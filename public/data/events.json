@@ -1,0 +1,18 @@
+[
+  {
+    "id": "shad-suk-mynsiem",
+    "name": "Shad Suk Mynsiem Festival",
+    "date": "2025-04-12",
+    "location": "Shillong",
+    "description": "Annual cultural dance festival of the Khasi community.",
+    "image": "/images/events/shad-suk-mynsiem.jpg"
+  },
+  {
+    "id": "autumn-festival",
+    "name": "Shillong Autumn Festival",
+    "date": "2025-10-20",
+    "location": "Umiam Lake",
+    "description": "Food, music, and arts at the lakefront during autumn.",
+    "image": "/images/events/autumn-festival.jpg"
+  }
+]

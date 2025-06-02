@@ -1,0 +1,18 @@
+[
+  {
+    "id": "pinewood-hotel",
+    "name": "Pinewood Hotel",
+    "location": "Shillong",
+    "image": "/images/accommodations/pinewood.jpg",
+    "pricePerNight": 2200,
+    "amenities": ["Wi-Fi", "Breakfast", "Parking"]
+  },
+  {
+    "id": "cherrapunji-resort",
+    "name": "Cherrapunji Resort",
+    "location": "Cherrapunji",
+    "image": "/images/accommodations/cherrapunji.jpg",
+    "pricePerNight": 1800,
+    "amenities": ["Wi-Fi", "Garden View", "Trekking"]
+  }
+]

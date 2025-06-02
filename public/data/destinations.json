@@ -1,0 +1,16 @@
+[
+  {
+    "id": "shillong",
+    "name": "Shillong",
+    "description": "The capital of Meghalaya, known as the Scotland of the East.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Umiam Lake", "Elephant Falls", "Shillong Peak"]
+  },
+  {
+    "id": "cherrapunji",
+    "name": "Cherrapunji",
+    "description": "One of the wettest places on Earth, famous for living root bridges.",
+    "image": "/images/destinations/cherrapunji.jpeg",
+    "highlights": ["Double Decker Bridge", "Mawsmai Caves", "Nohkalikai Falls"]
+  }
+]
