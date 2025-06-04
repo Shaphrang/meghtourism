@@ -1,16 +1,59 @@
 [
   {
-    "id": "shillong",
-    "name": "Shillong",
-    "description": "The capital of Meghalaya, known as the Scotland of the East.",
+    "id": "1",
+    "name": "Cherrapunji",
+    "description": "One of the wettest places on Earth.",
     "image": "/images/destinations/shillong.jpg",
-    "highlights": ["Umiam Lake", "Elephant Falls", "Shillong Peak"]
+    "highlights": ["Living Root Bridges", "Nohkalikai Falls", "Mawsmai Caves"]
   },
   {
-    "id": "cherrapunji",
+    "id": "2",
+    "name": "Mawlynnong",
+    "description": "Asia's cleanest village.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
+  },
+    {
+    "id": "1",
     "name": "Cherrapunji",
-    "description": "One of the wettest places on Earth, famous for living root bridges.",
-    "image": "/images/destinations/cherrapunji.jpeg",
-    "highlights": ["Double Decker Bridge", "Mawsmai Caves", "Nohkalikai Falls"]
+    "description": "One of the wettest places on Earth.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Living Root Bridges", "Nohkalikai Falls", "Mawsmai Caves"]
+  },
+  {
+    "id": "2",
+    "name": "Mawlynnong",
+    "description": "Asia's cleanest village.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
+  },
+    {
+    "id": "1",
+    "name": "Cherrapunji",
+    "description": "One of the wettest places on Earth.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Living Root Bridges", "Nohkalikai Falls", "Mawsmai Caves"]
+  },
+  {
+    "id": "2",
+    "name": "Mawlynnong",
+    "description": "Asia's cleanest village.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
+  },
+    {
+    "id": "1",
+    "name": "Cherrapunji",
+    "description": "One of the wettest places on Earth.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Living Root Bridges", "Nohkalikai Falls", "Mawsmai Caves"]
+  },
+  {
+    "id": "2",
+    "name": "Mawlynnong",
+    "description": "Asia's cleanest village.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
   }
+  
 ]

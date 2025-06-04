@@ -1,18 +1,58 @@
 [
   {
-    "id": "shad-suk-mynsiem",
-    "name": "Shad Suk Mynsiem Festival",
-    "date": "2025-04-12",
-    "location": "Shillong",
-    "description": "Annual cultural dance festival of the Khasi community.",
-    "image": "/images/events/shad-suk-mynsiem.jpg"
-  },
-  {
-    "id": "autumn-festival",
+    "id": "e1",
     "name": "Shillong Autumn Festival",
-    "date": "2025-10-20",
-    "location": "Umiam Lake",
-    "description": "Food, music, and arts at the lakefront during autumn.",
-    "image": "/images/events/autumn-festival.jpg"
+    "date": "Oct 15, 2025",
+    "location": "Wards Lake",
+    "image": "/images/events/shillong.jpg"
+  },
+    {
+    "id": "e2",
+    "name": "Cherry Blossom Festival",
+    "date": "Nov 20, 2025",
+    "location": "Polo Ground",
+    "image": "/images/events/shillong.jpg"
+  },
+    {
+    "id": "e1",
+    "name": "Shillong Autumn Festival",
+    "date": "Oct 15, 2025",
+    "location": "Wards Lake",
+    "image": "/images/events/shillong.jpg"
+  },
+    {
+    "id": "e2",
+    "name": "Cherry Blossom Festival",
+    "date": "Nov 20, 2025",
+    "location": "Polo Ground",
+    "image": "/images/events/shillong.jpg"
+  },
+    {
+    "id": "e1",
+    "name": "Shillong Autumn Festival",
+    "date": "Oct 15, 2025",
+    "location": "Wards Lake",
+    "image": "/images/events/shillong.jpg"
+  },
+    {
+    "id": "e2",
+    "name": "Cherry Blossom Festival",
+    "date": "Nov 20, 2025",
+    "location": "Polo Ground",
+    "image": "/images/events/shillong.jpg"
+  },
+    {
+    "id": "e1",
+    "name": "Shillong Autumn Festival",
+    "date": "Oct 15, 2025",
+    "location": "Wards Lake",
+    "image": "/images/events/shillong.jpg"
+  },
+    {
+    "id": "e2",
+    "name": "Cherry Blossom Festival",
+    "date": "Nov 20, 2025",
+    "location": "Polo Ground",
+    "image": "/images/events/shillong.jpg"
   }
 ]

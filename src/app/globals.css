@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #f5f9f6;         /* Light mint background */
+  --foreground: #1a1a1a;         /* Dark text */
+  --accent: #38b2ac;             /* Teal (Tailwind teal-500) */
+  --accent-dark: #2c7a7b;
+  --muted: #94a3b8;              /* Tailwind slate-400 */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0d0f10;
+    --foreground: #f1f5f9;
+    --accent: #4fd1c5;
+    --accent-dark: #319795;
+    --muted: #64748b;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbars cleanly */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Optional: Enhance headings */
+h1, h2, h3 {
+  font-weight: bold;
+}
+
+/* Optional: Section spacing */
+section {
+  margin-bottom: 3rem;
 }

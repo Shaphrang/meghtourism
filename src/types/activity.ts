@@ -3,6 +3,5 @@ export interface Activity {
   name: string;
   description: string;
   image: string;
-  location: string;
-  duration: string;
+  difficulty: string;
 }

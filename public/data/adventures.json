@@ -1,0 +1,58 @@
+[
+  {
+    "id": "a1",
+    "name": "Caving in Mawsmai",
+    "description": "Explore the ancient limestone caves of Mawsmai.",
+    "image": "/images/adventures/shillong.jpg",
+    "difficulty": "Moderate"
+  },
+  {
+    "id": "a2",
+    "name": "Trekking to Double Decker Bridge",
+    "description": "A scenic and challenging trek to Nongriat's root bridges.",
+    "image": "/images/adventures/shillong.jpg",
+    "difficulty": "Hard"
+  },
+    {
+    "id": "a1",
+    "name": "Caving in Mawsmai",
+    "description": "Explore the ancient limestone caves of Mawsmai.",
+    "image": "/images/adventures/shillong.jpg",
+    "difficulty": "Moderate"
+  },
+  {
+    "id": "a2",
+    "name": "Trekking to Double Decker Bridge",
+    "description": "A scenic and challenging trek to Nongriat's root bridges.",
+    "image": "/images/adventures/shillong.jpg",
+    "difficulty": "Hard"
+  },
+    {
+    "id": "a1",
+    "name": "Caving in Mawsmai",
+    "description": "Explore the ancient limestone caves of Mawsmai.",
+    "image": "/images/adventures/shillong.jpg",
+    "difficulty": "Moderate"
+  },
+  {
+    "id": "a2",
+    "name": "Trekking to Double Decker Bridge",
+    "description": "A scenic and challenging trek to Nongriat's root bridges.",
+    "image": "/images/adventures/shillong.jpg",
+    "difficulty": "Hard"
+  },
+    {
+    "id": "a1",
+    "name": "Caving in Mawsmai",
+    "description": "Explore the ancient limestone caves of Mawsmai.",
+    "image": "/images/adventures/shillong.jpg",
+    "difficulty": "Moderate"
+  },
+  {
+    "id": "a2",
+    "name": "Trekking to Double Decker Bridge",
+    "description": "A scenic and challenging trek to Nongriat's root bridges.",
+    "image": "/images/adventures/shillong.jpg",
+    "difficulty": "Hard"
+  }
+]
