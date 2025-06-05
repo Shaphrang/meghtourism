@@ -1,23 +1,21 @@
-import { Activity } from '@/types/activity';
+import Link from 'next/link';
+import { Thrill } from '@/types/thrill';
 
 interface Props {
-  activity: Activity;
+  thrill: Thrill;
   className?: string;
 }
 
-export default function ThrillCard({ activity, className = '' }: Props) {
+export default function ThrillCard({ thrill, className = '' }: Props) {
   return (
-    <div className={`bg-white rounded-2xl shadow-md overflow-hidden ${className}`}>
-      <img
-        src={activity.image}
-        alt={activity.name}
-        className="w-full h-40 object-cover"
-      />
-      <div className="p-4">
-        <h3 className="text-lg font-semibold">{activity.name}</h3>
-        <p className="text-sm text-gray-600">{activity.description}</p>
-        <p className="text-xs text-blue-500 mt-1">Difficulty: {activity.difficulty}</p>
+    <Link href={`/thrills/${thrill.id}`} className={`block ${className}`}>
+      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <img src={thrill.image} alt={thrill.name} className="w-full h-36 object-cover" />
+        <div className="p-4">
+          <h3 className="text-base font-semibold text-gray-800">{thrill.name}</h3>
+          <p className="text-sm text-gray-600">{thrill.location}</p>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

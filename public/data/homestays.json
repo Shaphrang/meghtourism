@@ -16,7 +16,7 @@
     "amenities": ["Hot Water", "Parking", "Garden Access"]
   },
     {
-    "id": "h1",
+    "id": "h3",
     "name": "Whispering Pines",
     "location": "Shillong",
     "price": "₹1200/night",
@@ -24,7 +24,7 @@
     "amenities": ["Free WiFi", "Mountain View", "Breakfast Included"]
   },
   {
-    "id": "h2",
+    "id": "h4",
     "name": "Hilltop Haven",
     "location": "Cherrapunji",
     "price": "₹1500/night",
@@ -32,7 +32,7 @@
     "amenities": ["Hot Water", "Parking", "Garden Access"]
   },
     {
-    "id": "h1",
+    "id": "h5",
     "name": "Whispering Pines",
     "location": "Shillong",
     "price": "₹1200/night",
@@ -40,15 +40,15 @@
     "amenities": ["Free WiFi", "Mountain View", "Breakfast Included"]
   },
   {
-    "id": "h2",
+    "id": "h6",
     "name": "Hilltop Haven",
     "location": "Cherrapunji",
     "price": "₹1500/night",
     "image": "/images/accomodations/shillong.jpg",
     "amenities": ["Hot Water", "Parking", "Garden Access"]
   },
-    {
-    "id": "h1",
+  {
+    "id": "h7",
     "name": "Whispering Pines",
     "location": "Shillong",
     "price": "₹1200/night",
@@ -56,7 +56,23 @@
     "amenities": ["Free WiFi", "Mountain View", "Breakfast Included"]
   },
   {
-    "id": "h2",
+    "id": "h8",
+    "name": "Hilltop Haven",
+    "location": "Cherrapunji",
+    "price": "₹1500/night",
+    "image": "/images/accomodations/shillong.jpg",
+    "amenities": ["Hot Water", "Parking", "Garden Access"]
+  },
+      {
+    "id": "h9",
+    "name": "Whispering Pines",
+    "location": "Shillong",
+    "price": "₹1200/night",
+    "image": "/images/accomodations/shillong.jpg",
+    "amenities": ["Free WiFi", "Mountain View", "Breakfast Included"]
+  },
+  {
+    "id": "h10",
     "name": "Hilltop Haven",
     "location": "Cherrapunji",
     "price": "₹1500/night",

@@ -14,46 +14,59 @@
     "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
   },
     {
-    "id": "1",
+    "id": "3",
     "name": "Cherrapunji",
     "description": "One of the wettest places on Earth.",
     "image": "/images/destinations/shillong.jpg",
     "highlights": ["Living Root Bridges", "Nohkalikai Falls", "Mawsmai Caves"]
   },
   {
-    "id": "2",
+    "id": "4",
     "name": "Mawlynnong",
     "description": "Asia's cleanest village.",
     "image": "/images/destinations/shillong.jpg",
     "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
   },
     {
-    "id": "1",
+    "id": "5",
     "name": "Cherrapunji",
     "description": "One of the wettest places on Earth.",
     "image": "/images/destinations/shillong.jpg",
     "highlights": ["Living Root Bridges", "Nohkalikai Falls", "Mawsmai Caves"]
   },
   {
-    "id": "2",
+    "id": "6",
     "name": "Mawlynnong",
     "description": "Asia's cleanest village.",
     "image": "/images/destinations/shillong.jpg",
     "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
   },
     {
-    "id": "1",
+    "id": "7",
     "name": "Cherrapunji",
     "description": "One of the wettest places on Earth.",
     "image": "/images/destinations/shillong.jpg",
     "highlights": ["Living Root Bridges", "Nohkalikai Falls", "Mawsmai Caves"]
   },
   {
-    "id": "2",
+    "id": "8",
+    "name": "Mawlynnong",
+    "description": "Asia's cleanest village.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
+  },
+    {
+    "id": "9",
+    "name": "Mawlynnong",
+    "description": "Asia's cleanest village.",
+    "image": "/images/destinations/shillong.jpg",
+    "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
+  },
+    {
+    "id": "10",
     "name": "Mawlynnong",
     "description": "Asia's cleanest village.",
     "image": "/images/destinations/shillong.jpg",
     "highlights": ["Sky View", "Living Root Bridge", "Clean Streets"]
   }
-  
 ]

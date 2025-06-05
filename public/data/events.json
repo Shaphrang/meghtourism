@@ -1,58 +1,92 @@
 [
   {
     "id": "e1",
-    "name": "Shillong Autumn Festival",
-    "date": "Oct 15, 2025",
-    "location": "Wards Lake",
-    "image": "/images/events/shillong.jpg"
+    "name": "Cherry Blossom Festival",
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
   },
     {
     "id": "e2",
     "name": "Cherry Blossom Festival",
-    "date": "Nov 20, 2025",
-    "location": "Polo Ground",
-    "image": "/images/events/shillong.jpg"
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
   },
     {
-    "id": "e1",
-    "name": "Shillong Autumn Festival",
-    "date": "Oct 15, 2025",
-    "location": "Wards Lake",
-    "image": "/images/events/shillong.jpg"
-  },
-    {
-    "id": "e2",
+    "id": "e3",
     "name": "Cherry Blossom Festival",
-    "date": "Nov 20, 2025",
-    "location": "Polo Ground",
-    "image": "/images/events/shillong.jpg"
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
   },
     {
-    "id": "e1",
-    "name": "Shillong Autumn Festival",
-    "date": "Oct 15, 2025",
-    "location": "Wards Lake",
-    "image": "/images/events/shillong.jpg"
-  },
-    {
-    "id": "e2",
+    "id": "e4",
     "name": "Cherry Blossom Festival",
-    "date": "Nov 20, 2025",
-    "location": "Polo Ground",
-    "image": "/images/events/shillong.jpg"
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
   },
     {
-    "id": "e1",
-    "name": "Shillong Autumn Festival",
-    "date": "Oct 15, 2025",
-    "location": "Wards Lake",
-    "image": "/images/events/shillong.jpg"
-  },
-    {
-    "id": "e2",
+    "id": "e5",
     "name": "Cherry Blossom Festival",
-    "date": "Nov 20, 2025",
-    "location": "Polo Ground",
-    "image": "/images/events/shillong.jpg"
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
+  },
+    {
+    "id": "e6",
+    "name": "Cherry Blossom Festival",
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
+  },
+    {
+    "id": "e7",
+    "name": "Cherry Blossom Festival",
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
+  },
+    {
+    "id": "e8",
+    "name": "Cherry Blossom Festival",
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
+  },
+    {
+    "id": "e9",
+    "name": "Cherry Blossom Festival",
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
+  },
+    {
+    "id": "e10",
+    "name": "Cherry Blossom Festival",
+    "location": "Shillong",
+    "date": "2024-11-10",
+    "image": "/images/events/cherrapunji.jpeg",
+    "description": "Celebrate the annual bloom of cherry blossoms with music and food.",
+    "highlights": ["Live music", "Local food", "Cultural performances"]
   }
 ]

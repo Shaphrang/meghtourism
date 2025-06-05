@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react';
 import { fetchData } from '@/lib/fetchData';
 import ThrillCard from '@/components/cards/thrillsCard';
-import { Activity } from '@/types/activity';
+import { Thrill } from '@/types/thrill';
 import HorizontalScroll from '@/components/common/horizontalScoll';
 
 export function ThrillsSection() {
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const [thrills, setThrills] = useState<Thrill[]>([]);
 
   useEffect(() => {
-    fetchData('adventures.json').then(setActivities);
+    fetchData('thrills.json').then(setThrills);
   }, []);
 
   return (
@@ -19,15 +19,15 @@ export function ThrillsSection() {
         <h2 className="text-xl font-bold">Adventure & Thrill</h2>
         <a href="/thrills" className="text-blue-500 text-sm">More →</a>
       </div>
-     <HorizontalScroll>
-          {activities.map((activity, i) => (
-            <ThrillCard
-              key={i}
-              activity={activity}
-              className="min-w-[250px] max-w-[250px]"
-            />
-          ))}
-     </HorizontalScroll>
+      <HorizontalScroll>
+        {thrills.map((thrill, i) => (
+          <ThrillCard
+            key={i}
+            thrill={thrill}
+            className="min-w-[250px] max-w-[250px]"
+          />
+        ))}
+      </HorizontalScroll>
     </section>
   );
 }

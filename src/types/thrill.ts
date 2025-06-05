@@ -1,8 +1,7 @@
-export interface Event {
+export interface Thrill {
   id: string;
   name: string;
   location: string;
-  date: string;
   image: string;
   description: string;
   highlights: string[];
