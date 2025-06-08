@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Destination } from '@/types/destination';
-import path from 'path';
-import { promises as fs } from 'fs';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Params {
   params: {
@@ -10,11 +9,17 @@ interface Params {
 }
 
 export default async function DestinationDetailPage({ params }: Params) {
-  const filePath = path.join(process.cwd(), 'public/data/destinations.json');
-  const fileContent = await fs.readFile(filePath, 'utf-8');
-  const destinations: Destination[] = JSON.parse(fileContent);
+  const { data, error } = await supabase
+    .from('destinations')
+    .select('*')
+    .eq('id', params.id)
+    .single();
 
-  const destination = destinations.find(dest => dest.id === params.id);
+  if (error) {
+    console.error(error);
+    return notFound();
+  }
+  const destination = data as Destination | null;
 
   if (!destination) return notFound();
 

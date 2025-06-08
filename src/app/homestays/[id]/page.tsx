@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Homestay } from '@/types/homestay';
-import path from 'path';
-import { promises as fs } from 'fs';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Params {
   params: {
@@ -10,11 +9,17 @@ interface Params {
 }
 
 export default async function HomestayDetailPage({ params }: Params) {
-  const filePath = path.join(process.cwd(), 'public/data/homestays.json');
-  const fileContent = await fs.readFile(filePath, 'utf-8');
-  const homestays: Homestay[] = JSON.parse(fileContent);
+  const { data, error } = await supabase
+    .from('homestays')
+    .select('*')
+    .eq('id', params.id)
+    .single();
 
-  const homestay = homestays.find(h => h.id === params.id);
+  if (error) {
+    console.error(error);
+    return notFound();
+  }
+  const homestay = data as Homestay | null;
 
   if (!homestay) return notFound();
 

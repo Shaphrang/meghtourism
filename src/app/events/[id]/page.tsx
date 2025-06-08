@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Event } from '@/types/event';
-import path from 'path';
-import { promises as fs } from 'fs';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Params {
   params: {
@@ -10,11 +9,17 @@ interface Params {
 }
 
 export default async function EventDetailPage({ params }: Params) {
-  const filePath = path.join(process.cwd(), 'public/data/events.json');
-  const fileContent = await fs.readFile(filePath, 'utf-8');
-  const events: Event[] = JSON.parse(fileContent);
+  const { data, error } = await supabase
+    .from('events')
+    .select('*')
+    .eq('id', params.id)
+    .single();
 
-  const event = events.find(e => e.id === params.id);
+  if (error) {
+    console.error(error);
+    return notFound();
+  }
+  const event = data as Event | null;
 
   if (!event) return notFound();
 

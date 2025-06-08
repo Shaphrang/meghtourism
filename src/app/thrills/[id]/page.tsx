@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
-import path from 'path';
-import { promises as fs } from 'fs';
+import { supabase } from '@/lib/supabaseClient';
 import { Thrill } from '@/types/thrill';
 
 type Props = {
@@ -11,11 +10,17 @@ export default async function Page({ params }: Props) {
   // 🔐 SAFELY check params
   if (typeof params === 'undefined' || typeof params.id === 'undefined') return notFound();
 
-  const filePath = path.join(process.cwd(), 'public/data/thrills.json');
-  const fileContent = await fs.readFile(filePath, 'utf8');
-  const thrills: Thrill[] = JSON.parse(fileContent);
+  const { data, error } = await supabase
+    .from('thrills')
+    .select('*')
+    .eq('id', params.id)
+    .single();
 
-  const thrill = thrills.find((t) => t.id === params.id);
+  if (error) {
+    console.error(error);
+    return notFound();
+  }
+  const thrill = data as Thrill | null;
 
   if (!thrill) return notFound();
 
@@ -40,11 +45,8 @@ export default async function Page({ params }: Props) {
 
 // ✅ Tell Next to statically pre-generate pages for each ID
 export async function generateStaticParams() {
-  const filePath = path.join(process.cwd(), 'public/data/thrills.json');
-  const fileContent = await fs.readFile(filePath, 'utf8');
-  const thrills: Thrill[] = JSON.parse(fileContent);
-
-  return thrills.map((thrill) => ({
-    id: thrill.id,
+  const { data } = await supabase.from('thrills').select('id');
+  return (data || []).map((thrill) => ({
+    id: (thrill as { id: string }).id,
   }));
 }
