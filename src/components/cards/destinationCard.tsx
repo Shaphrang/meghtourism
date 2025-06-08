@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Destination } from '@/types/destination';
 import clsx from 'clsx';
 
@@ -18,11 +19,17 @@ export default function DestinationCard({ destination, className = '' }: Props) 
         className
       )}
     >
-      <img
-        src={destination.image}
-        alt={destination.name}
-        className="w-full h-36 object-cover"
-      />
+      <div className="relative w-full h-36">
+        <Image
+          src={destination.image}
+          alt={destination.name}
+          fill
+          className="object-cover rounded-t-xl"
+          sizes="(max-width: 768px) 220px, 240px"
+          loading="lazy"
+        />
+      </div>
+
       <div className="p-4">
         <h3 className="text-base font-semibold text-gray-800">{destination.name}</h3>
         <p className="text-sm text-gray-600 line-clamp-2">{destination.description}</p>

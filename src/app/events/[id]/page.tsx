@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Event } from '@/types/event';
-import path from 'path';
-import { promises as fs } from 'fs';
+import { supabase } from '@/lib/supabaseClient';
+import Image from 'next/image';
 
 interface Params {
   params: {
@@ -10,30 +10,45 @@ interface Params {
 }
 
 export default async function EventDetailPage({ params }: Params) {
-  const filePath = path.join(process.cwd(), 'public/data/events.json');
-  const fileContent = await fs.readFile(filePath, 'utf-8');
-  const events: Event[] = JSON.parse(fileContent);
+  const { data, error } = await supabase
+    .from('events')
+    .select('*')
+    .eq('id', params.id)
+    .single();
 
-  const event = events.find(e => e.id === params.id);
+  if (error) {
+    console.error(error);
+    return notFound();
+  }
+
+  const event = data as Event | null;
 
   if (!event) return notFound();
 
   return (
     <div className="px-6 py-8 max-w-4xl mx-auto">
-      <img
-        src={event.image}
-        alt={event.name}
-        className="w-full h-64 object-cover rounded-xl mb-6"
-      />
+      <div className="relative w-full h-64 rounded-xl overflow-hidden mb-6">
+        <Image
+          src={event.image}
+          alt={event.name}
+          layout="fill"
+          objectFit="cover"
+          priority
+        />
+      </div>
+
       <h1 className="text-3xl font-bold mb-2">{event.name}</h1>
       <p className="text-gray-600 mb-1">{event.location}</p>
       <p className="text-gray-500 mb-4 italic">📅 {event.date}</p>
       <p className="text-gray-700 mb-4">{event.description}</p>
-      <ul className="list-disc list-inside text-gray-700">
-        {event.highlights.map((item, idx) => (
-          <li key={idx}>{item}</li>
-        ))}
-      </ul>
+
+      {event.highlights?.length > 0 && (
+        <ul className="list-disc list-inside text-gray-700 space-y-1">
+          {event.highlights.map((item, idx) => (
+            <li key={idx}>{item}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

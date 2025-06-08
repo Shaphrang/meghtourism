@@ -1,18 +1,48 @@
-HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# 🌄 Meghtourism.com
 
-First, run the development server:
+**Meghtourism** is an AI-powered travel assistant and tourism platform for Meghalaya, built using Next.js, Tailwind CSS, and Supabase. It aims to help travelers discover destinations, plan trips, and book homestays with a seamless web experience.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install Dependencies
+
+Before running any script, install all dependencies:
+
+```bash
+npm install
+```
+
+---
+
+## 🔐 Environment Variables
+
+Create a `.env.local` file in your project root with the following variables:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+## 🧪 Available Scripts
+
+### Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+
+### Run ESLint (code quality check)
+
+```bash
+npm run lint
+```
+
+### Build for Production
+
+```bash
+npm run build
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

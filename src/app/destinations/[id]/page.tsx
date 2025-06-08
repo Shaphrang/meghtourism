@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Destination } from '@/types/destination';
-import path from 'path';
-import { promises as fs } from 'fs';
+import { supabase } from '@/lib/supabaseClient';
+import Image from 'next/image';
 
 interface Params {
   params: {
@@ -10,28 +10,43 @@ interface Params {
 }
 
 export default async function DestinationDetailPage({ params }: Params) {
-  const filePath = path.join(process.cwd(), 'public/data/destinations.json');
-  const fileContent = await fs.readFile(filePath, 'utf-8');
-  const destinations: Destination[] = JSON.parse(fileContent);
+  const { data, error } = await supabase
+    .from('destinations')
+    .select('*')
+    .eq('id', params.id)
+    .single();
 
-  const destination = destinations.find(dest => dest.id === params.id);
+  if (error) {
+    console.error(error);
+    return notFound();
+  }
+
+  const destination = data as Destination | null;
 
   if (!destination) return notFound();
 
   return (
     <div className="px-6 py-8 max-w-4xl mx-auto">
-      <img
-        src={destination.image}
-        alt={destination.name}
-        className="w-full h-64 object-cover rounded-xl mb-6"
-      />
+      <div className="relative w-full h-64 rounded-xl overflow-hidden mb-6">
+        <Image
+          src={destination.image}
+          alt={destination.name}
+          layout="fill"
+          objectFit="cover"
+          priority // boost LCP
+        />
+      </div>
+
       <h1 className="text-3xl font-bold mb-2">{destination.name}</h1>
       <p className="text-gray-600 mb-4">{destination.description}</p>
-      <ul className="list-disc list-inside text-gray-700">
-        {destination.highlights.map((item, idx) => (
-          <li key={idx}>{item}</li>
-        ))}
-      </ul>
+
+      {destination.highlights?.length > 0 && (
+        <ul className="list-disc list-inside text-gray-700 space-y-1">
+          {destination.highlights.map((item, idx) => (
+            <li key={idx}>{item}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
