@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Search } from 'lucide-react';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,12 +18,16 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-6 text-gray-700 font-medium">
+        <nav className="hidden md:flex gap-6 text-gray-700 font-medium items-center">
           <Link href="/destinations">Destinations</Link>
-          <Link href="/accommodations">Accommodations</Link>
-          <Link href="/itineraries">Itineraries</Link>
+          <Link href="/homestays">Homestays</Link>
+          <Link href="/events">Events</Link>
+          <Link href="/thrills">Thrills</Link>
           <Link href="/cafes">Cafes</Link>
-          <Link href="/activities">Activities</Link>
+          <Link href="/rentals">Rentals</Link>
+          <Link href="/search" className="ml-2" aria-label="Search">
+            <Search size={20} />
+          </Link>
           <Link href="/events">Events</Link>
         </nav>
 
@@ -42,10 +46,14 @@ export default function Header() {
         <div className="md:hidden bg-white border-t px-4 pb-4 shadow-md">
           <nav className="flex flex-col gap-3 text-gray-700 font-medium">
             <Link href="/destinations" onClick={() => setIsOpen(false)}>Destinations</Link>
-            <Link href="/accommodations" onClick={() => setIsOpen(false)}>Accommodations</Link>
-            <Link href="/itineraries" onClick={() => setIsOpen(false)}>Itineraries</Link>
+            <Link href="/homestays" onClick={() => setIsOpen(false)}>Homestays</Link>
+            <Link href="/events" onClick={() => setIsOpen(false)}>Events</Link>
+            <Link href="/thrills" onClick={() => setIsOpen(false)}>Thrills</Link>
             <Link href="/cafes" onClick={() => setIsOpen(false)}>Cafes</Link>
-            <Link href="/activities" onClick={() => setIsOpen(false)}>Activities</Link>
+            <Link href="/rentals" onClick={() => setIsOpen(false)}>Rentals</Link>
+            <Link href="/search" onClick={() => setIsOpen(false)} className="flex items-center gap-1">
+              <Search size={16} /> Search
+            </Link>
             <Link href="/events" onClick={() => setIsOpen(false)}>Events</Link>
           </nav>
         </div>

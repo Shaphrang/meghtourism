@@ -19,28 +19,33 @@ export default function HorizontalScroll({ children, className = '' }: Props) {
   };
 
   return (
-    <div className="relative">
-      {/* Left Arrow */}
+    <div className="relative w-full">
+      {/* Scrollable Container */}
+      <div
+        ref={containerRef}
+        className={`
+          overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar
+          ${className}
+        `}
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          overflowY: 'hidden',
+        }}
+      >
+        <div className="flex gap-3 min-w-max px-3">{children}</div>
+      </div>
+
+      {/* Scroll Arrows - Only on desktop */}
       <button
         onClick={() => scroll('left')}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow rounded-full hover:bg-gray-100"
+        className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow rounded-full hover:bg-gray-100"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
 
-      {/* Scrollable Container */}
-      <div
-        ref={containerRef}
-        className={`overflow-x-auto no-scrollbar scroll-smooth pb-4 ${className}`}
-        style={{ WebkitOverflowScrolling: 'touch' }}
-      >
-        <div className="flex gap-4 min-w-max px-6">{children}</div>
-      </div>
-
-      {/* Right Arrow */}
       <button
         onClick={() => scroll('right')}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow rounded-full hover:bg-gray-100"
+        className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow rounded-full hover:bg-gray-100"
       >
         <ChevronRight className="w-5 h-5" />
       </button>

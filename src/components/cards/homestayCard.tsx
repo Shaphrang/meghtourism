@@ -15,33 +15,33 @@ export default function HomestayCard({ homestay, className = '' }: Props) {
     <Link
       href={`/homestays/${homestay.id}`}
       className={clsx(
-        'block bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 cursor-pointer hover:shadow-lg transition',
+        'block w-full h-64 rounded-xl overflow-hidden border bg-white shadow-md hover:shadow-lg transition cursor-pointer',
         className
       )}
     >
-      <div className="relative w-full h-36">
+      {/* Top: Image */}
+      <div className="relative w-full h-[70%]">
         <Image
-          src={homestay.image}
-          alt={homestay.name}
+          src={homestay.image ?? '/placeholder.jpg'}
+          alt={homestay.name ?? 'Homestay'}
           fill
-          className="object-cover rounded-t-xl"
-          sizes="(max-width: 768px) 180px, 200px"
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
           loading="lazy"
         />
       </div>
 
-      <div className="p-4">
-        <h3 className="text-base font-semibold text-gray-800">{homestay.name}</h3>
-        <p className="text-sm text-gray-600">{homestay.location}</p>
-        <p className="text-sm text-gray-600 mb-2">{homestay.price}</p>
-
-        {Array.isArray(homestay.amenities) && (
-          <ul className="text-sm text-gray-500 list-disc list-inside">
-            {homestay.amenities.slice(0, 2).map((amenity, idx) => (
-              <li key={idx}>{amenity}</li>
-            ))}
-          </ul>
-        )}
+      {/* Bottom: Info */}
+      <div className="h-[30%] px-3 py-2 flex flex-col justify-between">
+        <h3 className="text-sm font-semibold text-gray-800 truncate">
+          {homestay.name}
+        </h3>
+        <p className="text-xs text-gray-500 truncate">
+          {homestay.location ?? 'Meghalaya'}
+        </p>
+        <p className="text-xs font-medium text-blue-600">
+          ₹{homestay.pricepernight} / night
+        </p>
       </div>
     </Link>
   );

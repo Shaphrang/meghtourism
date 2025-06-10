@@ -12,13 +12,28 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main className="pt-20 px-6 py-10 font-sans">
+
+      {/* Full-width, responsive layout */}
+      <main className="w-full px-2 sm:px-6 pt-16 pb-24 bg-white font-sans">
         <HeroSection />
-        <DestinationsSection />
-        <HomestaysSection />
-        <EventsSection />
-        <ThrillsSection />
+
+        <section className="mt-4">
+          <DestinationsSection />
+        </section>
+
+        <section className="mt-4">
+          <HomestaysSection />
+        </section>
+
+        <section className="mt-4">
+          <EventsSection />
+        </section>
+
+        <section className="mt-4">
+          <ThrillsSection />
+        </section>
       </main>
+
       <Footer />
     </>
   );

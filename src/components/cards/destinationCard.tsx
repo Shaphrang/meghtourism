@@ -15,29 +15,29 @@ export default function DestinationCard({ destination, className = '' }: Props) 
     <Link
       href={`/destinations/${destination.id}`}
       className={clsx(
-        'block bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 cursor-pointer hover:shadow-lg transition',
+        'relative block w-full h-64 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer',
         className
       )}
     >
-      <div className="relative w-full h-36">
-        <Image
-          src={destination.image}
-          alt={destination.name}
-          fill
-          className="object-cover rounded-t-xl"
-          sizes="(max-width: 768px) 220px, 240px"
-          loading="lazy"
-        />
-      </div>
+      {/* Full Image */}
+      <Image
+        src={destination.image ?? '/placeholder.jpg'}
+        alt={destination.name ?? 'Destination'}
+        fill
+        className="object-cover"
+        sizes="(max-width: 768px) 100vw, 33vw"
+        loading="lazy"
+      />
 
-      <div className="p-4">
-        <h3 className="text-base font-semibold text-gray-800">{destination.name}</h3>
-        <p className="text-sm text-gray-600 line-clamp-2">{destination.description}</p>
-        <ul className="mt-2 text-sm text-gray-500 list-disc list-inside">
-          {destination.highlights.slice(0, 2).map((highlight, idx) => (
-            <li key={idx}>{highlight}</li>
-          ))}
-        </ul>
+      {/* Gradient Overlay */}
+      <div className="absolute bottom-0 w-full h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
+
+      {/* Text Content */}
+      <div className="absolute bottom-0 w-full h-1/3 px-3 py-3 text-white flex flex-col justify-end">
+        <h3 className="text-sm sm:text-base font-semibold truncate leading-tight">
+          {destination.name}
+        </h3>
+        <p className="text-xs text-gray-300 truncate">{destination.location ?? 'Meghalaya'}</p>
       </div>
     </Link>
   );
