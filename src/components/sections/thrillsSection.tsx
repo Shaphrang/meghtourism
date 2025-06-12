@@ -18,9 +18,9 @@ export function ThrillsSection() {
     <section className="py-6 px-4 bg-gradient-to-r from-blue-50 to-white">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Adventure & Thrill</h2>
-        <Link href="/thrills" className="text-blue-500 text-sm">
-          More →
-        </Link>
+          <Link href="/listingPages/thrills" className="text-blue-500 text-sm">
+            More →
+          </Link>
       </div>
 
       <HorizontalScroll>

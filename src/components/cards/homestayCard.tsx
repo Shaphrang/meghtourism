@@ -40,7 +40,8 @@ export default function HomestayCard({ homestay, className = '' }: Props) {
           {homestay.location ?? 'Meghalaya'}
         </p>
         <p className="text-xs font-medium text-blue-600">
-          ₹{homestay.pricepernight} / night
+          {/*₹{homestay.pricepernight} / night*/}
+          ₹{homestay.pricepernight ?? homestay.price} {homestay.pricepernight ? '/ night' : ''}
         </p>
       </div>
     </Link>

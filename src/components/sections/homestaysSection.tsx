@@ -17,9 +17,8 @@ export function HomestaysSection() {
 
   return (
     <HorizontalSection
-      title="Recommended Homestays"
-      link="/homestays"
-      items={homestays}
+        title="Recommended Homestays"
+        items={homestays}
       renderCard={(homestay, index) => (
         <HomestayCard
           key={index}
