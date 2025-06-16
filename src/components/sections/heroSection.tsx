@@ -4,7 +4,7 @@ export default function HeroSection() {
   return (
     <section
       className="relative w-full h-[50vh] md:h-[55vh] bg-cover bg-center"
-      style={{ backgroundImage: "url('/images/background/bg_Nohkalikai.png')" }}
+      style={{ backgroundImage: "url('https://dsvndsiallxdncdkcagj.supabase.co/storage/v1/object/public/images/backgrounds/bg_Nohkalikai.png')" }}
     >
       {/* Light gradient overlay only */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/20 to-transparent z-10" />

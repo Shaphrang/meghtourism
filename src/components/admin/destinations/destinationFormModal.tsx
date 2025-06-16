@@ -1,11 +1,11 @@
-'use client';
-
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Dialog } from '@headlessui/react';
 import { v4 as uuidv4 } from 'uuid';
 import imageCompression from 'browser-image-compression';
 import { toast } from 'react-hot-toast';
+import { uploadImageToSupabase } from '@/lib/uploadToSupabase';
+import { deleteImageFromSupabase } from '@/lib/deleteImageFromSupabase';
 
 interface Props {
   initialData?: any;
@@ -53,15 +53,11 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
 
   const handleSubmit = async () => {
     try {
-      if (isEditMode) {
-        const { error } = await supabase.from('destinations').update(form).eq('id', form.id);
-        if (error) throw error;
-        toast.success('Destination updated successfully');
-      } else {
-        const { error } = await supabase.from('destinations').insert([form]);
-        if (error) throw error;
-        toast.success('Destination created successfully');
-      }
+      const { error } = isEditMode
+        ? await supabase.from('destinations').update(form).eq('id', form.id)
+        : await supabase.from('destinations').insert([form]);
+      if (error) throw error;
+      toast.success(`Destination ${isEditMode ? 'updated' : 'created'} successfully`);
       onSave();
       onClose();
     } catch (error: any) {
@@ -161,7 +157,7 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
         {renderJSONInput('Travel Times', 'traveltimes')}
         {renderJSONInput('Average Cost Estimate', 'averagecostestimate')}
 
-        {/* Image Upload */}
+        {/* Main Image Upload */}
         <div className="mb-4">
           <label className="block font-medium text-sm mb-1">Main Image</label>
           <input
@@ -170,17 +166,28 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              const compressed = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1200 });
-              const filename = `${form.id}-main-${Date.now()}.${file.name.split('.').pop()}`;
-              const { error } = await supabase.storage.from('destinations').upload(filename, compressed, { upsert: true });
-              if (error) return toast.error('Upload failed: ' + error.message);
-              const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/destinations/${filename}`;
-              handleChange('image', url);
-              toast.success('Main image uploaded');
+              const url = await uploadImageToSupabase({
+                file,
+                category: 'destinations',
+                id: form.id,
+                type: 'main',
+              });
+              if (url) {
+                handleChange('image', url);
+                toast.success('Main image uploaded');
+              } else {
+                toast.error('Main image upload failed');
+              }
             }}
             className="border px-3 py-2 w-full"
           />
-          {form.image && <img src={form.image} alt="Preview" className="mt-2 h-32 object-cover rounded" />}
+          {form.image && (
+            <img
+              src={form.image}
+              alt="Main Preview"
+              className="mt-2 h-32 object-cover rounded"
+            />
+          )}
         </div>
 
         {/* Gallery Upload */}
@@ -193,24 +200,53 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
             onChange={async (e) => {
               const files = Array.from(e.target.files || []);
               const uploaded: string[] = [];
+
               for (const file of files) {
-                const compressed = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1200 });
-                const filename = `${form.id}-gallery-${Date.now()}-${file.name}`;
-                const { error } = await supabase.storage.from('destinations').upload(filename, compressed, { upsert: true });
-                if (!error) {
-                  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/destinations/${filename}`;
-                  uploaded.push(url);
-                }
+                const url = await uploadImageToSupabase({
+                  file,
+                  category: 'destinations',
+                  id: form.id,
+                  type: 'gallery',
+                });
+                if (url) uploaded.push(url);
               }
-              if (uploaded.length) toast.success('Gallery images uploaded');
-              handleChange('gallery', [...(form.gallery || []), ...uploaded]);
+
+              if (uploaded.length) {
+                toast.success('Gallery images uploaded');
+                handleChange('gallery', [...(form.gallery || []), ...uploaded]);
+              } else {
+                toast.error('Gallery upload failed');
+              }
             }}
             className="border px-3 py-2 w-full"
           />
+
           <div className="grid grid-cols-3 gap-2 mt-2">
-            {(form.gallery || []).map((url: string, i: number) => (
-              <img key={i} src={url} className="h-24 object-cover rounded" />
-            ))}
+            {(form.gallery || []).map((url: string, i: number) => {
+              const storagePath = url.split('/storage/v1/object/public/')[1];
+              return (
+                <div key={i} className="relative group">
+                  <img src={url} className="h-24 object-cover rounded w-full" alt={`Gallery ${i}`} />
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const deleted = await deleteImageFromSupabase(storagePath);
+                      if (deleted) {
+                        const updatedGallery = (form.gallery || []).filter((_: string, index: number) => index !== i);
+
+                        handleChange('gallery', updatedGallery);
+                        toast.success('Image removed');
+                      } else {
+                        toast.error('Failed to delete image');
+                      }
+                    }}
+                    className="absolute top-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
+                  >
+                    ✕
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
 

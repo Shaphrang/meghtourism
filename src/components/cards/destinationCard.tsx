@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Destination } from '@/types/destination';
 import clsx from 'clsx';
+import { SupabaseImage } from '@/components/common/supabaseImage';
+
 
 interface Props {
   destination: Destination;
@@ -20,14 +22,14 @@ export default function DestinationCard({ destination, className = '' }: Props) 
       )}
     >
       {/* Full Image */}
-      <Image
-        src={destination.image ?? '/placeholder.jpg'}
-        alt={destination.name ?? 'Destination'}
-        fill
-        className="object-cover"
-        sizes="(max-width: 768px) 100vw, 33vw"
-        loading="lazy"
-      />
+        <SupabaseImage
+          src={destination.image}
+          alt={destination.name ?? 'Destination'}
+          width={600}
+          height={300}
+          className="object-cover absolute inset-0 w-full h-full"
+        />
+
 
       {/* Gradient Overlay */}
       <div className="absolute bottom-0 w-full h-1/3 bg-gradient-to-t from-black/80 to-transparent" />

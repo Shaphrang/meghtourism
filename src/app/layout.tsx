@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
+import Script from 'next/script';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,12 +27,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {/* ✅ Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-9DZ19X5X54"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-9DZ19X5X54');
+          `}
+        </Script>
+
+        {/* App Content */}
         {children}
-        <Toaster/>
+        <Toaster />
       </body>
     </html>
   );
 }
+
