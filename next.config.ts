@@ -1,17 +1,23 @@
+// next.config.js
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development', // disable PWA in dev
+});
 
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'dsvndsiallxdncdkcagj.supabase.co', // ✅ Your Supabase domain
-        pathname: '/storage/v1/object/public/**',     // ✅ Matches all image paths in Storage
+        hostname: 'dsvndsiallxdncdkcagj.supabase.co',
+        pathname: '/storage/v1/object/public/**',
       },
     ],
   },
 };
 
-export default nextConfig;
+module.exports = withPWA(nextConfig);
