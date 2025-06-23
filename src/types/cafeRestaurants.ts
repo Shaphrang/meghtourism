@@ -1,0 +1,34 @@
+export interface CafeAndRestaurant {
+  id: string;
+  name: string;
+  description: string;
+  type: string;
+  cuisine: string[];
+  tags: string[];
+  location: string;
+  district: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  maplink: string;
+  image: string;
+  gallery: string[];
+  menu: string[];
+  pricelevel: string;
+  popularitems: string[];
+  timing: string;
+  contact: string;
+  email: string;
+  website: string;
+  features: string[];
+  dietaryoptions: string[];
+  averagecost: number;
+  ratings: number;
+  reviews: string[];
+  isfamilyfriendly: boolean;
+  accessibility: string[];
+  season: string;
+  popularityindex: number;
+  visibilitystatus: string;
+  created_at: string;
+}
