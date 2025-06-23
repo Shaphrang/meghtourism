@@ -13,6 +13,9 @@ export function DestinationsSection() {
     page: 1,
     pageSize: 6,
   });
+if (!loading && !error && destinations.length === 0) {
+  return <p className="p-4 text-gray-500">No destinations found.</p>;
+}
 
   if (loading) return <p className="p-4">Loading...</p>;
   if (error) return <p className="p-4 text-red-500">{error}</p>;

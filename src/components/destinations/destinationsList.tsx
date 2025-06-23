@@ -1,22 +1,28 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import useSupabaseList from '@/hooks/useSupabaseList';
 import { Destination } from '@/types/destination';
 import DestinationListingCard from '@/components/cards/destinationListingCard';
-import PromoBanner from '@/components/common/promoBanner';
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 12;
 
 export default function DestinationsList() {
   const [district, setDistrict] = useState('');
   const [sort, setSort] = useState('popularity');
-  const [page, setPage] = useState(1);
   const [searchText, setSearchText] = useState('');
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [allDestinations, setAllDestinations] = useState<Destination[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  const { data: destinations = [], loading, error } = useSupabaseList<Destination>('destinations', {
+  const {
+    data: fetchedData = [],
+    totalCount,
+    loading,
+    error
+  } = useSupabaseList<Destination>('destinations', {
     search: searchText,
     filter: district ? { field: 'district', value: district } : undefined,
     sortBy: sort === 'az' ? 'name' : sort === 'rating' ? 'rating' : 'created_at',
@@ -25,65 +31,77 @@ export default function DestinationsList() {
     pageSize: PAGE_SIZE,
   });
 
-  // Infinite scroll
+  // Append or reset data
+  useEffect(() => {
+    if (page === 1) {
+      setAllDestinations(fetchedData);
+    } else {
+      setAllDestinations((prev) => [...prev, ...fetchedData]);
+    }
+  }, [fetchedData]);
+
+  // Stop if we've reached all rows
+  useEffect(() => {
+    if (totalCount !== null) {
+      const maxPages = Math.ceil(totalCount / PAGE_SIZE);
+      if (page >= maxPages || fetchedData.length < PAGE_SIZE) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+    }
+  }, [totalCount, page, fetchedData.length]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1);
+    setAllDestinations([]); 
+  }, [searchText, district, sort]);
+
+  // Infinite scroll observer
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setLoadingMore(true);
-        setTimeout(() => {
-          setPage((prev) => prev + 1);
-          setLoadingMore(false);
-        }, 600);
+      if (entries[0].isIntersecting && !loading && hasMore) {
+        setPage((prev) => prev + 1);
       }
     });
-    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+
+    const ref = loadMoreRef.current;
+    if (ref) observer.observe(ref);
     return () => observer.disconnect();
-  }, []);
+  }, [loading, hasMore]);
 
-  // Extract unique districts
   const districts = Array.from(
-    new Set(destinations.map((d: Destination) => d.district).filter(Boolean))
+    new Set(allDestinations.map((d) => d.district).filter(Boolean))
   ) as string[];
-
-  if (loading && page === 1) return <p className="p-4">Loading...</p>;
-  if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
     <>
-      {/* Filters */}
-      <div className="sticky top-[64px] z-10 bg-white pb-3 pt-2 mb-4 flex flex-wrap gap-3 px-2 border-b">
+      {/* Filters: compact, scrollable row */}
+      <div className="w-full px-3 py-2 sticky top-0 z-10 bg-white border-b flex flex-nowrap overflow-x-auto gap-2 sm:gap-3">
         <input
           type="text"
           value={searchText}
-          onChange={(e) => {
-            setSearchText(e.target.value);
-            setPage(1);
-          }}
-          placeholder="Search destinations"
-          className="border border-gray-300 px-3 py-1.5 text-sm rounded shadow-sm"
+          onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Search"
+          className="flex-1 min-w-[140px] border border-gray-300 px-3 py-2 text-sm rounded-md shadow-sm"
         />
 
         <select
-          className="border border-gray-300 px-3 py-1.5 text-sm rounded shadow-sm focus:outline-none"
           value={district}
-          onChange={(e) => {
-            setDistrict(e.target.value);
-            setPage(1);
-          }}
+          onChange={(e) => setDistrict(e.target.value)}
+          className="min-w-[120px] border border-gray-300 px-2 py-2 text-sm rounded-md shadow-sm"
         >
           <option value="">All Districts</option>
-          {districts.map((d: string) => (
+          {districts.map((d) => (
             <option key={d} value={d}>{d}</option>
           ))}
         </select>
 
         <select
-          className="border border-gray-300 px-3 py-1.5 text-sm rounded shadow-sm focus:outline-none"
           value={sort}
-          onChange={(e) => {
-            setSort(e.target.value);
-            setPage(1);
-          }}
+          onChange={(e) => setSort(e.target.value)}
+          className="min-w-[120px] border border-gray-300 px-2 py-2 text-sm rounded-md shadow-sm"
         >
           <option value="popularity">Popularity</option>
           <option value="az">A-Z</option>
@@ -92,30 +110,22 @@ export default function DestinationsList() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 transition-all px-2">
-        {destinations.map((dest: Destination) => (
-          <div key={dest.id} className="rounded overflow-hidden shadow-md">
-            <img
-              src={dest.image || '/placeholder.jpg'}
-              alt={dest.name || 'Destination'}
-              loading="lazy"
-              className="w-full h-48 object-cover"
-            />
-            <DestinationListingCard destination={dest} />
-          </div>
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 px-2 sm:px-4 pt-4">
+        {allDestinations.map((dest, index) => (
+          <DestinationListingCard key={`${dest.id}-${index}`} destination={dest} />
         ))}
-
-        {destinations.length % PAGE_SIZE === 0 && destinations.length > 0 && (
-          <div className="sm:col-span-2 lg:col-span-3" key={`banner-${page}`}>
-            <PromoBanner />
-          </div>
-        )}
       </div>
 
-      {/* Infinite scroll loader */}
-      <div ref={loadMoreRef} className="h-10 mt-6 flex justify-center items-center text-sm text-gray-500">
-        {loadingMore && <span>Loading more...</span>}
+      {/* Infinite Scroll Loader */}
+      <div
+        ref={loadMoreRef}
+        className="h-12 mt-6 flex justify-center items-center text-sm text-gray-500"
+      >
+        {loading && <span>Loading more...</span>}
+        {!hasMore && !loading && allDestinations.length > 0 && <span>✅ All loaded</span>}
       </div>
+
+      {error && <p className="p-4 text-red-500">{error}</p>}
     </>
   );
 }

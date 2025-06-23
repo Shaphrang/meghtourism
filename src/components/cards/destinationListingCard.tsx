@@ -1,7 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Destination } from '@/types/destination';
-import { Star } from 'lucide-react';
+import { Star, MapPin } from 'lucide-react';
 
 interface Props {
   destination: Destination;
@@ -9,31 +11,45 @@ interface Props {
 
 export default function DestinationListingCard({ destination }: Props) {
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition flex flex-col">
-      <div className="relative w-full h-48">
-        {destination.image ? (
-          <Image
-            src={destination.image}
-            alt={destination.name ?? 'Destination'}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 33vw"
-            loading="lazy"
-          />
-        ) : null}
-      </div>
-      <div className="p-4 flex flex-col flex-grow">
-        <h3 className="font-semibold text-lg mb-1">{destination.name}</h3>
-        <p className="text-sm text-gray-600 line-clamp-2 mb-2 flex-grow">{destination.description}</p>
+    <div className="flex flex-col bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden w-full max-w-full">
+      {/* Image Section */}
+      <div className="relative w-full aspect-[4/3]">
+        <Image
+          src={destination.image || '/placeholder.jpg'}
+          alt={destination.name || 'Destination'}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
+          loading="lazy"
+        />
+        {/* Rating Badge */}
         {destination.rating && (
-          <div className="flex items-center text-sm text-yellow-600 mb-2">
-            <Star className="w-4 h-4 fill-yellow-500 mr-1" /> {destination.rating.toFixed(1)}
+          <div className="absolute top-2 right-2 bg-white bg-opacity-90 px-2 py-0.5 rounded-full text-xs text-yellow-700 font-medium shadow">
+            ⭐ {destination.rating.toFixed(1)}
           </div>
         )}
-        {destination.tags && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {destination.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded-full">
+      </div>
+
+      {/* Info Section */}
+      <div className="flex flex-col px-3 py-2 flex-grow">
+        <h3 className="text-sm font-semibold text-gray-800 truncate mb-1">
+          {destination.name}
+        </h3>
+
+        {destination.district && (
+          <p className="flex items-center text-xs text-gray-500 mb-1 truncate">
+            <MapPin className="w-3.5 h-3.5 mr-1" />
+            {destination.district}
+          </p>
+        )}
+
+        {Array.isArray(destination.tags) && destination.tags.length > 0 && (
+          <div className="flex gap-1 flex-wrap mb-2">
+            {destination.tags.slice(0, 2).map((tag) => (
+              <span
+                key={tag}
+                className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full"
+              >
                 {tag}
               </span>
             ))}
@@ -41,9 +57,9 @@ export default function DestinationListingCard({ destination }: Props) {
         )}
         <Link
           href={`/destinations/${destination.id}`}
-          className="mt-auto text-center bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700"
+          className="mt-auto text-center text-[13px] font-medium bg-emerald-600 text-white py-1.5 rounded-md hover:bg-emerald-700 transition"
         >
-          More Info
+          Explore
         </Link>
       </div>
     </div>
