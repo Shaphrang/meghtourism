@@ -24,10 +24,10 @@ export default function HorizontalSection<T>({
   };
 
   return (
-    <section className="w-full px-2 sm:px-4">
+    <section className="w-full">
       {/* Title */}
-      <div className="flex justify-between items-center mb-2 px-1">
-        <h2 className="text-base sm:text-lg font-semibold text-gray-800">
+      <div className="flex justify-between items-center px-3">
+        <h2 className="text-sm sm:text-base font-semibold text-gray-800">
           {title}
         </h2>
       </div>
@@ -48,9 +48,9 @@ export default function HorizontalSection<T>({
           className="overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar w-full"
           style={{ overflowY: 'hidden', WebkitOverflowScrolling: 'touch' }}
         >
-          <div className="flex gap-3 px-3">
+          <div className="flex gap-3 px-3 py-2">
             {items.map((item, i) => (
-              <div key={i} className="w-[200px] flex-shrink-0">
+              <div key={i} className="w-[180px] shrink-0">
                 {renderCard(item, i)}
               </div>
             ))}

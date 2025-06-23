@@ -14,10 +14,19 @@ export default function AdminCafeRestaurants() {
   const [selected, setSelected] = useState<any | null>(null);
 
   const fetchItems = async () => {
-    const { data } = await supabase
-      .from('caferestaurants')
+    console.log('Fetching cafe/restaurant entries...');
+    const { data, error } = await supabase
+      .from('cafes_and_restaurants') // Make sure this matches the correct table name
       .select('*')
       .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching data:', error.message);
+      toast.error('Failed to load entries');
+    } else {
+      console.log('Fetched entries:', data);
+    }
+
     setItems(data || []);
   };
 
@@ -26,27 +35,32 @@ export default function AdminCafeRestaurants() {
   }, []);
 
   const openAddModal = () => {
+    console.log('Opening add modal');
     setEditing(null);
     setShowModal(true);
   };
 
   const openEditModal = (item: any) => {
+    console.log('Opening edit modal for:', item);
     setEditing(item);
     setShowModal(true);
   };
 
   const confirmDelete = (item: any) => {
+    console.log('Confirming delete for:', item);
     setSelected(item);
     setShowDeleteModal(true);
   };
 
   const handleDelete = async () => {
     if (selected) {
-      const { error } = await supabase.from('caferestaurants').delete().eq('id', selected.id);
+      console.log('Deleting entry:', selected);
+      const { error } = await supabase.from('cafes_and_restaurants').delete().eq('id', selected.id);
       if (!error) {
         toast.success('Entry deleted');
         fetchItems();
       } else {
+        console.error('Delete failed:', error.message);
         toast.error('Failed to delete');
       }
       setShowDeleteModal(false);
@@ -86,15 +100,24 @@ export default function AdminCafeRestaurants() {
       {showModal && (
         <CafeRestaurantFormModal
           initialData={editing}
-          onClose={() => setShowModal(false)}
-          onSave={fetchItems}
+          onClose={() => {
+            console.log('Closing modal');
+            setShowModal(false);
+          }}
+          onSave={() => {
+            console.log('Saving new or edited entry');
+            fetchItems();
+          }}
         />
       )}
 
       {showDeleteModal && (
         <DeleteConfirmModal
           open={showDeleteModal}
-          onCancel={() => setShowDeleteModal(false)}
+          onCancel={() => {
+            console.log('Cancel delete');
+            setShowDeleteModal(false);
+          }}
           onConfirm={handleDelete}
           itemName={selected?.name || 'this entry'}
         />

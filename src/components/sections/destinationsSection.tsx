@@ -1,48 +1,77 @@
 'use client';
 
-import { Destination } from '@/types/destination';
-import DestinationCard from '@/components/cards/destinationCard';
-import useSupabaseList from '@/hooks/useSupabaseList';
-import HorizontalSection from '@/components/sections/horizontalSection';
+import { useRef } from 'react';
+import Image from 'next/image';
+import { MapPin } from 'lucide-react';
 import Link from 'next/link';
+import useSupabaseList from '@/hooks/useSupabaseList';
+import { Destination } from '@/types/destination';
 
-export function DestinationsSection() {
-  const { data: destinations = [], loading, error } = useSupabaseList<Destination>('destinations', {
-    sortBy: 'name',
-    ascending: true,
-    page: 1,
-    pageSize: 6,
+export default function DestinationsSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { data: destinations, loading } = useSupabaseList<Destination>('destinations', {
+    sortBy: 'created_at',
+    ascending: false,
+    pageSize: 10,
   });
-if (!loading && !error && destinations.length === 0) {
-  return <p className="p-4 text-gray-500">No destinations found.</p>;
-}
-
-  if (loading) return <p className="p-4">Loading...</p>;
-  if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
-    <section className="relative px-4 py-6">
-      <HorizontalSection
-        title="Top Destinations"
-        items={destinations}
-        renderCard={(destination, i) => (
-          <DestinationCard
-            key={i}
-            destination={destination}
-            className="min-w-[180px] max-w-[180px]"
-          />
-        )}
-      />
-
-      {/* View All Button */}
-      <div className="mt-4 flex justify-end">
-        <Link
-          href="/listingPages/destinations"
-          className="text-sm font-medium text-blue-600 px-4 py-2 rounded-md border border-blue-600 hover:bg-blue-50 transition"
-        >
-          View All →
+    <section className="w-full px-2 sm:px-4 mt-6">
+      <div className="flex justify-between items-center px-1 mb-2">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Explore Destinations</h2>
+        <Link href="/destinations" className="text-sm text-emerald-600 hover:underline font-medium">
+          View All
         </Link>
       </div>
+
+      {loading ? (
+        <div className="text-sm text-gray-500 px-1">Loading destinations...</div>
+      ) : (
+        <div
+          ref={containerRef}
+          onWheel={(e) => {
+            if (containerRef.current && e.deltaY !== 0) {
+              e.preventDefault();
+              containerRef.current.scrollLeft += e.deltaY;
+            }
+          }}
+          className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2"
+        >
+          {destinations.slice(0, 10).map((dest) => (
+            <div
+              key={dest.id}
+              className="min-w-[48%] sm:min-w-[200px] max-w-[240px] rounded-xl overflow-hidden bg-white shadow-md snap-start flex-shrink-0"
+            >
+              <div className="w-full h-[120px] sm:h-[140px] bg-gray-100">
+                {dest.image ? (
+                  <Image
+                    src={dest.image}
+                    alt={dest.name || 'Destination'}
+                    width={300}
+                    height={140}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                    No image available
+                  </div>
+                )}
+              </div>
+              <div className="p-2">
+                <h3 className="text-sm font-semibold text-gray-800 truncate">
+                  {dest.name || 'Untitled'}
+                </h3>
+                {dest.location && (
+                  <div className="flex items-center text-xs text-gray-500 mt-1">
+                    <MapPin size={12} className="mr-1" />
+                    <span className="truncate">{dest.location}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

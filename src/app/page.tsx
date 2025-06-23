@@ -1,41 +1,47 @@
+// app/page.tsx (Next.js 13+ App Router)
 'use client';
 
-import Header from '@/components/common/header';
-import Footer from '@/components/common/footer';
 import HeroSection from '@/components/sections/heroSection';
-import { DestinationsSection } from '@/components/sections/destinationsSection';
-import { HomestaysSection } from '@/components/sections/homestaysSection';
-import { EventsSection } from '@/components/sections/eventsSection';
-import { ThrillsSection } from '@/components/sections/thrillsSection';
+import BannerAd from '@/components/common/bannerAd';
+import DestinationsSection from '@/components/sections/destinationsSection';
+import AccommodationsSection from '@/components/sections/homestaysSection';
+import EventsSection from '@/components/sections/eventsSection';
+import ThrillsSection from '@/components/sections/thrillsSection';
+import CafesSection from '@/components/sections/cafesRestaurantsSection';
+import BlogsSection from '@/components/sections/blogsSection';
 
 export default function HomePage() {
   return (
-    <>
-      <Header />
+    <main className="w-full min-h-screen bg-gradient-to-b from-green-50 to-blue-50 text-gray-800">
+      {/* Hero */}
+      <HeroSection />
 
-      {/* Full-width, responsive layout*/}
-      <main className="w-full px-2 sm:px-6 pt-16 pb-24 bg-white font-sans">
-        <HeroSection />
+      {/* Banner Ad */}
+      <BannerAd />
 
-        <section className="mt-4">
-          <DestinationsSection />
-        </section>
+      {/* Destinations */}
+      <DestinationsSection />
 
-        <section className="mt-4">
-          <HomestaysSection />
-        </section>
+      {/* Banner Ad */}
+      <BannerAd />
 
-        <section className="mt-4">
-          <EventsSection />
-        </section>
+      {/* Accommodations */}
+      <AccommodationsSection />
 
-        <section className="mt-4">
-          <ThrillsSection />
-        </section>
-      </main>
+      {/* Accommodations */}
+      <EventsSection />
 
-      <Footer />
-    </>
+      {/* Banner Ad */}
+      <BannerAd />
+
+      {/* Banner Ad */}
+      <ThrillsSection />
+      
+      {/* Banner Ad */}
+      <CafesSection />
+
+      {/* Banner Ad */}
+      <BlogsSection />
+    </main>
   );
 }
-

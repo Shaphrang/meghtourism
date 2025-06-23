@@ -1,34 +1,45 @@
+// src/components/sections/HeroSection.tsx
 'use client';
+
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export default function HeroSection() {
   return (
-    <section
-      className="relative w-full h-[50vh] md:h-[55vh] bg-cover bg-center"
-      style={{ backgroundImage: "url('https://dsvndsiallxdncdkcagj.supabase.co/storage/v1/object/public/images/backgrounds/bg_Nohkalikai.png')" }}
-    >
-      {/* Light gradient overlay only */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/20 to-transparent z-10" />
+    <section className="relative w-full h-[25vh] md:h-[40vh] overflow-hidden shadow-sm">
+      {/* Background Image */}
+      <Image
+        src="https://dsvndsiallxdncdkcagj.supabase.co/storage/v1/object/public/images/backgrounds/bg_Nohkalikai.png"
+        alt="Scenic Meghalaya"
+        fill
+        className="object-cover object-center"
+        priority
+      />
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/30" />
 
       {/* Content */}
-      <div className="relative z-20 flex flex-col justify-center items-center h-full text-center text-white px-4">
-        <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight drop-shadow-xl">
-          <span className="block">Explore</span>
-          <span className="block text-white-400">Magical Meghalaya</span>
-        </h1>
+      <div className="relative z-10 flex flex-col items-center justify-center text-center h-full px-4">
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-white text-xl sm:text-2xl md:text-4xl font-semibold drop-shadow-md"
+        >
+          Discover Meghalaya
+        </motion.h1>
 
-        <p className="mt-3 text-base md:text-lg font-light text-gray-200 max-w-xl drop-shadow">
-          AI-powered travel assistant for Meghalaya
-        </p>
-
-        <input
-          type="text"
-          placeholder="Try: best time to visit Cherrapunjee"
-          className="mt-6 w-full max-w-md px-5 py-3 text-sm md:text-base text-gray-900 bg-white/90 rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
-        />
-
-        <button className="mt-4 px-6 py-2 text-white font-semibold bg-emerald-500 hover:bg-emerald-600 rounded-full shadow-lg transition">
-          Start Exploring →
-        </button>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="mt-2"
+        >
+          <button className="bg-white text-gray-800 font-medium px-4 py-1.5 rounded-full text-xs sm:text-sm md:text-base shadow hover:bg-gray-100 transition">
+            Explore Now
+          </button>
+        </motion.div>
       </div>
     </section>
   );

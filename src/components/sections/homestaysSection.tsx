@@ -1,31 +1,76 @@
+// src/components/sections/AccommodationsSection.tsx
 'use client';
 
+import { useRef } from 'react';
+import Image from 'next/image';
+import { MapPin } from 'lucide-react';
 import useSupabaseList from '@/hooks/useSupabaseList';
 import { Homestay } from '@/types/homestay';
-import HorizontalSection from '@/components/sections/horizontalSection';
-import HomestayCard from '@/components/cards/homestayCard';
 
-export function HomestaysSection() {
-  const { data: homestays = [], loading, error } = useSupabaseList<Homestay>('homestays', {
+export default function AccommodationsSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { data: homestays, loading } = useSupabaseList<Homestay>('homestays', {
     sortBy: 'created_at',
     ascending: false,
-    page: 1,
-    pageSize: 6,
+    pageSize: 10,
   });
 
-  if (loading) return <p className="p-4">Loading...</p>;
-  if (error) return <p className="p-4 text-red-500">{error}</p>;
   return (
-    <HorizontalSection
-        title="Recommended Homestays"
-        items={homestays}
-      renderCard={(homestay, index) => (
-        <HomestayCard
-          key={index}
-          homestay={homestay}
-          className="w-[200px] flex-shrink-0"
-        />
+    <section className="w-full px-2 sm:px-4 mt-4">
+      <div className="flex justify-between items-center px-1 mb-2">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Stay with Comfort</h2>
+        <a href="/accommodations" className="text-sm text-emerald-600 hover:underline font-medium">View All</a>
+      </div>
+
+      {loading ? (
+        <div className="text-sm text-gray-500 px-1">Loading accommodations...</div>
+      ) : (
+        <div
+          ref={containerRef}
+          onWheel={(e) => {
+            if (containerRef.current && e.deltaY !== 0) {
+              e.preventDefault();
+              containerRef.current.scrollLeft += e.deltaY;
+            }
+          }}
+          className="flex space-x-3 overflow-x-auto scrollbar-hide scroll-x-snap snap-x snap-mandatory pb-2"
+        >
+          {homestays.slice(0, 10).map((stay) => (
+            <div
+              key={stay.id}
+              className="min-w-[45%] sm:min-w-[180px] max-w-[200px] h-[180px] sm:h-[200px] bg-white rounded-xl overflow-hidden shadow-md snap-start flex-shrink-0 flex flex-col"
+            >
+              <div className="w-full h-[100px] sm:h-[110px] bg-gray-100">
+                {stay.image ? (
+                  <Image
+                    src={stay.image}
+                    alt={stay.name || 'Homestay'}
+                    width={300}
+                    height={130}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                    No image available
+                  </div>
+                )}
+              </div>
+              <div className="px-3 py-2 flex flex-col justify-between flex-grow h-full overflow-hidden">
+                <h3 className="text-sm font-semibold text-gray-800 truncate">{stay.name || 'Untitled'}</h3>
+                {stay.location && (
+                  <p className="text-xs text-gray-500 truncate flex items-center">
+                    <MapPin size={12} className="mr-1" />
+                    {stay.location}
+                  </p>
+                )}
+                {stay.pricepernight && (
+                  <p className="text-sm font-medium text-emerald-600">₹{stay.pricepernight.toLocaleString()}/night</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
-    />
+    </section>
   );
 }

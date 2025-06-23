@@ -28,7 +28,7 @@ export default function ContentPanel({ active }: Props) {
       {active === 'traveltips' && <AdminTravelTips />}
       {active === 'itineraries' && <AdminItineraries />}
       {active === 'rentals' && <AdminRentals />}
-      {active === 'caferestaurants' && <AdminCafeRestaurants />}
+      {active === 'cafes_and_restaurants' && <AdminCafeRestaurants />}
       {active === 'faqs' && <AdminFaqs />}
     </div>
   );

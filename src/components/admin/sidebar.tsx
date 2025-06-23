@@ -17,7 +17,7 @@ const categories = [
   { key: 'traveltips', label: 'Travel Tips' },
   { key: 'itineraries', label: 'Itineraries' },
   { key: 'rentals', label: 'Rentals' },
-  { key: 'caferestaurants', label: 'Cafes & Restaurants' },
+  { key: 'cafes_and_restaurants', label: 'Cafes & Restaurants' },
   { key: 'faqs', label: 'FAQs' }
 ];
 

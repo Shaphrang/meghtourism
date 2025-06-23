@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import useSupabaseList from '@/hooks/useSupabaseList';
 import { Thrill } from '@/types/thrill';
 import ThrillCard from '@/components/cards/thrillsCard';
-import PromoBanner from '@/components/common/promoBanner';
+import PromoBanner from '@/components/common/bannerAd';
 
 const PAGE_SIZE = 6;
 

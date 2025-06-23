@@ -53,23 +53,28 @@ export default function CafeRestaurantFormModal({ initialData, onClose, onSave }
   );
 
   const handleChange = (key: string, value: any) => {
+    console.log(`Form change: ${key} =`, value);
     setForm((prev: any) => ({ ...prev, [key]: value }));
   };
 
   const handleSubmit = async () => {
+    console.log("Submitting form data:", form);
     try {
       if (isEditMode) {
-        const { error } = await supabase.from('caferestaurants').update(form).eq('id', form.id);
+        const { error, data } = await supabase.from('cafes_and_restaurants').update(form).eq('id', form.id);
+        console.log("Update result:", { data, error });
         if (error) throw error;
         toast.success('Entry updated');
       } else {
-        const { error } = await supabase.from('caferestaurants').insert([form]);
+        const { error, data } = await supabase.from('cafes_and_restaurants').insert([form]);
+        console.log("Insert result:", { data, error });
         if (error) throw error;
         toast.success('Entry created');
       }
       onSave();
       onClose();
     } catch (err: any) {
+      console.error("Error during submit:", err);
       toast.error(err.message || 'Error saving data');
     }
   };
@@ -155,7 +160,8 @@ export default function CafeRestaurantFormModal({ initialData, onClose, onSave }
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              const url = await uploadImageToSupabase({ file, category: 'caferestaurants', id: form.id, type: 'main' });
+              const url = await uploadImageToSupabase({ file, category: 'cafes_and_restaurants', id: form.id, type: 'main' });
+              console.log("Image upload result:", url);
               if (url) {
                 handleChange('image', url);
                 toast.success('Image uploaded');
@@ -179,9 +185,10 @@ export default function CafeRestaurantFormModal({ initialData, onClose, onSave }
               const files = Array.from(e.target.files || []);
               const uploaded: string[] = [];
               for (const file of files) {
-                const url = await uploadImageToSupabase({ file, category: 'caferestaurants', id: form.id, type: 'gallery' });
+                const url = await uploadImageToSupabase({ file, category: 'cafes_and_restaurants', id: form.id, type: 'gallery' });
                 if (url) uploaded.push(url);
               }
+              console.log("Gallery upload results:", uploaded);
               if (uploaded.length) {
                 toast.success('Gallery images uploaded');
                 handleChange('gallery', [...(form.gallery || []), ...uploaded]);
