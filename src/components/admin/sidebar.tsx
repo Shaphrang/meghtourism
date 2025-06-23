@@ -12,7 +12,13 @@ const categories = [
   { key: 'destinations', label: 'Destinations' },
   { key: 'homestays', label: 'Homestays' },
   { key: 'events', label: 'Events' },
-  { key: 'thrills', label: 'Thrills' }
+  { key: 'thrills', label: 'Thrills' },
+  { key: 'blogs', label: 'Blogs' },
+  { key: 'traveltips', label: 'Travel Tips' },
+  { key: 'itineraries', label: 'Itineraries' },
+  { key: 'rentals', label: 'Rentals' },
+  { key: 'caferestaurants', label: 'Cafes & Restaurants' },
+  { key: 'faqs', label: 'FAQs' }
 ];
 
 export default function Sidebar({ current, onSelect }: Props) {
