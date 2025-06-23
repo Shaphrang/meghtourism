@@ -1,6 +1,7 @@
+// src/components/sections/DestinationsSection.tsx
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { MapPin } from 'lucide-react';
 import Link from 'next/link';
@@ -15,11 +16,26 @@ export default function DestinationsSection() {
     pageSize: 10,
   });
 
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+      }
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
+
   return (
     <section className="w-full px-2 sm:px-4 mt-6">
       <div className="flex justify-between items-center px-1 mb-2">
         <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Explore Destinations</h2>
-        <Link href="/destinations" className="text-sm text-emerald-600 hover:underline font-medium">
+        <Link href="/destin" className="text-sm text-emerald-600 hover:underline font-medium">
           View All
         </Link>
       </div>
@@ -29,18 +45,12 @@ export default function DestinationsSection() {
       ) : (
         <div
           ref={containerRef}
-          onWheel={(e) => {
-            if (containerRef.current && e.deltaY !== 0) {
-              e.preventDefault();
-              containerRef.current.scrollLeft += e.deltaY;
-            }
-          }}
           className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2"
         >
           {destinations.slice(0, 10).map((dest) => (
             <div
               key={dest.id}
-              className="min-w-[48%] sm:min-w-[200px] max-w-[240px] rounded-xl overflow-hidden bg-white shadow-md snap-start flex-shrink-0"
+              className="min-w-[42%] sm:min-w-[200px] max-w-[240px] rounded-xl overflow-hidden bg-white shadow-md snap-start flex-shrink-0"
             >
               <div className="w-full h-[120px] sm:h-[140px] bg-gray-100">
                 {dest.image ? (

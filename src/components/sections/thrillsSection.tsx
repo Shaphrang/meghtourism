@@ -1,4 +1,3 @@
-// src/components/sections/ThrillsSection.tsx
 'use client';
 
 import { useRef, useEffect } from 'react';
@@ -10,7 +9,6 @@ import { Thrill } from '@/types/thrill';
 
 export default function ThrillsSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-
   const { data: thrills, loading } = useSupabaseList<Thrill>('thrills', {
     sortBy: 'created_at',
     ascending: false,
@@ -36,7 +34,10 @@ export default function ThrillsSection() {
     <section className="w-full px-2 sm:px-4 mt-6">
       <div className="flex justify-between items-center px-1 mb-2">
         <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Adventure & Thrills</h2>
-        <Link href="/thrills" className="text-sm text-emerald-600 hover:underline font-medium">
+        <Link
+          href="/thrills"
+          className="text-sm text-emerald-600 hover:underline font-medium"
+        >
           View All
         </Link>
       </div>
@@ -46,7 +47,7 @@ export default function ThrillsSection() {
       ) : (
         <div
           ref={containerRef}
-          className="flex space-x-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2"
+          className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2"
         >
           {thrills.slice(0, 10).map((thrill) => (
             <div
@@ -80,7 +81,7 @@ export default function ThrillsSection() {
                 )}
                 {thrill.priceperperson && (
                   <p className="text-xs text-gray-600 mt-1">
-                    ₹{thrill.priceperperson} per person
+                    ₹{thrill.priceperperson.toLocaleString()} per person
                   </p>
                 )}
               </div>

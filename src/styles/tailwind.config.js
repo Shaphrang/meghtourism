@@ -2,7 +2,8 @@
 module.exports = {
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
-    './public/**/*.{html,js,mp4,jpg,png}'
+    './public/**/*.{html,js,mp4,jpg,png}',
+    './components/**/*.{js,ts,jsx,tsx}' // add this if shadcn components live here
   ],
   theme: {
     extend: {
@@ -10,14 +11,15 @@ module.exports = {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
       },
       screens: {
-        'xs': '360px', // Optional smaller screen support
+        'xs': '360px',
       },
     },
   },
   plugins: [
     require('@tailwindcss/line-clamp'),
     require('tailwind-scrollbar')({ nocompatible: true }),
-    require('@tailwindcss/aspect-ratio'), // optional for image blocks
-    require('@tailwindcss/forms'),        // optional if you're using any forms
+    require('@tailwindcss/aspect-ratio'),
+    require('@tailwindcss/forms'),
+    require('tailwindcss-animate') // ✅ Required by shadcn
   ],
 }
