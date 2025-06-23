@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef, useMemo } from 'react';
-import { fetchData } from '@/lib/fetchData';
+import { useEffect, useState, useRef } from 'react';
+import useSupabaseList from '@/hooks/useSupabaseList';
 import { Thrill } from '@/types/thrill';
 import ThrillCard from '@/components/cards/thrillsCard';
 import PromoBanner from '@/components/common/promoBanner';
@@ -9,16 +9,19 @@ import PromoBanner from '@/components/common/promoBanner';
 const PAGE_SIZE = 6;
 
 export default function ThrillsList() {
-  const [thrills, setThrills] = useState<Thrill[]>([]);
   const [location, setLocation] = useState('');
   const [page, setPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Fetch thrills once
-  useEffect(() => {
-    fetchData('thrills.json').then(setThrills).catch(console.error);
-  }, []);
+  const { data: thrills = [], loading, error } = useSupabaseList<Thrill>('thrills', {
+    filter: location ? { field: 'location', value: location } : undefined,
+    sortBy: 'name',
+    ascending: true,
+    page,
+    pageSize: PAGE_SIZE,
+  });
 
   // Infinite scroll effect
   useEffect(() => {
@@ -35,21 +38,12 @@ export default function ThrillsList() {
     return () => observer.disconnect();
   }, []);
 
-  const locations = useMemo(() => {
-    return Array.from(new Set(thrills.map((t) => t.location).filter(Boolean))) as string[];
-  }, [thrills]);
+  const locations = Array.from(
+    new Set(thrills.map((t) => t.location).filter(Boolean))
+  ) as string[];
 
-  const filtered = useMemo(() => {
-    return thrills.filter((t) => (location ? t.location === location : true));
-  }, [thrills, location]);
-
-  const sorted = useMemo(() => {
-    return [...filtered].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-  }, [filtered]);
-
-  const visible = useMemo(() => {
-    return sorted.slice(0, page * PAGE_SIZE);
-  }, [sorted, page]);
+  if (loading && page === 1) return <p className="p-4">Loading...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
     <>
@@ -74,12 +68,12 @@ export default function ThrillsList() {
 
       {/* Grid of thrill cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 transition-all px-2">
-        {visible.map((thrill) => (
+        {thrills.map((thrill) => (
           <ThrillCard key={thrill.id} thrill={thrill} className="w-full" />
         ))}
 
         {/* PromoBanner after full page */}
-        {visible.length % PAGE_SIZE === 0 && visible.length > 0 && (
+        {thrills.length % PAGE_SIZE === 0 && thrills.length > 0 && (
           <div className="sm:col-span-2 lg:col-span-3" key={`banner-${page}`}>
             <PromoBanner />
           </div>

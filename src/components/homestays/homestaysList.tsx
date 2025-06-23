@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef, useMemo } from 'react';
-import { fetchData } from '@/lib/fetchData';
+import { useEffect, useState, useRef } from 'react';
+import useSupabaseList from '@/hooks/useSupabaseList';
 import { Homestay } from '@/types/homestay';
 import HomestayCard from '@/components/cards/homestayCard';
 import PromoBanner from '@/components/common/promoBanner';
@@ -9,7 +9,6 @@ import PromoBanner from '@/components/common/promoBanner';
 const PAGE_SIZE = 6;
 
 export default function HomestaysList() {
-  const [homestays, setHomestays] = useState<Homestay[]>([]);
   const [location, setLocation] = useState('');
   const [sort, setSort] = useState<'az' | 'price'>('az');
   const [page, setPage] = useState(1);
@@ -17,9 +16,13 @@ export default function HomestaysList() {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Fetch homestays on mount
-  useEffect(() => {
-    fetchData('homestays.json').then(setHomestays).catch(console.error);
-  }, []);
+  const { data: homestays = [], loading, error } = useSupabaseList<Homestay>('homestays', {
+    filter: location ? { field: 'location', value: location } : undefined,
+    sortBy: sort === 'price' ? 'pricepernight' : 'name',
+    ascending: sort === 'az',
+    page,
+    pageSize: PAGE_SIZE,
+  });
 
   // Infinite scroll setup
   useEffect(() => {
@@ -36,30 +39,12 @@ export default function HomestaysList() {
     return () => observer.disconnect();
   }, []);
 
-  // Extract unique locations
-  const locations = useMemo(() => {
-    return Array.from(new Set(homestays.map((h) => h.location).filter(Boolean))) as string[];
-  }, [homestays]);
+  const locations = Array.from(
+    new Set(homestays.map((h) => h.location).filter(Boolean))
+  ) as string[];
 
-  // Filter by selected location
-  const filtered = useMemo(() => {
-    return homestays.filter((h) => (location ? h.location === location : true));
-  }, [homestays, location]);
-
-  // Sort homestays by name or pricepernight
-  const sorted = useMemo(() => {
-    return [...filtered].sort((a, b) => {
-      if (sort === 'price') {
-        return (a.pricepernight ?? 0) - (b.pricepernight ?? 0);
-      }
-      return (a.name ?? '').localeCompare(b.name ?? '');
-    });
-  }, [filtered, sort]);
-
-  // Paginate visible results
-  const visible = useMemo(() => {
-    return sorted.slice(0, page * PAGE_SIZE);
-  }, [sorted, page]);
+  if (loading && page === 1) return <p className="p-4">Loading...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
     <>
@@ -93,12 +78,12 @@ export default function HomestaysList() {
 
       {/* Homestay Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 transition-all px-2">
-        {visible.map((homestay) => (
+        {homestays.map((homestay) => (
           <HomestayCard key={homestay.id} homestay={homestay} />
         ))}
 
         {/* PromoBanner after every full page */}
-        {visible.length % PAGE_SIZE === 0 && visible.length > 0 && (
+        {homestays.length % PAGE_SIZE === 0 && homestays.length > 0 && (
           <div className="sm:col-span-2 lg:col-span-3" key={`banner-${page}`}>
             <PromoBanner />
           </div>

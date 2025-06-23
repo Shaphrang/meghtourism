@@ -1,20 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Destination } from '@/types/destination';
 import DestinationCard from '@/components/cards/destinationCard';
-import { fetchData } from '@/lib/fetchData';
+import useSupabaseList from '@/hooks/useSupabaseList';
 import HorizontalSection from '@/components/sections/horizontalSection';
 import Link from 'next/link';
 
 export function DestinationsSection() {
-  const [destinations, setDestinations] = useState<Destination[]>([]);
+  const { data: destinations = [], loading, error } = useSupabaseList<Destination>('destinations', {
+    sortBy: 'name',
+    ascending: true,
+    page: 1,
+    pageSize: 6,
+  });
 
-  useEffect(() => {
-    fetchData('destinations.json')
-      .then(setDestinations)
-      .catch(console.error);
-  }, []);
+  if (loading) return <p className="p-4">Loading...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
     <section className="relative px-4 py-6">

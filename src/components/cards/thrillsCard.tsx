@@ -18,9 +18,10 @@ export default function ThrillCard({ thrill, className = '' }: Props) {
     >
       <div className="relative w-full h-36">
         <img
-          src={thrill.image}
-          alt={thrill.name}
+          src={thrill.image || '/placeholder.jpg'}
+          alt={thrill.name || ''}
           className="w-full h-full object-cover"
+          loading="lazy"
         />
       </div>
       <div className="p-4">

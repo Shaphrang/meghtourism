@@ -1,18 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { fetchData } from '@/lib/fetchData';
+import useSupabaseList from '@/hooks/useSupabaseList';
 import EventCard from '@/components/cards/eventCard';
 import { Event } from '@/types/event';
 import HorizontalScroll from '@/components/common/horizontalScroll';
 import Link from 'next/link';
 
 export function EventsSection() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const { data: events = [], loading, error } = useSupabaseList<Event>('events', {
+    sortBy: 'date',
+    ascending: true,
+    page: 1,
+    pageSize: 6,
+  });
 
-  useEffect(() => {
-    fetchData('events.json').then(setEvents).catch(console.error);
-  }, []);
+  if (loading) return <p className="p-4">Loading...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
     <section className="py-6 px-4">

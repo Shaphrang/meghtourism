@@ -12,7 +12,10 @@ interface Options {
 }
 
 export default function useSupabaseList<T>(table: string, options: Options = {}) {
-  const supabase = createClientComponentClient();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  const supabase = createClientComponentClient(); // Supabase still needs to be created for type safety
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,27 +32,31 @@ export default function useSupabaseList<T>(table: string, options: Options = {})
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+
+      if (!supabaseUrl || !supabaseKey) {
+        setError('Supabase credentials are not configured');
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       let query = supabase.from(table).select('*', { count: 'exact' });
 
-      if (search) {
-        query = query.ilike('name', `%${search}%`);
-      }
-
-      if (filter) {
-        query = query.eq(filter.field, filter.value);
-      }
-
-      if (sortBy) {
-        query = query.order(sortBy, { ascending });
-      }
+      if (search) query = query.ilike('name', `%${search}%`);
+      if (filter) query = query.eq(filter.field, filter.value);
+      if (sortBy) query = query.order(sortBy, { ascending });
 
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
 
       const { data, error } = await query.range(from, to);
 
-      if (error) setError(error.message);
-      else setData(data as T[]);
+      if (error) {
+        setError(error.message);
+        setData([]);
+      } else {
+        setData(data as T[]);
+      }
 
       setLoading(false);
     };

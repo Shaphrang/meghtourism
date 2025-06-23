@@ -31,6 +31,7 @@ export function SupabaseImage({
       alt={alt}
       width={width}
       height={height}
+      loading="lazy"
       className={className}
       onError={() => {
         if (imgSrc !== fallback) setImgSrc(fallback);

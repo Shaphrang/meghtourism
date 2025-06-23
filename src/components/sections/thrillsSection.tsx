@@ -1,18 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { fetchData } from '@/lib/fetchData';
+import useSupabaseList from '@/hooks/useSupabaseList';
 import ThrillCard from '@/components/cards/thrillsCard';
 import { Thrill } from '@/types/thrill';
 import HorizontalScroll from '@/components/common/horizontalScroll';
 import Link from 'next/link';
 
 export function ThrillsSection() {
-  const [thrills, setThrills] = useState<Thrill[]>([]);
+  const { data: thrills = [], loading, error } = useSupabaseList<Thrill>('thrills', {
+    sortBy: 'created_at',
+    ascending: false,
+    page: 1,
+    pageSize: 6,
+  });
 
-  useEffect(() => {
-    fetchData('thrills.json').then(setThrills).catch(console.error);
-  }, []);
+  if (loading) return <p className="p-4">Loading...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
     <section className="py-6 px-4 bg-gradient-to-r from-blue-50 to-white">
