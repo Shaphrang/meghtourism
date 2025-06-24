@@ -21,30 +21,58 @@ export default function ClientPage() {
   const [nearby, setNearby] = useState<Destination[]>([]);
   const [showFullDesc, setShowFullDesc] = useState(false);
 
-  useEffect(() => {
-    async function fetchData() {
-      const { data: dest } = await supabase.from("destinations").select("*").eq("slug", slug).single();
-      setDestination(dest);
-      if (dest?.nearbydestinations?.length) {
-        const { data: related } = await supabase.from("destinations").select("*").in("id", dest.nearbydestinations);
-        setNearby(related || []);
+useEffect(() => {
+  async function fetchData() {
+    const rawSlug = String(slug);
+    const fixedSlug = rawSlug.replace(/_/g, '-');
+    console.log("Fixed slug used for DB:", fixedSlug);
 
-        const { data: stays } = await supabase
-          .from("homestays")
-          .select("*")
-          .contains("nearbydestinations", [dest.id]);
-        setHomestays(stays || []);
-      }
+    const { data: dest, error: destError } = await supabase
+      .from("destinations")
+      .select("*")
+      .eq("slug", fixedSlug)
+      .single();
+
+    if (destError) console.error("Error fetching destination:", destError);
+    console.log("Destination fetched:", dest);
+
+    setDestination(dest);
+
+    if (dest?.nearbydestinations?.length) {
+      const { data: related, error: nearbyError } = await supabase
+        .from("destinations")
+        .select("*")
+        .in("id", dest.nearbydestinations);
+
+      if (nearbyError) console.error("Error fetching nearby attractions:", nearbyError);
+      console.log("Nearby attractions fetched:", related);
+      setNearby(related || []);
+
+      const { data: stays, error: staysError } = await supabase
+        .from("homestays")
+        .select("*")
+        .contains("nearbydestinations", [dest.id]);
+
+      if (staysError) console.error("Error fetching nearby homestays:", staysError);
+      console.log("Nearby homestays fetched:", stays);
+      setHomestays(stays || []);
     }
-    fetchData();
-  }, [slug]);
+  }
+
+  fetchData();
+}, [slug]);
 
   if (!destination) return <p className="p-4">Loading...</p>;
 
   return (
     <main className="px-4 pb-10">
       {/* Hero */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="w-full h-[200px] sm:h-[300px] relative rounded-xl overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="w-full h-[200px] sm:h-[300px] relative rounded-xl overflow-hidden"
+      >
         {destination.image ? (
           <Image src={destination.image} alt={destination.name || ""} fill className="object-cover" />
         ) : (
@@ -137,13 +165,14 @@ export default function ClientPage() {
           onSubmit={(e) => {
             e.preventDefault();
             toast.success("Message submitted!");
+            console.log("Form submitted");
           }}
           className="space-y-3"
         >
-          <Input placeholder="Name" required />
-          <Input placeholder="Email" type="email" required />
-          <Input placeholder="Phone" required />
-          <Textarea placeholder="Message" rows={3} required />
+          <Input name="name" placeholder="Name" required />
+          <Input name="email" placeholder="Email" type="email" required />
+          <Input name="phone" placeholder="Phone" required />
+          <Textarea name="message" placeholder="Message" rows={3} required />
           <Button type="submit" className="bg-emerald-600 text-white hover:bg-emerald-700">
             Send Message
           </Button>

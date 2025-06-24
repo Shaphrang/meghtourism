@@ -1,14 +1,14 @@
 // src/app/destinations/page.tsx
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { Destination } from "@/types/destination";
 import useSupabaseList from "@/hooks/useSupabaseList";
 import { MapPin } from "lucide-react";
-import BannerAd from "@/components/common/bannerAd"; // Make sure this is the correct path
+import BannerAd from "@/components/common/bannerAd"; // Adjust this path as needed
 
 export default function DestinationsListingPage() {
   const [page, setPage] = useState(1);
@@ -70,16 +70,16 @@ export default function DestinationsListingPage() {
           <option value="East Khasi Hills">East Khasi Hills</option>
           <option value="West Jaintia Hills">West Jaintia Hills</option>
           <option value="Ri-Bhoi">Ri-Bhoi</option>
+          {/* Add more districts as needed */}
         </select>
       </div>
 
       {/* List/Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {items.map((dest, index) => (
-          <>
+          <Fragment key={dest.id}>
             <Link
-              key={dest.id}
-              href={`/destin/${dest.id}`}
+              href={`/destinations/${dest.id}`}
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300"
             >
               <div className="w-full h-32 bg-gray-100">
@@ -104,7 +104,7 @@ export default function DestinationsListingPage() {
                 <BannerAd />
               </div>
             )}
-          </>
+          </Fragment>
         ))}
       </div>
 

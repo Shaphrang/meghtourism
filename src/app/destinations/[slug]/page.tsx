@@ -1,13 +1,29 @@
-// src/app/destin/[slug]/page.tsx
+// src/app/destinations/[slug]/page.tsx
 import { Metadata } from 'next';
-import { createServerSupabaseClient  } from '@/lib/supabaseServer';
+import { cookies } from 'next/headers';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import DestinationDetailPage from './clientPage';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const supabase = createServerSupabaseClient();
-  const { data: dest } = await supabase.from('destinations').select('*').eq('slug', params.slug).single();
+export async function generateMetadata(_: any): Promise<Metadata> {
+  const cookieStore = cookies(); // you must await cookies or call it before passing to supabase client
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
 
-  if (!dest) return { title: 'Destination Not Found' };
+  const url = new URL(_.params?.slug ?? '', 'https://example.com'); // ensure params is accessed safely
+  const slug = url.pathname.split('/').pop(); // fallback if slug is malformed
+
+  if (!slug) {
+    return { title: 'Destination Not Found' };
+  }
+
+  const { data: dest } = await supabase
+    .from('destinations')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (!dest) {
+    return { title: 'Destination Not Found' };
+  }
 
   return {
     title: `${dest.name} | Meghtourism`,
