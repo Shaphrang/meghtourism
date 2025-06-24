@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import useSupabaseList from '@/hooks/useSupabaseList';
-import { CafeAndRestaurant } from '@/types/cafeAndRestaurant';
+import { CafeAndRestaurant } from '@/types/cafeRestaurants';
 
 export default function CafesSection() {
   const containerRef = useRef<HTMLDivElement>(null);
