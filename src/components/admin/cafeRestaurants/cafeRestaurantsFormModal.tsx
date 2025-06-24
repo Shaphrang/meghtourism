@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { generateSlug } from '@/lib/generateSlug';
 import { Dialog } from '@headlessui/react';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-hot-toast';
@@ -60,13 +61,20 @@ export default function CafeRestaurantFormModal({ initialData, onClose, onSave }
   const handleSubmit = async () => {
     console.log("Submitting form data:", form);
     try {
+      const slug = await generateSlug(supabase, form.name, (form as any).slug);
+      const payload = { ...form, slug };
       if (isEditMode) {
-        const { error, data } = await supabase.from('cafes_and_restaurants').update(form).eq('id', form.id);
+        const { error, data } = await supabase
+          .from('cafes_and_restaurants')
+          .update(payload)
+          .eq('id', form.id);
         console.log("Update result:", { data, error });
         if (error) throw error;
         toast.success('Entry updated');
       } else {
-        const { error, data } = await supabase.from('cafes_and_restaurants').insert([form]);
+        const { error, data } = await supabase
+          .from('cafes_and_restaurants')
+          .insert([payload]);
         console.log("Insert result:", { data, error });
         if (error) throw error;
         toast.success('Entry created');

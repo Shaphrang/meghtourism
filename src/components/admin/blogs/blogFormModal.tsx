@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { generateSlug } from '@/lib/generateSlug';
 import { Dialog } from '@headlessui/react';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-hot-toast';
@@ -47,12 +48,14 @@ export default function BlogFormModal({ initialData, onClose, onSave }: Props) {
 
   const handleSubmit = async () => {
     try {
+      const slug = await generateSlug(supabase, form.title, form.slug);
+      const payload = { ...form, slug };
       if (isEditMode) {
-        const { error } = await supabase.from('blogs').update(form).eq('id', form.id);
+        const { error } = await supabase.from('blogs').update(payload).eq('id', form.id);
         if (error) throw error;
         toast.success('Blog updated successfully');
       } else {
-        const { error } = await supabase.from('blogs').insert([form]);
+        const { error } = await supabase.from('blogs').insert([payload]);
         if (error) throw error;
         toast.success('Blog created successfully');
       }
@@ -108,7 +111,6 @@ export default function BlogFormModal({ initialData, onClose, onSave }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {renderInput('Title', 'title')}
-          {renderInput('Slug', 'slug')}
           {renderInput('Author', 'author')}
           {renderInput('Category', 'category')}
           {renderInput('Region', 'region')}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { generateSlug } from '@/lib/generateSlug';
 import { Dialog } from '@headlessui/react';
 import { v4 as uuidv4 } from 'uuid';
 import imageCompression from 'browser-image-compression';
@@ -53,9 +54,11 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
 
   const handleSubmit = async () => {
     try {
+      const slug = await generateSlug(supabase, form.name, (form as any).slug);
+      const payload = { ...form, slug };
       const { error } = isEditMode
-        ? await supabase.from('destinations').update(form).eq('id', form.id)
-        : await supabase.from('destinations').insert([form]);
+        ? await supabase.from('destinations').update(payload).eq('id', form.id)
+        : await supabase.from('destinations').insert([payload]);
       if (error) throw error;
       toast.success(`Destination ${isEditMode ? 'updated' : 'created'} successfully`);
       onSave();

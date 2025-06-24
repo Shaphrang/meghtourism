@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { generateSlug } from '@/lib/generateSlug';
 import { Dialog } from '@headlessui/react';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-hot-toast';
@@ -38,12 +39,14 @@ export default function FaqFormModal({ initialData, onClose, onSave }: Props) {
 
   const handleSubmit = async () => {
     try {
+      const slug = await generateSlug(supabase, form.question, (form as any).slug);
+      const payload = { ...form, slug };
       if (isEditMode) {
-        const { error } = await supabase.from('prebuilt_faqs').update(form).eq('id', form.id);
+        const { error } = await supabase.from('prebuilt_faqs').update(payload).eq('id', form.id);
         if (error) throw error;
         toast.success('FAQ updated');
       } else {
-        const { error } = await supabase.from('prebuilt_faqs').insert([form]);
+        const { error } = await supabase.from('prebuilt_faqs').insert([payload]);
         if (error) throw error;
         toast.success('FAQ created');
       }

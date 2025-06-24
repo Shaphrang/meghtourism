@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { generateSlug } from '@/lib/generateSlug';
 import { Dialog } from '@headlessui/react';
 import { v4 as uuidv4 } from 'uuid';
 import imageCompression from 'browser-image-compression';
@@ -60,12 +61,14 @@ export default function ThrillFormModal({ initialData, onClose, onSave }: Props)
 
   const handleSubmit = async () => {
     try {
+      const slug = await generateSlug(supabase, form.name, (form as any).slug);
+      const payload = { ...form, slug };
       if (isEditMode) {
-        const { error } = await supabase.from('thrills').update(form).eq('id', form.id);
+        const { error } = await supabase.from('thrills').update(payload).eq('id', form.id);
         if (error) throw error;
         toast.success('Thrill updated');
       } else {
-        const { error } = await supabase.from('thrills').insert([form]);
+        const { error } = await supabase.from('thrills').insert([payload]);
         if (error) throw error;
         toast.success('Thrill created');
       }

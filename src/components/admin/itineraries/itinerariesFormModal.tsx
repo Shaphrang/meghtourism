@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { generateSlug } from '@/lib/generateSlug';
 import { Dialog } from '@headlessui/react';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-hot-toast';
@@ -57,12 +58,14 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
 
   const handleSubmit = async () => {
     try {
+      const slug = await generateSlug(supabase, form.title, form.slug);
+      const payload = { ...form, slug };
       if (isEditMode) {
-        const { error } = await supabase.from('itineraries').update(form).eq('id', form.id);
+        const { error } = await supabase.from('itineraries').update(payload).eq('id', form.id);
         if (error) throw error;
         toast.success('Itinerary updated');
       } else {
-        const { error } = await supabase.from('itineraries').insert([form]);
+        const { error } = await supabase.from('itineraries').insert([payload]);
         if (error) throw error;
         toast.success('Itinerary created');
       }
@@ -129,7 +132,6 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {renderInput('Title', 'title')}
-          {renderInput('Slug', 'slug')}
           {renderInput('Days', 'days', 'number')}
           {renderInput('Starting Point', 'starting_point')}
           {renderInput('Ending Point', 'ending_point')}
