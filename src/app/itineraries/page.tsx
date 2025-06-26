@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import useSupabaseList from "@/hooks/useSupabaseList";
 import { Itinerary } from "@/types/itineraries";
+import { MapPin } from "lucide-react";
 
 export default function ItinerariesListingPage() {
   const [page, setPage] = useState(1);
@@ -56,7 +57,6 @@ export default function ItinerariesListingPage() {
         </h1>
       </section>
 
-      
       {/* Top Adventures */}
       <section className="p-4">
         <h2 className="text-lg font-semibold mb-2">Top Adventures</h2>
@@ -68,7 +68,7 @@ export default function ItinerariesListingPage() {
               className="min-w-[160px] bg-white rounded-xl shadow-sm overflow-hidden"
             >
               <div className="h-32 relative bg-gray-100">
-                {itin.image ? (
+                {itin.image && itin.image.startsWith("/") ? (
                   <Image
                     src={itin.image}
                     alt={itin.title || "Itinerary"}
@@ -92,7 +92,6 @@ export default function ItinerariesListingPage() {
         </div>
       </section>
 
-
       {/* All Itineraries */}
       <section className="p-4">
         <h2 className="text-lg font-semibold mb-2">All Activities</h2>
@@ -104,14 +103,21 @@ export default function ItinerariesListingPage() {
               className="bg-gray-50 rounded-xl shadow-md overflow-hidden"
             >
               <div className="relative w-full h-40 bg-gray-100">
-                {trip.image ? (
-                  <Image src={trip.image} alt={trip.title || "Itinerary"} fill className="object-cover" />
+                {trip.image && trip.image.startsWith("/") ? (
+                  <Image
+                    src={trip.image}
+                    alt={trip.title || "Itinerary"}
+                    fill
+                    className="object-cover"
+                  />
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400 text-xs">No image</div>
+                  <div className="flex items-center justify-center h-full text-gray-400 text-xs">
+                    No image
+                  </div>
                 )}
               </div>
               <div className="p-4">
-                                <h3 className="text-lg font-bold truncate">{trip.title}</h3>
+                <h3 className="text-lg font-bold truncate">{trip.title}</h3>
                 {trip.description && (
                   <p className="text-sm text-gray-700 mt-1 line-clamp-2">
                     {trip.description}
@@ -121,7 +127,7 @@ export default function ItinerariesListingPage() {
             </Link>
           ))}
         </div>
-          <div ref={observerRef} className="text-center mt-4">
+        <div ref={observerRef} className="text-center mt-4">
           {loading && <p className="text-sm text-gray-500">Loading...</p>}
           {items.length >= (totalCount ?? 0) && !loading && (
             <p className="text-sm text-gray-400">No more itineraries.</p>
