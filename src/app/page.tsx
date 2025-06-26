@@ -1,4 +1,3 @@
-// app/page.tsx (Next.js 13+ App Router)
 'use client';
 
 import HeroSection from '@/components/sections/heroSection';
@@ -16,32 +15,41 @@ export default function HomePage() {
       {/* Hero */}
       <HeroSection />
 
-      {/* Banner Ad */}
-      <BannerAd />
-
       {/* Destinations */}
-      <DestinationsSection />
+      <section className="mt-4">
+        <DestinationsSection />
+      </section>
 
-      {/* Banner Ad */}
       <BannerAd />
 
       {/* Accommodations */}
-      <AccommodationsSection />
+      <section className="mt-4">
+        <AccommodationsSection />
+      </section>
 
-      {/* Accommodations */}
-      <EventsSection />
-
-      {/* Banner Ad */}
       <BannerAd />
 
-      {/* Banner Ad */}
-      <ThrillsSection />
-      
-      {/* Banner Ad */}
-      <CafesSection />
+      {/* Events */}
+      <section className="mt-4">
+        <EventsSection />
+      </section>
 
-      {/* Banner Ad */}
-      <BlogsSection />
+      <BannerAd />
+
+      {/* Thrills */}
+      <section className="mt-4">
+        <ThrillsSection />
+      </section>
+
+      {/* Cafes */}
+      <section className="mt-4">
+        <CafesSection />
+      </section>
+
+      {/* Blogs */}
+      <section className="mt-4 pb-6">
+        <BlogsSection />
+      </section>
     </main>
   );
 }
