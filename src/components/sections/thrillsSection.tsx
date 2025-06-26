@@ -50,8 +50,9 @@ export default function ThrillsSection() {
           className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2"
         >
           {thrills.slice(0, 10).map((thrill) => (
-            <div
+            <Link
               key={thrill.id}
+              href={`/thrills/${thrill.slug ?? thrill.id}`}
               className="min-w-[42%] sm:min-w-[200px] max-w-[240px] rounded-xl overflow-hidden bg-white shadow-md snap-start flex-shrink-0"
             >
               <div className="w-full h-[120px] sm:h-[140px] bg-gray-100">
@@ -85,7 +86,7 @@ export default function ThrillsSection() {
                   </p>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

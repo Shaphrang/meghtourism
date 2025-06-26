@@ -48,8 +48,9 @@ export default function EventsSection() {
           className="flex space-x-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2"
         >
           {events.slice(0, 10).map((event) => (
-            <div
+            <Link
               key={event.id}
+              href={`/events/${event.slug ?? event.id}`}
               className="w-[100px] sm:w-[120px] flex flex-col items-center space-y-1 snap-start flex-shrink-0"
             >
               <div className="w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] rounded-full bg-white shadow-md flex items-center justify-center overflow-hidden relative border">
@@ -82,7 +83,7 @@ export default function EventsSection() {
                   </p>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

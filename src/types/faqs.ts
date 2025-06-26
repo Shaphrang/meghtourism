@@ -1,6 +1,7 @@
 export interface PrebuiltFAQ {
   id: string;
   question: string;
+  slug?: string;
   answer: string;
   category: string;
   tags: string[];

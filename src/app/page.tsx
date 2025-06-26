@@ -1,7 +1,7 @@
 'use client';
 
 import HeroSection from '@/components/sections/heroSection';
-import BannerAd from '@/components/common/bannerAd';
+import CarouselBanner from '@/components/common/carouselBanner';
 import DestinationsSection from '@/components/sections/destinationsSection';
 import AccommodationsSection from '@/components/sections/homestaysSection';
 import EventsSection from '@/components/sections/eventsSection';
@@ -20,21 +20,21 @@ export default function HomePage() {
         <DestinationsSection />
       </section>
 
-      <BannerAd />
+      <CarouselBanner />
 
       {/* Accommodations */}
       <section className="mt-4">
         <AccommodationsSection />
       </section>
 
-      <BannerAd />
+      <CarouselBanner />
 
       {/* Events */}
       <section className="mt-4">
         <EventsSection />
       </section>
 
-      <BannerAd />
+      <CarouselBanner />
 
       {/* Thrills */}
       <section className="mt-4">

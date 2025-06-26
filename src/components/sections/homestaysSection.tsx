@@ -48,8 +48,9 @@ export default function AccommodationsSection() {
           className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2"
         >
           {homestays.slice(0, 10).map((stay) => (
-            <div
+            <Link
               key={stay.id}
+              href={`/homestays/${stay.slug ?? stay.id}`}
               className="min-w-[42%] sm:min-w-[180px] max-w-[220px] h-[190px] sm:h-[210px] bg-white rounded-xl overflow-hidden shadow-md snap-start flex-shrink-0 flex flex-col"
             >
               <div className="w-full h-[100px] sm:h-[110px] bg-gray-100">
@@ -81,7 +82,7 @@ export default function AccommodationsSection() {
                   </p>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

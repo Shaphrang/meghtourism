@@ -48,7 +48,7 @@ export default function Header() {
           <Link href="/events" className="text-sm sm:text-base hover:text-emerald-400 transition">
             Events
           </Link>
-          <Link href="/cafes" className="text-sm sm:text-base hover:text-emerald-400 transition">
+          <Link href="/cafesRestaurants" className="text-sm sm:text-base hover:text-emerald-400 transition">
             Cafes
           </Link>
           <Link href="/blogs" className="text-sm sm:text-base hover:text-emerald-400 transition">
@@ -73,7 +73,7 @@ export default function Header() {
             <Link href="/events" onClick={() => setIsOpen(false)} className="hover:text-green-600">
               Events
             </Link>
-            <Link href="/cafes" onClick={() => setIsOpen(false)} className="hover:text-green-600">
+            <Link href="/cafesRestaurants" onClick={() => setIsOpen(false)} className="hover:text-green-600">
               Cafes
             </Link>
             <Link href="/blogs" onClick={() => setIsOpen(false)} className="hover:text-green-600">

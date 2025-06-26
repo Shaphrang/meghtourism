@@ -53,8 +53,9 @@ export default function CafesSection() {
       ) : (
         <div ref={containerRef} className="grid gap-4 sm:grid-cols-2">
           {cafes.slice(0, 8).map((cafe) => (
-            <div
+            <Link
               key={cafe.id}
+              href={`/cafesRestaurants/${cafe.slug ?? cafe.id}`}
               className="flex gap-3 bg-white rounded-xl shadow-md overflow-hidden p-2"
             >
               <div className="relative w-[100px] h-[100px] flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
@@ -95,7 +96,7 @@ export default function CafesSection() {
                   {(cafe.cuisine?.length ? cafe.cuisine.join(', ') : 'No cuisine')} • {cafe.type} • ⭐ {cafe.ratings ?? 'N/A'}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

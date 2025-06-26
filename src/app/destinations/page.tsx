@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Destination } from "@/types/destination";
 import useSupabaseList from "@/hooks/useSupabaseList";
 import { MapPin } from "lucide-react";
-import BannerAd from "@/components/common/bannerAd"; // Adjust this path as needed
+import CarouselBanner from "@/components/common/carouselBanner"; // Adjust this path as needed
 
 export default function DestinationsListingPage() {
   const [page, setPage] = useState(1);
@@ -101,7 +101,7 @@ export default function DestinationsListingPage() {
 
             {(index + 1) % 8 === 0 && (
               <div key={`ad-${index}`} className="col-span-full">
-                <BannerAd />
+                <CarouselBanner />
               </div>
             )}
           </Fragment>

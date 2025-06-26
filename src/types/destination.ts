@@ -1,6 +1,7 @@
 export interface Destination {
   id: string;
   name: string | null;
+  slug?: string;
   description: string | null;
   location: string | null;
   district: string | null;
