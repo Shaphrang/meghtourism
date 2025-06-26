@@ -3,6 +3,7 @@
 export interface Thrill {
   id: string;
   name?: string;
+  slug?: string;
   location?: string;
   district?: string;
   image?: string;

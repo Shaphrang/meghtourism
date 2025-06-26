@@ -3,6 +3,7 @@
 export interface Event {
   id: string;
   name?: string;
+  slug?: string;
   description?: string;
   location?: string;
   district?: string;

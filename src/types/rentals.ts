@@ -1,6 +1,7 @@
 export interface Rental {
   id: string;
   title: string;
+  slug?: string;
   type: string;
   description: string;
   brand: string;

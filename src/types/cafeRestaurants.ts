@@ -1,6 +1,7 @@
 export interface CafeAndRestaurant {
   id: string;
   name: string;
+  slug?: string;
   description: string;
   type: string;
   cuisine: string[];
