@@ -81,7 +81,7 @@ export default function RentalsListingPage() {
               className="min-w-[160px] bg-white rounded-xl shadow-md overflow-hidden"
             >
               <div className="h-24 relative bg-gray-100">
-                {rental.image ? (
+                {rental.image && rental.image.startsWith('https') ? (
                   <Image src={rental.image} alt={rental.title || rental.type} fill className="object-cover" />
                 ) : (
                   <div className="flex items-center justify-center h-full text-xs text-gray-400">No image</div>
@@ -107,7 +107,7 @@ export default function RentalsListingPage() {
               className="flex items-center bg-white rounded-xl shadow-sm overflow-hidden"
             >
               <div className="relative w-24 h-24 bg-gray-100">
-                {rental.image ? (
+                {rental.image && rental.image.startsWith('https') ? (
                   <Image src={rental.image} alt={rental.title || rental.type} fill className="object-cover" />
                 ) : (
                   <div className="flex items-center justify-center w-full h-full text-xs text-gray-400">No image</div>

@@ -79,7 +79,7 @@ export default function RestaurantsListingPage() {
               className="min-w-[180px] bg-white rounded-xl shadow-md overflow-hidden"
             >
               <div className="h-32 relative bg-gray-100">
-                {rest.image ? (
+                {rest.image && rest.image.startsWith('https') ? (
                   <Image src={rest.image} alt={rest.name} fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
@@ -107,7 +107,7 @@ export default function RestaurantsListingPage() {
               className="flex items-center bg-white rounded-xl shadow-sm overflow-hidden"
             >
               <div className="relative w-24 h-24 bg-gray-100">
-                {rest.image ? (
+                {rest.image && rest.image.startsWith('https') ? (
                   <Image src={rest.image} alt={rest.name} fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>

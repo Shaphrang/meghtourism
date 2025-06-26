@@ -81,7 +81,7 @@ export default function ThrillsListingPage() {
               className="min-w-[200px] bg-white rounded-xl shadow-md overflow-hidden"
             >
               <div className="h-32 relative bg-gray-100">
-                {thrill.image ? (
+                {thrill.image && thrill.image.startsWith('https') ? (
                   <Image src={thrill.image} alt={thrill.name || "Thrill"} fill className="object-cover" />
                 ) : (
                   <div className="flex items-center justify-center h-full text-xs text-gray-400">No image</div>
@@ -111,7 +111,7 @@ export default function ThrillsListingPage() {
               className="bg-gray-50 rounded-xl shadow-sm overflow-hidden"
             >
               <div className="h-40 relative bg-gray-100">
-                {thrill.image ? (
+                {thrill.image && thrill.image.startsWith('https') ? (
                   <Image src={thrill.image} alt={thrill.name || "Thrill"} fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>

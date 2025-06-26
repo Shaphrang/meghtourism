@@ -54,7 +54,7 @@ export default function EventsSection() {
               className="w-[100px] sm:w-[120px] flex flex-col items-center space-y-1 snap-start flex-shrink-0"
             >
               <div className="w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] rounded-full bg-white shadow-md flex items-center justify-center overflow-hidden relative border">
-                {event.image ? (
+                {event.image && event.image.startsWith('https') ? (
                   <Image
                     src={event.image}
                     alt={event.name || 'Event'}

@@ -66,7 +66,11 @@ export default function ClientPage() {
       <Swiper spaceBetween={10} slidesPerView={1.2} className="w-full h-64 md:h-96">
         {gallery.map((img, idx) => (
           <SwiperSlide key={idx} className="relative w-full h-full rounded-lg overflow-hidden">
-            <Image src={img} alt={event.name || "Event"} fill className="object-cover" />
+            {img && img.startsWith('https') ? (
+              <Image src={img} alt={event.name || "Event"} fill className="object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
+            )}
           </SwiperSlide>
         ))}
       </Swiper>
@@ -120,7 +124,7 @@ export default function ClientPage() {
             {attractions.map((a) => (
               <div key={a.id} className="min-w-[150px] rounded-xl shadow overflow-hidden">
                 <div className="relative w-full h-24">
-                  {a.image ? (
+                  {a.image && a.image.startsWith('https') ? (
                     <Image src={a.image} alt={a.name || "Attraction"} fill className="object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-400">No image</div>
@@ -140,7 +144,7 @@ export default function ClientPage() {
             {homestays.map((stay) => (
               <div key={stay.id} className="flex gap-3 bg-gray-50 rounded-xl shadow p-3">
                 <div className="relative w-20 h-20 rounded-md overflow-hidden">
-                  {stay.image ? (
+                  {stay.image && stay.image.startsWith('https') ? (
                     <Image src={stay.image} alt={stay.name || "Stay"} fill className="object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>

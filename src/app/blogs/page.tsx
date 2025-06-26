@@ -51,7 +51,7 @@ export default function BlogsListingPage() {
             className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
             <div className="relative w-full h-40 bg-gray-100">
-              {blog.cover_image ? (
+              {blog.cover_image && blog.cover_image.startsWith('https') ? (
                 <Image src={blog.cover_image} alt={blog.title} fill className="object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-sm text-gray-400">No Image</div>

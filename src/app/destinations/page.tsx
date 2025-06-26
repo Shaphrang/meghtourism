@@ -83,7 +83,7 @@ export default function DestinationsListingPage() {
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300"
             >
               <div className="w-full h-32 bg-gray-100">
-                {dest.image ? (
+                {dest.image && dest.image.startsWith('https') ? (
                   <Image src={dest.image} alt={dest.name || "Destination"} width={400} height={150} className="w-full h-full object-cover" />
                 ) : (
                   <div className="flex items-center justify-center h-full text-sm text-gray-400">No image</div>

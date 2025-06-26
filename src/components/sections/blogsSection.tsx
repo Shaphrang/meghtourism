@@ -34,7 +34,7 @@ export default function BlogsSection() {
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
               <div className="relative w-full h-[160px] sm:h-[180px] bg-gray-100">
-                {blog.cover_image ? (
+                {blog.cover_image && blog.cover_image.startsWith('https') ? (
                   <Image
                     src={blog.cover_image}
                     alt={blog.title}

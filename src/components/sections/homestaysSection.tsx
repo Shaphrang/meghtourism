@@ -54,7 +54,7 @@ export default function AccommodationsSection() {
               className="min-w-[42%] sm:min-w-[180px] max-w-[220px] h-[190px] sm:h-[210px] bg-white rounded-xl overflow-hidden shadow-md snap-start flex-shrink-0 flex flex-col"
             >
               <div className="w-full h-[100px] sm:h-[110px] bg-gray-100">
-                {stay.image ? (
+                {stay.image && stay.image.startsWith('https') ? (
                   <Image
                     src={stay.image}
                     alt={stay.name || 'Homestay'}

@@ -56,7 +56,7 @@ export default function ThrillsSection() {
               className="min-w-[42%] sm:min-w-[200px] max-w-[240px] rounded-xl overflow-hidden bg-white shadow-md snap-start flex-shrink-0"
             >
               <div className="w-full h-[120px] sm:h-[140px] bg-gray-100">
-                {thrill.image ? (
+                {thrill.image && thrill.image.startsWith('https') ? (
                   <Image
                     src={thrill.image}
                     alt={thrill.name || 'Thrill'}

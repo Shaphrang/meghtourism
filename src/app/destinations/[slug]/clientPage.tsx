@@ -63,7 +63,7 @@ useEffect(() => {
         transition={{ duration: 0.6 }}
         className="w-full h-[200px] sm:h-[300px] relative rounded-xl overflow-hidden"
       >
-        {destination.image ? (
+        {destination.image && destination.image.startsWith('https') ? (
           <Image src={destination.image} alt={destination.name || ""} fill className="object-cover" />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center text-sm text-gray-500">No Image</div>
@@ -107,7 +107,7 @@ useEffect(() => {
             {homestays.map((stay) => (
               <div key={stay.id} className="bg-white rounded-xl shadow-sm p-3 flex gap-3">
                 <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
-                  {stay.image ? (
+                  {stay.image && stay.image.startsWith('https') ? (
                     <Image src={stay.image} alt={stay.name || ""} width={96} height={96} className="object-cover w-full h-full" />
                   ) : (
                     <div className="flex items-center justify-center h-full text-xs text-gray-500">No Image</div>
@@ -132,7 +132,7 @@ useEffect(() => {
             {nearby.map((n) => (
               <div key={n.id} className="w-[160px] flex-shrink-0 bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="w-full h-24 bg-gray-100">
-                  {n.image ? (
+                  {n.image && n.image.startsWith('https') ? (
                     <Image src={n.image} alt={n.name || ""} width={160} height={96} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>

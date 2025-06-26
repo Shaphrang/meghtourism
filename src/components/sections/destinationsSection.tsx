@@ -54,7 +54,7 @@ export default function DestinationsSection() {
               className="min-w-[42%] sm:min-w-[200px] max-w-[240px] rounded-xl overflow-hidden bg-white shadow-md snap-start flex-shrink-0"
             >
               <div className="w-full h-[120px] sm:h-[140px] bg-gray-100">
-                {dest.image ? (
+                {dest.image && dest.image.startsWith('https') ? (
                   <Image
                     src={dest.image}
                     alt={dest.name || 'Destination'}

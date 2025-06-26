@@ -59,7 +59,7 @@ export default function CafesSection() {
               className="flex gap-3 bg-white rounded-xl shadow-md overflow-hidden p-2"
             >
               <div className="relative w-[100px] h-[100px] flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-                {cafe.image ? (
+                {cafe.image && cafe.image.startsWith('https') ? (
                   <Image
                     src={cafe.image}
                     alt={cafe.name}

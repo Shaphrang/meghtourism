@@ -42,7 +42,11 @@ export default function ClientPage() {
         <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-64 md:h-96">
           {gallery.map((img, idx) => (
             <SwiperSlide key={idx} className="relative w-full h-full rounded-lg overflow-hidden">
-              <Image src={img} alt={blog.title || "Blog"} fill className="object-cover" />
+              {img && img.startsWith('https') ? (
+                <Image src={img} alt={blog.title || "Blog"} fill className="object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
+              )}
             </SwiperSlide>
           ))}
         </Swiper>

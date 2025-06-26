@@ -83,7 +83,7 @@ export default function HomestayListingPage() {
               className="min-w-[160px] bg-white rounded-xl shadow-sm overflow-hidden"
             >
               <div className="h-24 relative bg-gray-100">
-                {stay.image ? (
+                {stay.image && stay.image.startsWith('https') ? (
                   <Image src={stay.image} alt={stay.name || "Stay"} fill className="object-cover" />
                 ) : (
                   <div className="flex items-center justify-center h-full text-xs text-gray-400">
@@ -111,7 +111,7 @@ export default function HomestayListingPage() {
               className="bg-gray-50 rounded-xl shadow-md overflow-hidden"
             >
               <div className="relative w-full h-40 bg-gray-100">
-                {stay.image ? (
+                {stay.image && stay.image.startsWith('https') ? (
                   <Image src={stay.image} alt={stay.name || "Stay"} fill className="object-cover" />
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-400 text-xs">

@@ -69,9 +69,12 @@ export default function ClientPage() {
         {gallery.map((img, idx) => (
           <SwiperSlide
             key={idx}
-            className="relative w-full h-full flex items-center justify-center overflow-hidden"
-          >
-            <Image src={img} alt={homestay.name || "Homestay"} fill className="object-cover" />
+            className="relative w-full h-full flex items-center justify-center overflow-hidden">
+            {img && img.startsWith('https') ? (
+              <Image src={img} alt={homestay.name || "Homestay"} fill className="object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
+            )}
           </SwiperSlide>
         ))}
       </Swiper>
@@ -150,7 +153,7 @@ export default function ClientPage() {
                 className="min-w-[160px] bg-white rounded-lg shadow-sm overflow-hidden"
               >
                 <div className="h-24 relative bg-gray-100">
-                  {n.image ? (
+                  {n.image && n.image.startsWith('https') ? (
                     <Image src={n.image} alt={n.name || "Attraction"} fill className="object-cover" />
                   ) : (
                     <div className="flex items-center justify-center h-full text-xs text-gray-400">
@@ -175,7 +178,7 @@ export default function ClientPage() {
             {similar.map((stay) => (
               <div key={stay.id} className="flex gap-3 bg-gray-50 rounded-lg p-3 shadow-sm">
                 <div className="relative w-20 h-20 rounded-md overflow-hidden bg-gray-100">
-                  {stay.image ? (
+                  {stay.image && stay.image.startsWith('https') ? (
                     <Image src={stay.image} alt={stay.name || "Stay"} fill className="object-cover" />
                   ) : (
                     <div className="flex items-center justify-center h-full text-xs text-gray-400">

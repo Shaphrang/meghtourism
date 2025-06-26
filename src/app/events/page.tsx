@@ -80,7 +80,7 @@ export default function EventsListingPage() {
               className="min-w-[200px] bg-white rounded-xl shadow-md overflow-hidden"
             >
               <div className="h-32 relative bg-gray-100">
-                {event.image ? (
+                {event.image && event.image.startsWith('https') ? (
                   <Image src={event.image} alt={event.name || "Event"} fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
@@ -108,7 +108,7 @@ export default function EventsListingPage() {
               className="bg-gray-50 rounded-xl shadow-sm overflow-hidden"
             >
               <div className="h-40 relative bg-gray-100">
-                {event.image ? (
+                {event.image && event.image.startsWith('https') ? (
                   <Image src={event.image} alt={event.name || "Event"} fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
