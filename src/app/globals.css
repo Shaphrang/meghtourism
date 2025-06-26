@@ -142,6 +142,6 @@ section {
 }
 
 :root {
-  --header-height: 4rem;
+  --header-height: 3rem;
   --footer-height: 4rem;
 }

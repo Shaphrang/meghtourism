@@ -27,36 +27,26 @@ useEffect(() => {
     const fixedSlug = rawSlug.replace(/_/g, '-');
     console.log("Fixed slug used for DB:", fixedSlug);
 
-    const { data: dest, error: destError } = await supabase
-      .from("destinations")
-      .select("*")
-      .eq("slug", fixedSlug)
+    const { data: dest } = await supabase
+      .from('destinations')
+      .select('*')
+      .eq('slug', fixedSlug)
       .single();
-
-    if (destError) console.error("Error fetching destination:", destError);
-    console.log("Destination fetched:", dest);
 
     setDestination(dest);
 
-    if (dest?.nearbydestinations?.length) {
-      const { data: related, error: nearbyError } = await supabase
-        .from("destinations")
-        .select("*")
-        .in("id", dest.nearbydestinations);
+    const { data: related } = await supabase
+      .from('destinations')
+      .select('*')
+      .neq('id', dest?.id || '')
+      .limit(4);
+    setNearby(related || []);
 
-      if (nearbyError) console.error("Error fetching nearby attractions:", nearbyError);
-      console.log("Nearby attractions fetched:", related);
-      setNearby(related || []);
-
-      const { data: stays, error: staysError } = await supabase
-        .from("homestays")
-        .select("*")
-        .contains("nearbydestinations", [dest.id]);
-
-      if (staysError) console.error("Error fetching nearby homestays:", staysError);
-      console.log("Nearby homestays fetched:", stays);
-      setHomestays(stays || []);
-    }
+    const { data: stays } = await supabase
+      .from('homestays')
+      .select('*')
+      .limit(4);
+    setHomestays(stays || []);
   }
 
   fetchData();
