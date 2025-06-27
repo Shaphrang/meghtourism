@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-hot-toast';
 import { uploadImageToSupabase } from '@/lib/uploadToSupabase';
 import { deleteImageFromSupabase } from '@/lib/deleteImageFromSupabase';
+import { LOCATION_ZONES } from '@/lib/locationZones';
 
 interface Props {
   initialData?: any;
@@ -124,6 +125,26 @@ export default function RentalFormModal({ initialData, onClose, onSave }: Props)
       <label className="text-sm">{label}</label>
     </div>
   );
+    const renderSelect = (label: string, key: string) => (
+    <div className="mb-3">
+      <label className="block font-medium text-sm mb-1">{label}</label>
+      <select
+        value={form[key] || ''}
+        onChange={(e) => handleChange(key, e.target.value)}
+        className="w-full border px-3 py-2 rounded"
+        required
+      >
+        <option value="" disabled>
+          Select a location...
+        </option>
+        {LOCATION_ZONES.map((zone) => (
+          <option key={zone} value={zone}>
+            {zone}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 
   return (
     <Dialog open={true} onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center">
@@ -136,7 +157,7 @@ export default function RentalFormModal({ initialData, onClose, onSave }: Props)
           {renderInput('Type', 'type')}
           {renderInput('Brand', 'brand')}
           {renderInput('Fuel Policy', 'fuelpolicy')}
-          {renderInput('Location', 'location')}
+          {renderSelect('Location Zone', 'location')}
           {renderInput('District', 'district')}
           {renderInput('Latitude', 'latitude', 'number')}
           {renderInput('Longitude', 'longitude', 'number')}

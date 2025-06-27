@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Event } from "@/types/event";
-import { Destination } from "@/types/destination";
-import { Homestay } from "@/types/homestay";
 import Image from "next/image";
 import { Share2, MapPin, Calendar, Clock } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
