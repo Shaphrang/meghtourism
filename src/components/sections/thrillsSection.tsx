@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import ScrollWrapper from '../common/scrollWrapper';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
@@ -8,27 +8,11 @@ import useSupabaseList from '@/hooks/useSupabaseList';
 import { Thrill } from '@/types/thrill';
 
 export default function ThrillsSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { data: thrills, loading } = useSupabaseList<Thrill>('thrills', {
     sortBy: 'created_at',
     ascending: false,
     pageSize: 10,
   });
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        el.scrollLeft += e.deltaY;
-      }
-    };
-
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, []);
 
   return (
     <section className="w-full px-2 sm:px-4 mt-6">
@@ -45,10 +29,7 @@ export default function ThrillsSection() {
       {loading ? (
         <div className="text-sm text-gray-500 px-1">Loading thrills...</div>
       ) : (
-        <div
-          ref={containerRef}
-          className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2"
-        >
+        <ScrollWrapper className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2">
           {thrills.slice(0, 10).map((thrill) => (
             <Link
               key={thrill.id}
@@ -88,7 +69,7 @@ export default function ThrillsSection() {
               </div>
             </Link>
           ))}
-        </div>
+        </ScrollWrapper>
       )}
     </section>
   );

@@ -42,7 +42,7 @@ export default function CarouselBanner() {
         loop
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
-        className="w-full h-40"
+        className="w-full h-25"
       >
         {bannerCards.map((card, i) => (
           <SwiperSlide key={i} className="w-full h-full">

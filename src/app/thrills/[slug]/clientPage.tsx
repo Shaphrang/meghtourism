@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Thrill } from "@/types/thrill";
 import { Destination } from "@/types/destination";
 import { Homestay } from "@/types/homestay";
@@ -11,20 +10,19 @@ import { MapPin, Share2, Clock, Star } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
+import { supabase } from "@/lib/supabaseClient";
+import { normalizeSlug } from "@/lib/utils";
+import NearbyListings from "@/components/common/nearbyListings";
 
 export default function ClientPage() {
   const { slug } = useParams();
-  const supabase = createClientComponentClient();
 
   const [thrill, setThrill] = useState<Thrill | null>(null);
-  const [attractions, setAttractions] = useState<Destination[]>([]);
-  const [stays, setStays] = useState<Homestay[]>([]);
   const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      const rawSlug = String(slug);
-      const fixedSlug = rawSlug.replace(/_/g, "-");
+      const fixedSlug = normalizeSlug(String(slug));
       const { data: th } = await supabase
         .from("thrills")
         .select("*")
@@ -33,16 +31,6 @@ export default function ClientPage() {
 
       if (th) {
         setThrill(th);
-        const { data: dest } = await supabase
-          .from("destinations")
-          .select("*")
-          .limit(4);
-        setAttractions(dest || []);
-        const { data: staysData } = await supabase
-          .from("homestays")
-          .select("*")
-          .limit(4);
-        setStays(staysData || []);
       }
     }
     fetchData();
@@ -171,53 +159,19 @@ export default function ClientPage() {
         </section>
       )}
 
-      {attractions.length > 0 && (
-        <section className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Nearby Attractions</h2>
-          <div className="flex gap-4 overflow-x-auto">
-            {attractions.map((a) => (
-              <div key={a.id} className="min-w-[140px] bg-white rounded-lg shadow">
-                <div className="h-24 relative">
-                  {a.image && a.image.startsWith('https') ? (
-                    <Image src={a.image} alt={a.name || "Attraction"} fill className="object-cover rounded-t-lg" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-                  )}
-                </div>
-                <div className="p-2">
-                  <p className="text-sm font-medium truncate">{a.name}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <NearbyListings
+        type="destinations"
+        filterBy="district"
+        matchValue={thrill.district}
+        title="Nearby Attractions"
+      />
 
-      {stays.length > 0 && (
-        <section className="p-4 pb-8">
-          <h2 className="text-lg font-semibold mb-2">Nearby Homestays</h2>
-          <div className="flex flex-col gap-3">
-            {stays.map((stay) => (
-              <div key={stay.id} className="flex gap-3 bg-gray-50 rounded-lg shadow p-3">
-                <div className="w-20 h-20 relative rounded-md overflow-hidden">
-                  {stay.image && stay.image.startsWith('https') ? (
-                    <Image src={stay.image} alt={stay.name || "Stay"} fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-                  )}
-                </div>
-                <div className="flex flex-col justify-center">
-                  <p className="font-semibold text-sm">{stay.name}</p>
-                  {stay.location && <p className="text-xs text-gray-500">{stay.location}</p>}
-                  {stay.pricepernight && (
-                    <p className="text-green-600 text-sm">₹{stay.pricepernight.toLocaleString()}/night</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <NearbyListings
+        type="homestays"
+        filterBy="district"
+        matchValue={thrill.district}
+        title="Nearby Homestays"
+      />
     </main>
   );
 }

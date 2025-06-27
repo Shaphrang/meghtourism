@@ -1,7 +1,7 @@
 // src/components/sections/DestinationsSection.tsx
 'use client';
 
-import { useRef, useEffect } from 'react';
+import ScrollWrapper from '../common/scrollWrapper';
 import Image from 'next/image';
 import { MapPin } from 'lucide-react';
 import Link from 'next/link';
@@ -9,27 +9,11 @@ import useSupabaseList from '@/hooks/useSupabaseList';
 import { Destination } from '@/types/destination';
 
 export default function DestinationsSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { data: destinations, loading } = useSupabaseList<Destination>('destinations', {
     sortBy: 'created_at',
     ascending: false,
     pageSize: 10,
   });
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        el.scrollLeft += e.deltaY;
-      }
-    };
-
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, []);
 
   return (
     <section className="w-full px-2 sm:px-4 mt-6">
@@ -43,10 +27,7 @@ export default function DestinationsSection() {
       {loading ? (
         <div className="text-sm text-gray-500 px-1">Loading destinations...</div>
       ) : (
-        <div
-          ref={containerRef}
-          className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2"
-        >
+        <ScrollWrapper className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2">
           {destinations.slice(0, 10).map((dest) => (
             <Link
               key={dest.id}
@@ -81,7 +62,7 @@ export default function DestinationsSection() {
               </div>
             </Link>
           ))}
-        </div>
+        </ScrollWrapper>
       )}
     </section>
   );

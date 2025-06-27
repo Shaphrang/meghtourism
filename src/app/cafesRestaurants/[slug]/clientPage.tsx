@@ -2,46 +2,30 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { CafeAndRestaurant } from "@/types/cafeRestaurants";
-import { Destination } from "@/types/destination";
-import { Homestay } from "@/types/homestay";
 import Image from "next/image";
 import { MapPin, Phone, Clock, Share2 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
+import { supabase } from "@/lib/supabaseClient";
+import { normalizeSlug } from "@/lib/utils";
+import NearbyListings from "@/components/common/nearbyListings";
 
 export default function ClientPage() {
   const { slug } = useParams();
-  const supabase = createClientComponentClient();
 
   const [cafe, setCafe] = useState<CafeAndRestaurant | null>(null);
-  const [attractions, setAttractions] = useState<Destination[]>([]);
-  const [stays, setStays] = useState<Homestay[]>([]);
 
   useEffect(() => {
     async function fetchData() {
-      const rawSlug = String(slug);
-      const fixedSlug = rawSlug.replace(/_/g, "-");
+      const fixedSlug = normalizeSlug(String(slug));
       const { data } = await supabase
         .from("cafes_and_restaurants")
         .select("*")
         .eq("slug", fixedSlug)
         .single();
       setCafe(data);
-
-      const { data: dest } = await supabase
-        .from("destinations")
-        .select("*")
-        .limit(4);
-      setAttractions(dest || []);
-
-      const { data: staysData } = await supabase
-        .from("homestays")
-        .select("*")
-        .limit(4);
-      setStays(staysData || []);
     }
 
     fetchData();
@@ -162,54 +146,19 @@ export default function ClientPage() {
         </section>
       )}
 
-      {attractions.length > 0 && (
-        <section className="px-4 pb-4">
-          <h2 className="font-semibold mb-2">Nearby Attractions</h2>
-          <div className="flex gap-3 overflow-x-auto">
-            {attractions.map((a) => (
-              <div key={a.id} className="min-w-[160px] rounded-lg shadow bg-white overflow-hidden">
-                <div className="h-24 relative bg-gray-100">
-                  {a.image ? (
-                    <Image src={a.image} alt={a.name || 'Attraction'} fill className="object-cover rounded-t-lg" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-                  )}
-                </div>
-                <div className="p-2">
-                  <p className="font-medium text-sm truncate">{a.name}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <NearbyListings
+        type="destinations"
+        filterBy="district"
+        matchValue={cafe.district}
+        title="Nearby Attractions"
+      />
 
-      {stays.length > 0 && (
-        <section className="px-4 pb-4">
-          <h2 className="font-semibold mb-2">Nearby Stays</h2>
-          <div className="flex flex-col gap-3">
-            {stays.map((stay) => (
-              <div key={stay.id} className="flex gap-3 bg-gray-50 rounded-lg p-3 shadow-sm">
-                <div className="w-20 h-20 relative bg-gray-100 rounded-md overflow-hidden">
-                  {stay.image ? (
-                    <Image src={stay.image} alt={stay.name || 'Stay'} fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-                  )}
-                </div>
-                <div>
-                  <p className="font-semibold">{stay.name}</p>
-                  {stay.location && <p className="text-sm text-gray-500">{stay.location}</p>}
-                  {stay.pricepernight && (
-                    <p className="text-green-600 font-medium">₹{stay.pricepernight.toLocaleString()}/night</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
+      <NearbyListings
+        type="homestays"
+        filterBy="district"
+        matchValue={cafe.district}
+        title="Nearby Stays"
+      />
       {Array.isArray(cafe.reviews) && cafe.reviews.length > 0 && (
         <section className="px-4 pb-4">
           <h2 className="font-semibold mb-1">Reviews</h2>

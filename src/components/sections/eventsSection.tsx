@@ -1,35 +1,18 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import ScrollWrapper from '../common/scrollWrapper';
 import Image from 'next/image';
 import Link from 'next/link';
 import useSupabaseList from '@/hooks/useSupabaseList';
 import { Event } from '@/types/event';
 
 export default function EventsSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const { data: events, loading } = useSupabaseList<Event>('events', {
     sortBy: 'created_at',
     ascending: false,
     pageSize: 10,
   });
-
-  // Enable mouse wheel horizontal scroll on desktop
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        el.scrollLeft += e.deltaY;
-      }
-    };
-
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, []);
 
   return (
     <section className="w-full px-2 sm:px-4 mt-6">
@@ -43,10 +26,7 @@ export default function EventsSection() {
       {loading ? (
         <div className="text-sm text-gray-500 px-1">Loading events...</div>
       ) : (
-        <div
-          ref={containerRef}
-          className="flex space-x-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2"
-        >
+        <ScrollWrapper className="flex space-x-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2">
           {events.slice(0, 10).map((event) => (
             <Link
               key={event.id}
@@ -85,7 +65,7 @@ export default function EventsSection() {
               </div>
             </Link>
           ))}
-        </div>
+        </ScrollWrapper>
       )}
     </section>
   );

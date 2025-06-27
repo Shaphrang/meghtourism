@@ -55,8 +55,6 @@ export default function RootLayout({
         </Script>
         {/* ✅ Global Header */}
         <Header />
-
-        <Header />
         <main className="min-h-screen pt-[var(--header-height)] pb-[var(--footer-height)]">
           {children}
         </main>

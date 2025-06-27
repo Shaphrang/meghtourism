@@ -1,7 +1,7 @@
 // src/components/sections/AccommodationsSection.tsx
 'use client';
 
-import { useRef, useEffect } from 'react';
+import ScrollWrapper from '../common/scrollWrapper';
 import Image from 'next/image';
 import { MapPin } from 'lucide-react';
 import Link from 'next/link';
@@ -9,27 +9,11 @@ import useSupabaseList from '@/hooks/useSupabaseList';
 import { Homestay } from '@/types/homestay';
 
 export default function AccommodationsSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { data: homestays, loading } = useSupabaseList<Homestay>('homestays', {
     sortBy: 'created_at',
     ascending: false,
     pageSize: 10,
   });
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        el.scrollLeft += e.deltaY;
-      }
-    };
-
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, []);
 
   return (
     <section className="w-full px-2 sm:px-4 mt-4">
@@ -43,10 +27,7 @@ export default function AccommodationsSection() {
       {loading ? (
         <div className="text-sm text-gray-500 px-1">Loading accommodations...</div>
       ) : (
-        <div
-          ref={containerRef}
-          className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2"
-        >
+        <ScrollWrapper className="flex space-x-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2">
           {homestays.slice(0, 10).map((stay) => (
             <Link
               key={stay.id}
@@ -84,7 +65,7 @@ export default function AccommodationsSection() {
               </div>
             </Link>
           ))}
-        </div>
+        </ScrollWrapper>
       )}
     </section>
   );

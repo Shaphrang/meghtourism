@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Destination } from "@/types/destination";
-import { Homestay } from "@/types/homestay";
 import { toast } from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,20 +10,18 @@ import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabaseClient";
+import { normalizeSlug } from "@/lib/utils";
+import NearbyListings from "@/components/common/nearbyListings";
 
 export default function ClientPage() {
   const { slug } = useParams();
-  const supabase = createClientComponentClient();
   const [destination, setDestination] = useState<Destination | null>(null);
-  const [homestays, setHomestays] = useState<Homestay[]>([]);
-  const [nearby, setNearby] = useState<Destination[]>([]);
   const [showFullDesc, setShowFullDesc] = useState(false);
 
 useEffect(() => {
   async function fetchData() {
-    const rawSlug = String(slug);
-    const fixedSlug = rawSlug.replace(/_/g, '-');
-    console.log("Fixed slug used for DB:", fixedSlug);
+    const fixedSlug = normalizeSlug(String(slug));
 
     const { data: dest } = await supabase
       .from('destinations')
@@ -34,19 +30,6 @@ useEffect(() => {
       .single();
 
     setDestination(dest);
-
-    const { data: related } = await supabase
-      .from('destinations')
-      .select('*')
-      .neq('id', dest?.id || '')
-      .limit(4);
-    setNearby(related || []);
-
-    const { data: stays } = await supabase
-      .from('homestays')
-      .select('*')
-      .limit(4);
-    setHomestays(stays || []);
   }
 
   fetchData();
@@ -99,54 +82,19 @@ useEffect(() => {
         </motion.div>
       )}
 
-      {/* Nearby Homestays */}
-      {homestays.length > 0 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Nearby Homestays</h2>
-          <div className="space-y-3">
-            {homestays.map((stay) => (
-              <div key={stay.id} className="bg-white rounded-xl shadow-sm p-3 flex gap-3">
-                <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
-                  {stay.image && stay.image.startsWith('https') ? (
-                    <Image src={stay.image} alt={stay.name || ""} width={96} height={96} className="object-cover w-full h-full" />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-xs text-gray-500">No Image</div>
-                  )}
-                </div>
-                <div className="flex flex-col justify-between">
-                  <h3 className="font-medium text-sm text-gray-800">{stay.name}</h3>
-                  <p className="text-xs text-gray-500 truncate">{stay.location}</p>
-                  <p className="text-xs text-emerald-600 font-semibold">₹{stay.pricepernight?.toLocaleString()}/night</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Nearby Attractions */}
-      {nearby.length > 0 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="mt-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Nearby Attractions</h2>
-          <div className="flex space-x-3 overflow-x-auto pb-1">
-            {nearby.map((n) => (
-              <div key={n.id} className="w-[160px] flex-shrink-0 bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="w-full h-24 bg-gray-100">
-                  {n.image && n.image.startsWith('https') ? (
-                    <Image src={n.image} alt={n.name || ""} width={160} height={96} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-                  )}
-                </div>
-                <div className="p-2">
-                  <h3 className="text-sm font-medium text-gray-800 truncate">{n.name}</h3>
-                  <p className="text-xs text-gray-500 truncate">{n.district}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
+      <NearbyListings
+        type="homestays"
+        filterBy="district"
+        matchValue={destination.district}
+        title="Nearby Homestays"
+      />
+        <NearbyListings
+        type="destinations"
+        filterBy="district"
+        matchValue={destination.district}
+        excludeId={destination.id}
+        title="Nearby Attractions"
+      />
 
       {/* Contact Form */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="mt-8">

@@ -2,22 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Blog } from "@/types/blogs";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
+import { supabase } from "@/lib/supabaseClient";
+import { normalizeSlug } from "@/lib/utils"
 
 export default function ClientPage() {
   const { slug } = useParams();
-  const supabase = createClientComponentClient();
   const [blog, setBlog] = useState<Blog | null>(null);
 
   useEffect(() => {
     async function fetchData() {
-      const rawSlug = String(slug);
-      const fixedSlug = rawSlug.replace(/_/g, "-");
+      const fixedSlug = normalizeSlug(String(slug));
       const { data } = await supabase
         .from("blogs")
         .select("*")

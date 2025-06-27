@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Itinerary } from "@/types/itineraries";
 import { Destination } from "@/types/destination";
 import { Homestay } from "@/types/homestay";
@@ -11,20 +10,19 @@ import { ChevronDown, ChevronUp, Share2 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
+import { supabase } from "@/lib/supabaseClient";
+import { normalizeSlug } from "@/lib/utils";
+import NearbyListings from "@/components/common/nearbyListings";
 
 export default function ClientPage() {
   const { slug } = useParams();
-  const supabase = createClientComponentClient();
 
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
-  const [attractions, setAttractions] = useState<Destination[]>([]);
-  const [stays, setStays] = useState<Homestay[]>([]);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchData() {
-      const rawSlug = String(slug);
-      const fixedSlug = rawSlug.replace(/_/g, "-");
+      const fixedSlug = normalizeSlug(String(slug));
       const { data: itin } = await supabase
         .from("itineraries")
         .select("*")
@@ -32,16 +30,6 @@ export default function ClientPage() {
         .single();
       if (itin) {
         setItinerary(itin);
-        const { data: dest } = await supabase
-          .from("destinations")
-          .select("*")
-          .limit(4);
-        setAttractions(dest || []);
-        const { data: homes } = await supabase
-          .from("homestays")
-          .select("*")
-          .limit(4);
-        setStays(homes || []);
       }
     }
     fetchData();
@@ -138,51 +126,18 @@ export default function ClientPage() {
         </section>
       ) : null}
 
-      {attractions.length > 0 && (
-        <section className="p-4">
-          <h3 className="text-base font-semibold mb-2">Nearby Attractions</h3>
-          <div className="flex gap-3 overflow-x-auto">
-            {attractions.map((a) => (
-              <div key={a.id} className="min-w-[150px] rounded-xl shadow overflow-hidden">
-                <div className="relative w-full h-24">
-                  {a.image && a.image.startsWith('https') ? (
-                    <Image src={a.image} alt={a.name || 'Attraction'} fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-400">No image</div>
-                  )}
-                </div>
-                <p className="p-2 text-sm font-medium truncate">{a.name}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {stays.length > 0 && (
-        <section className="p-4">
-          <h3 className="text-base font-semibold mb-2">Nearby Stays</h3>
-          <div className="flex flex-col gap-3">
-            {stays.map((stay) => (
-              <div key={stay.id} className="flex gap-3 bg-gray-50 rounded-lg p-3 shadow-sm">
-                <div className="relative w-20 h-20 rounded-md overflow-hidden bg-gray-100">
-                  {stay.image && stay.image.startsWith('https') ? (
-                    <Image src={stay.image} alt={stay.name || 'Stay'} fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-                  )}
-                </div>
-                <div>
-                  <p className="font-semibold">{stay.name}</p>
-                  {stay.location && <p className="text-sm text-gray-500 truncate">{stay.location}</p>}
-                  {stay.pricepernight && (
-                    <p className="text-green-600 text-sm">₹{stay.pricepernight.toLocaleString()}/night</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <NearbyListings
+        type="destinations"
+        filterBy="district"
+        matchValue={itinerary.district}
+        title="Nearby Attractions"
+      />
+      <NearbyListings
+        type="homestays"
+        filterBy="district"
+        matchValue={itinerary.district}
+        title="Nearby Stays"
+      />
 
       {Array.isArray((itinerary as any).reviews) && (itinerary as any).reviews.length > 0 && (
         <section className="p-4">
