@@ -7,20 +7,20 @@ import HorizontalScroll from './horizontalScroll';
 
 interface Props {
   type: string; // table name
-  filterBy: string; // column to match
-  matchValue: string | number | null;
+  location: string | null;
   excludeId?: string;
+  limit?: number;
   title?: string;
 }
 
 export default function NearbyListings<T>({
   type,
-  filterBy,
-  matchValue,
+  location,
   excludeId,
+  limit,
   title,
 }: Props) {
-  const { data, loading } = useSupabaseNearby<T>(type, filterBy, matchValue, excludeId);
+  const { data, loading } = useSupabaseNearby<T>(type, location, excludeId, limit);
 
   if (loading) {
     return <p className="text-sm text-gray-500 px-2">Loading {title || 'items'}...</p>;

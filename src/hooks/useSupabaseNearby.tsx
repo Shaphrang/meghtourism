@@ -3,8 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 
 export default function useSupabaseNearby<T>(
   table: string,
-  filterBy: string,
-  matchValue: string | number | null,
+  location: string | null,
   excludeId?: string,
   limit = 4
 ) {
@@ -13,7 +12,7 @@ export default function useSupabaseNearby<T>(
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!matchValue) {
+    if (!location) {
       setData([]);
       setLoading(false);
       return;
@@ -21,9 +20,9 @@ export default function useSupabaseNearby<T>(
 
     const fetchData = async () => {
       setLoading(true);
-      let query = supabase.from(table).select("*").eq(filterBy, matchValue);
+      let query = supabase.from(table).select("*").eq("location", location);
       if (excludeId) {
-        query = query.neq("id", excludeId);
+        query = query.neq("id", excludeId).neq("slug", excludeId);
       }
       const { data, error } = await query.limit(limit);
       if (error) {
@@ -36,7 +35,7 @@ export default function useSupabaseNearby<T>(
     };
 
     fetchData();
-  }, [table, filterBy, matchValue, excludeId, limit]);
+  }, [table, location, excludeId, limit]);
 
   return { data, loading, error };
 }

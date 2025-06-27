@@ -148,15 +148,13 @@ export default function ClientPage() {
 
       <NearbyListings
         type="destinations"
-        filterBy="district"
-        matchValue={cafe.district}
+        location={cafe.location}
         title="Nearby Attractions"
       />
 
       <NearbyListings
         type="homestays"
-        filterBy="district"
-        matchValue={cafe.district}
+        location={cafe.location}
         title="Nearby Stays"
       />
       {Array.isArray(cafe.reviews) && cafe.reviews.length > 0 && (

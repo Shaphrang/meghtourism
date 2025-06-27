@@ -126,18 +126,16 @@ export default function ClientPage() {
         </section>
       ) : null}
 
-      <NearbyListings
+      {/*<NearbyListings
         type="destinations"
-        filterBy="district"
-        matchValue={itinerary.district}
+        location={itinerary.location}
         title="Nearby Attractions"
       />
       <NearbyListings
         type="homestays"
-        filterBy="district"
-        matchValue={itinerary.district}
+        location={itinerary.location}
         title="Nearby Stays"
-      />
+      />*/}
 
       {Array.isArray((itinerary as any).reviews) && (itinerary as any).reviews.length > 0 && (
         <section className="p-4">

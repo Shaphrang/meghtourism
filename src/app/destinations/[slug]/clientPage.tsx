@@ -84,14 +84,12 @@ useEffect(() => {
 
       <NearbyListings
         type="homestays"
-        filterBy="district"
-        matchValue={destination.district}
+        location={destination.location}
         title="Nearby Homestays"
       />
         <NearbyListings
         type="destinations"
-        filterBy="district"
-        matchValue={destination.district}
+        location={destination.location}
         excludeId={destination.id}
         title="Nearby Attractions"
       />

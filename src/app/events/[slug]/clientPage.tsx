@@ -105,14 +105,12 @@ export default function ClientPage() {
 
       <NearbyListings
         type="destinations"
-        filterBy="district"
-        matchValue={event.district}
+        location={event.location ?? null}
         title="Nearby Attractions"
       />
-            <NearbyListings
+      <NearbyListings
         type="homestays"
-        filterBy="district"
-        matchValue={event.district}
+        location={event.location ?? null}
         title="Nearby Homestays"
       />
 
