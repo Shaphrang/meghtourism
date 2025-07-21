@@ -8,6 +8,7 @@ import EventsSection from '@/components/sections/eventsSection';
 import ThrillsSection from '@/components/sections/thrillsSection';
 import CafesSection from '@/components/sections/cafesRestaurantsSection';
 import BlogsSection from '@/components/sections/blogsSection';
+import ItinerariesSection from '@/components/sections/itinerariesSection';
 
 export default function HomePage() {
   return (
@@ -44,6 +45,11 @@ export default function HomePage() {
       {/* Cafes */}
       <section className="mt-4">
         <CafesSection />
+      </section>
+
+      {/* Itineraries */}
+      <section className="mt-4">
+        <ItinerariesSection />
       </section>
 
       {/* Blogs */}

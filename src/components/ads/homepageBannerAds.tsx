@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import useFilteredList from '@/hooks/useFilteredList'
 import { cn } from '@/lib/utils'
+import { MapPin } from 'lucide-react';
 
 /**
  * Supported ad categories for the homepage banner component.
@@ -47,12 +48,12 @@ const categoryConfig: Record<
         </div>
         <div className="flex flex-col flex-1 p-2">
           <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
-          {item.location && <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.location}</p>}
-          <div className="mt-auto pt-1">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/destinations/${item.slug ?? item.id}`}>Learn More</Link>
-            </Button>
-          </div>
+          {item.location && (
+              <p className="text-xs text-gray-600 mt-1 line-clamp-2 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                {item.location}
+              </p>
+            )}
         </div>
       </div>
     ),
@@ -70,15 +71,15 @@ const categoryConfig: Record<
         </div>
         <div className="flex flex-col flex-1 p-2">
           <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
-          {item.location && <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.location}</p>}
+          {item.location && (
+              <p className="text-xs text-gray-600 mt-1 line-clamp-2 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                {item.location}
+              </p>
+            )}
           {item.pricepernight && (
             <p className="text-xs text-emerald-600 mt-1">₹{item.pricepernight.toLocaleString()}/night</p>
           )}
-          <div className="mt-auto pt-1">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/homestays/${item.slug ?? item.id}`}>Learn More</Link>
-            </Button>
-          </div>
         </div>
       </div>
     ),
@@ -103,11 +104,6 @@ const categoryConfig: Record<
               {new Date(item.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
             </p>
           )}
-          <div className="mt-1">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/events/${item.slug ?? item.id}`}>Learn More</Link>
-            </Button>
-          </div>
         </div>
       </div>
     ),
@@ -125,15 +121,15 @@ const categoryConfig: Record<
         </div>
         <div className="flex flex-col flex-1 p-2">
           <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
-          {item.location && <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.location}</p>}
+          {item.location && (
+            <p className="text-xs text-gray-600 mt-1 line-clamp-2 flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+              {item.location}
+            </p>
+          )}
           {item.priceperperson && (
             <p className="text-xs text-emerald-600 mt-1">₹{item.priceperperson.toLocaleString()} per person</p>
           )}
-          <div className="mt-auto pt-1">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/thrills/${item.slug ?? item.id}`}>Learn More</Link>
-            </Button>
-          </div>
         </div>
       </div>
     ),
@@ -188,11 +184,6 @@ const categoryConfig: Record<
           {item.estimated_cost?.min && (
             <p className="text-xs text-emerald-600 mt-1">₹{item.estimated_cost.min.toLocaleString()}</p>
           )}
-          <div className="mt-auto pt-1">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/itineraries/${item.slug ?? item.id}`}>Learn More</Link>
-            </Button>
-          </div>
         </div>
       </div>
     ),
@@ -206,8 +197,8 @@ function useHomepageAds(category: HomepageAdCategory) {
   const config = categoryConfig[category]
   const { data, loading } = useFilteredList<any>(config.table, {
     filters: [
-      { field: 'adSlot', op: 'eq', value: 'homepage' },
-      { field: 'adActive', op: 'eq', value: true },
+      { field: 'adslot', op: 'eq', value: 'homepage' },
+      { field: 'adactive', op: 'eq', value: true },
     ],
     sort: { field: 'created_at', ascending: false },
     pageSize: 10,

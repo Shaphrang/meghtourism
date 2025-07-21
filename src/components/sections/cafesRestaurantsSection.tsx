@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import useSupabaseList from '@/hooks/useSupabaseList';
 import { CafeAndRestaurant } from '@/types/cafeRestaurants';
+import HomepageBannerAds from '../ads/homepageBannerAds';
+
 
 export default function CafesSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -100,6 +102,7 @@ export default function CafesSection() {
           ))}
         </div>
       )}
+      <HomepageBannerAds category="cafesRestaurants" className="mt-2" />
     </section>
   );
 }
