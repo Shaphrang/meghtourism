@@ -230,8 +230,14 @@ export default function HomepageBannerAds({ category, className }: BannerProps) 
     return <p className="text-sm text-gray-500 px-2">No Data available.</p>
   }
 
+    const containerClasses =
+    category === 'cafesRestaurants'
+      ? 'flex flex-col gap-3'
+      : 'flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2'
+
+
   return (
-    <div className={cn('flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2', className)}>
+    <div className={cn(containerClasses, className)}>
       {data.map((item) => (
         <Card key={item.id} item={item} />
       ))}
