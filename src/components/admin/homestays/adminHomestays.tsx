@@ -28,6 +28,21 @@ export default function AdminHomestays() {
     fetchHomestays();
   }, [search, locationFilter]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-homestays')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'homestays' },
+        () => fetchHomestays()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const openAddModal = () => {
     setEditingHomestay(null);
     setShowModal(true);

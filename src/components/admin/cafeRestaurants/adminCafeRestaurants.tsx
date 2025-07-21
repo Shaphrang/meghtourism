@@ -37,6 +37,21 @@ export default function AdminCafeRestaurants() {
     fetchItems();
   }, [search, locationFilter]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-cafes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'cafes_and_restaurants' },
+        () => fetchItems()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const openAddModal = () => {
     console.log('Opening add modal');
     setEditing(null);

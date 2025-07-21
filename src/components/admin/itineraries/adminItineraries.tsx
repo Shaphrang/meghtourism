@@ -28,6 +28,21 @@ export default function AdminItineraries() {
     fetchItineraries();
   }, [search, locationFilter]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-itineraries')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'itineraries' },
+        () => fetchItineraries()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const openAddModal = () => {
     setEditing(null);
     setShowModal(true);

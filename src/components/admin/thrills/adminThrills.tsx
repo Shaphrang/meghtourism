@@ -28,6 +28,21 @@ export default function AdminThrills() {
     fetchThrills();
   }, [search, locationFilter]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-thrills')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'thrills' },
+        () => fetchThrills()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const openAddModal = () => {
     setEditingThrill(null);
     setShowModal(true);

@@ -25,6 +25,21 @@ export default function AdminTravelTips() {
     fetchTips();
   }, []);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-traveltips')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'traveltips' },
+        () => fetchTips()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const openAddModal = () => {
     setEditingTip(null);
     setShowModal(true);

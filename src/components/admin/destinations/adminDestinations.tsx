@@ -28,6 +28,22 @@ export default function AdminDestinations() {
     fetchDestinations();
   }, [search, locationFilter]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-destinations')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'destinations' },
+        () => fetchDestinations()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+
   const openAddModal = () => {
     setEditingDestination(null);
     setShowModal(true);

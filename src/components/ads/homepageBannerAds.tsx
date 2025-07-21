@@ -238,9 +238,22 @@ export default function HomepageBannerAds({ category, className }: BannerProps) 
 
   return (
     <div className={cn(containerClasses, className)}>
-      {data.map((item) => (
-        <Card key={item.id} item={item} />
-      ))}
+      {data.map((item) => {
+        const slug = item.slug ?? item.id
+        const hrefMap: Record<HomepageAdCategory, string> = {
+          destinations: `/destinations/${slug}`,
+          homestays: `/homestays/${slug}`,
+          events: `/events/${slug}`,
+          thrills: `/thrills/${slug}`,
+          cafesRestaurants: `/cafesRestaurants/${slug}`,
+          itineraries: `/itineraries/${slug}`,
+        }
+        return (
+          <Link key={item.id} href={hrefMap[category]} className="shrink-0">
+            <Card item={item} />
+          </Link>
+        )
+      })}
     </div>
   )
 }

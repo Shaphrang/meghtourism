@@ -25,6 +25,21 @@ export default function AdminFaqs() {
     fetchFaqs();
   }, []);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-faqs')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'prebuilt_faqs' },
+        () => fetchFaqs()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const openAddModal = () => {
     setEditing(null);
     setShowModal(true);

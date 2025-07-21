@@ -25,6 +25,21 @@ export default function AdminRentals() {
     fetchRentals();
   }, []);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-rentals')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'rentals' },
+        () => fetchRentals()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const openAddModal = () => {
     setEditing(null);
     setShowModal(true);

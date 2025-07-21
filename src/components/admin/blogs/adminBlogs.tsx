@@ -25,6 +25,22 @@ export default function AdminBlogs() {
     fetchBlogs();
   }, []);
 
+    useEffect(() => {
+    const channel = supabase
+      .channel('admin-blogs')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'blogs' },
+        () => fetchBlogs()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+
   const openAddModal = () => {
     setEditingBlog(null);
     setShowModal(true);

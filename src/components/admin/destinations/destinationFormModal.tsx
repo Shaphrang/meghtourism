@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { generateSlug } from '@/lib/generateSlug';
 import { Dialog } from '@headlessui/react';
@@ -18,8 +18,7 @@ interface Props {
 
 export default function DestinationFormModal({ initialData, onClose, onSave }: Props) {
   const isEditMode = !!initialData;
-  const [form, setForm] = useState(
-    initialData || {
+  const createDefaultForm = () => ({
       id: uuidv4(),
       name: '',
       description: '',
@@ -49,8 +48,25 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
       warnings: [],
       adSlot: 'none',
       adActive: false,
-    }
-  );
+    });
+
+  const mapInitialData = (data: any) => {
+    if (!data) return createDefaultForm();
+    const { adslot, adactive, ...rest } = data;
+    return {
+      ...createDefaultForm(),
+      ...rest,
+      id: data.id,
+      adSlot: adslot ?? 'none',
+      adActive: adactive ?? false,
+    };
+  };
+
+  const [form, setForm] = useState(() => mapInitialData(initialData));
+
+  useEffect(() => {
+    setForm(mapInitialData(initialData));
+  }, [initialData]);
 
   const handleChange = (field: string, value: any) => {
     setForm((prev: any) => ({ ...prev, [field]: value }));
