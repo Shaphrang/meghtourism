@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import useFilteredList from '@/hooks/useFilteredList'
 import { cn } from '@/lib/utils'
-import { MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react'
+import { useState } from 'react'
 
 /**
  * Supported ad categories for the homepage banner component.
@@ -136,32 +137,45 @@ const categoryConfig: Record<
   },
   cafesRestaurants: {
     table: 'cafes_and_restaurants',
-    Card: ({ item }) => (
-      <div className="flex gap-3 bg-white rounded-xl shadow-md overflow-hidden p-2 flex-shrink-0">
-        <div className="relative w-[100px] h-[100px] flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-          {item.image ? (
-            <Image src={item.image} alt={item.name || 'Cafe'} fill sizes="100px" className="object-cover" />
-          ) : (
-            <div className="flex items-center justify-center h-full text-sm text-gray-400">No Image</div>
-          )}
-        </div>
-        <div className="flex flex-col justify-between py-1 pr-1">
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
-            {item.description && (
-              <p className="text-xs text-gray-600">{item.description}</p>
+    Card: ({ item }) => {
+      const [expanded, setExpanded] = useState(false)
+      return (
+        <div className="flex gap-3 bg-white rounded-xl shadow-md overflow-hidden p-2 flex-shrink-0">
+          <div className="relative w-[100px] h-[100px] flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+            {item.image ? (
+              <Image src={item.image} alt={item.name || 'Cafe'} fill sizes="100px" className="object-cover" />
+            ) : (
+              <div className="flex items-center justify-center h-full text-sm text-gray-400">No Image</div>
             )}
-            <p className="text-xs text-gray-500 mt-1 flex items-center">
-              <MapPin size={12} className="mr-1" />
-              {item.location}
-            </p>
           </div>
-          <div className="text-xs text-gray-500 mt-1">
-            {(item.cuisine?.length ? item.cuisine.join(', ') : 'No cuisine')} • {item.type} • ⭐ {item.ratings ?? 'N/A'}
+          <div className="flex flex-col justify-between py-1 pr-1">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
+              <p className="text-xs text-gray-600">
+                {expanded
+                  ? item.description
+                  : `${item.description?.slice(0, 100)}${item.description && item.description.length > 100 ? '...' : ''}`}
+                {item.description && item.description.length > 100 && (
+                  <button
+                    onClick={() => setExpanded(!expanded)}
+                    className="ml-1 text-emerald-600 text-[11px] font-medium"
+                  >
+                    {expanded ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </p>
+              <p className="text-xs text-gray-500 mt-1 flex items-center">
+                <MapPin size={12} className="mr-1" />
+                {item.location}
+              </p>
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {(item.cuisine?.length ? item.cuisine.join(', ') : 'No cuisine')} • {item.type} • ⭐ {item.ratings ?? 'N/A'}
+            </div>
           </div>
         </div>
-      </div>
-    ),
+      )
+    },
   },
   itineraries: {
     table: 'itineraries',
@@ -210,10 +224,10 @@ export default function HomepageBannerAds({ category, className }: BannerProps) 
   const { data, loading, Card } = useHomepageAds(category)
 
   if (loading) {
-    return <p className="text-sm text-gray-500 px-2">Loading ads...</p>
+    return <p className="text-sm text-gray-500 px-2">Loading Data...</p>
   }
   if (!data.length) {
-    return <p className="text-sm text-gray-500 px-2">No ads available.</p>
+    return <p className="text-sm text-gray-500 px-2">No Data available.</p>
   }
 
   return (
