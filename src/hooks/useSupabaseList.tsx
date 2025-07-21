@@ -3,7 +3,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 interface Options {
   search?: string;
-  filter?: { field: string; value: string };
+  filter?: { field: string; value: any } | null; // ✅ updated
   sortBy?: string;
   ascending?: boolean;
   page?: number;
@@ -44,7 +44,14 @@ export default function useSupabaseList<T>(table: string, options: Options = {})
       let query = supabase.from(table).select('*', { count: 'exact' });
 
       if (search) query = query.ilike('name', `%${search}%`);
-      if (filter) query = query.eq(filter.field, filter.value);
+      if (filter && filter.value != null && filter.value !== "") {
+        if (filter.field === "tags") {
+          query = query.contains("tags", [filter.value]);
+        } else {
+          query = query.eq(filter.field, filter.value);
+        }
+      }
+
       if (sortBy) query = query.order(sortBy, { ascending });
 
       const from = (page - 1) * pageSize;
@@ -55,7 +62,6 @@ export default function useSupabaseList<T>(table: string, options: Options = {})
 
         console.log(`📦 [${table}] fetched rows:`, data);
         console.log(`🧮 [${table}] total count:`, count);
-        console.log(`🔑 Supabase URL:`, supabaseUrl);
         console.log(`❌ Supabase error:`, error);
 
         if (error) {
@@ -66,6 +72,7 @@ export default function useSupabaseList<T>(table: string, options: Options = {})
           if (typeof count === 'number') {
             setTotalCount(count);
           }
+          setError(null);
         }
       } catch (err: any) {
         console.error(`❌ Supabase range error for [${table}]`, err);

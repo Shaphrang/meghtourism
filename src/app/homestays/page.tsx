@@ -3,24 +3,42 @@
 import { useEffect, useRef, useState, Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Filter,
-  MapPin,
-  SlidersHorizontal,
-  SortAsc,
-} from "lucide-react";
+import { MapPin, SlidersHorizontal, XCircle } from "lucide-react";
 import useSupabaseList from "@/hooks/useSupabaseList";
 import { Homestay } from "@/types/homestay";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function HomestayListingPage() {
-    const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
   const [items, setItems] = useState<Homestay[]>([]);
+  const [filter, setFilter] = useState<{ field: string; value: any } | null>(null);
+  const [activeFilterType, setActiveFilterType] = useState<"location" | "price" | null>(null);
+
+  const [locations, setLocations] = useState<string[]>([]);
+
+  const supabase = createClientComponentClient();
+
+  // Fetch unique locations
+  useEffect(() => {
+    const fetchLocations = async () => {
+      const { data } = await supabase.from("homestays").select("location");
+      const locSet = new Set<string>();
+      data?.forEach((item) => {
+        if (item?.location && item.location !== "") locSet.add(item.location);
+      });
+      setLocations([...locSet].sort());
+    };
+    fetchLocations();
+  }, []);
+
   const { data, totalCount, loading } = useSupabaseList<Homestay>("homestays", {
+    filter,
     sortBy: "created_at",
     ascending: false,
     page,
     pageSize: 6,
   });
+
   const { data: popular } = useSupabaseList<Homestay>("homestays", {
     sortBy: "ratings",
     ascending: false,
@@ -47,6 +65,18 @@ export default function HomestayListingPage() {
     return () => observer.disconnect();
   }, [items, loading, totalCount]);
 
+  const handleSelectValue = (field: string, value: any) => {
+    setFilter({ field, value });
+    setPage(1);
+    setActiveFilterType(null);
+  };
+
+  const resetFilter = () => {
+    setFilter(null);
+    setActiveFilterType(null);
+    setPage(1);
+  };
+
   return (
     <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden">
       {/* Hero Section */}
@@ -57,18 +87,73 @@ export default function HomestayListingPage() {
         <p className="text-sm text-gray-700 mt-1">Explore cozy and affordable stays across the state</p>
       </section>
 
-      {/* Action Bar */}
-      <section className="bg-white shadow-md border-b">
-        <div className="flex justify-center gap-6 px-4 py-3">
-          <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-800 font-medium text-sm shadow">
-            <SortAsc size={16} /> Sort
+      {/* Filter Bar */}
+      <section className="bg-white shadow-md border-b px-4 py-4">
+        <div className="flex flex-wrap justify-center gap-2">
+          <button
+            onClick={() => setActiveFilterType(activeFilterType === "location" ? null : "location")}
+            className={`flex flex-col items-center px-3 py-2 rounded-full ${filter?.field === "location" ? "bg-blue-500 text-white" : "bg-blue-100 text-blue-800"} font-medium text-sm shadow transition`}
+          >
+            <MapPin size={18} />
+            <span>Location</span>
+            {filter?.field === "location" && <span className="text-xs mt-1">{filter.value}</span>}
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-800 font-medium text-sm shadow">
-            <SlidersHorizontal size={16} /> Price
+
+          <button
+            onClick={() => setActiveFilterType(activeFilterType === "price" ? null : "price")}
+            className={`flex flex-col items-center px-3 py-2 rounded-full ${filter?.field === "price" ? "bg-green-500 text-white" : "bg-green-100 text-green-800"} font-medium text-sm shadow transition`}
+          >
+            <SlidersHorizontal size={18} />
+            <span>Price</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-100 text-yellow-800 font-medium text-sm shadow">
-            <Filter size={16} /> Location
+
+          <button
+            onClick={resetFilter}
+            className="flex flex-col items-center px-3 py-2 rounded-full bg-gray-200 text-gray-700 font-medium text-sm shadow transition"
+          >
+            <XCircle size={18} />
+            <span>Reset</span>
           </button>
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-2 mt-3">
+          {activeFilterType === "location" && locations.map((loc) => (
+            <button
+              key={loc}
+              onClick={() => handleSelectValue("location", loc)}
+              className="px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-sm hover:bg-blue-100 transition"
+            >
+              {loc}
+            </button>
+          ))}
+          {activeFilterType === "price" && (
+            <>
+              <button
+                onClick={() => handleSelectValue("price", "<1000")}
+                className="px-3 py-1 rounded-full bg-green-50 text-green-800 text-sm hover:bg-green-100 transition"
+              >
+                Below ₹1,000
+              </button>
+              <button
+                onClick={() => handleSelectValue("price", "1000-2000")}
+                className="px-3 py-1 rounded-full bg-green-50 text-green-800 text-sm hover:bg-green-100 transition"
+              >
+                ₹1,000 – ₹2,000
+              </button>
+              <button
+                onClick={() => handleSelectValue("price", "2000-4000")}
+                className="px-3 py-1 rounded-full bg-green-50 text-green-800 text-sm hover:bg-green-100 transition"
+              >
+                ₹2,000 – ₹4,000
+              </button>
+              <button
+                onClick={() => handleSelectValue("price", ">4000")}
+                className="px-3 py-1 rounded-full bg-green-50 text-green-800 text-sm hover:bg-green-100 transition"
+              >
+                Above ₹4,000
+              </button>
+            </>
+          )}
         </div>
       </section>
 
@@ -80,10 +165,10 @@ export default function HomestayListingPage() {
             <Link
               key={stay.id}
               href={`/homestays/${stay.slug}`}
-              className="min-w-[160px] bg-white rounded-xl shadow-sm overflow-hidden"
+              className="min-w-[160px] bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all"
             >
               <div className="h-24 relative bg-gray-100">
-                {stay.image && stay.image.startsWith('https') ? (
+                {stay.image && stay.image.startsWith("https") ? (
                   <Image src={stay.image} alt={stay.name || "Stay"} fill className="object-cover" />
                 ) : (
                   <div className="flex items-center justify-center h-full text-xs text-gray-400">
@@ -95,7 +180,7 @@ export default function HomestayListingPage() {
                 <p className="text-sm font-semibold truncate">{stay.name}</p>
                 {stay.location && <p className="text-xs text-gray-500 truncate">{stay.location}</p>}
               </div>
-              </Link>
+            </Link>
           ))}
         </div>
       </section>
@@ -108,10 +193,10 @@ export default function HomestayListingPage() {
             <Link
               key={stay.id}
               href={`/homestays/${stay.slug}`}
-              className="bg-gray-50 rounded-xl shadow-md overflow-hidden"
+              className="bg-gray-50 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all"
             >
               <div className="relative w-full h-40 bg-gray-100">
-                {stay.image && stay.image.startsWith('https') ? (
+                {stay.image && stay.image.startsWith("https") ? (
                   <Image src={stay.image} alt={stay.name || "Stay"} fill className="object-cover" />
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-400 text-xs">

@@ -1,25 +1,32 @@
-// src/app/destinations/page.tsx
 "use client";
 
 import { useEffect, useRef, useState, Fragment } from "react";
-import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { Destination } from "@/types/destination";
-import useSupabaseList from "@/hooks/useSupabaseList";
 import { MapPin } from "lucide-react";
-import CarouselBanner from "@/components/common/carouselBanner"; // Adjust this path as needed
+import useSupabaseList from "@/hooks/useSupabaseList";
+import { Destination } from "@/types/destination";
+import CarouselBanner from "@/components/common/carouselBanner";
+import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
 
 export default function DestinationsListingPage() {
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState({ district: "", tag: "" });
   const [items, setItems] = useState<Destination[]>([]);
+  const [filter, setFilter] = useState<{ field: string; value: any } | null>(null);
+
   const { data, totalCount, loading } = useSupabaseList<Destination>("destinations", {
+    filter,
     sortBy: "created_at",
     ascending: false,
     page,
+    pageSize: 8,
+  });
+
+  const { data: featured } = useSupabaseList<Destination>("destinations", {
+    sortBy: "rating",
+    ascending: false,
+    page: 1,
     pageSize: 10,
-    filter: filters.district ? { field: "district", value: filters.district } : undefined,
   });
 
   const observerRef = useRef<HTMLDivElement>(null);
@@ -42,80 +49,115 @@ export default function DestinationsListingPage() {
     return () => observer.disconnect();
   }, [items, loading, totalCount]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
-
   return (
-    <main className="px-4 py-6">
-      <Head>
-        <title>Explore Destinations in Meghalaya | Meghtourism</title>
-        <meta name="description" content="Discover beautiful destinations in Meghalaya. Filter by district or tags and explore more." />
-      </Head>
-
+    <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden">
       {/* Hero */}
-      <div className="mb-4">
-        <h1 className="text-xl font-bold text-gray-800">All Destinations</h1>
-        <p className="text-sm text-gray-600">Browse all popular and offbeat destinations across Meghalaya</p>
-      </div>
+      <section className="bg-gradient-to-br from-green-100 to-teal-100 p-6 text-center">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-800">
+          Explore Meghalaya's Destinations
+        </h1>
+        <p className="text-sm text-gray-700 mt-1">
+          Discover beautiful places, hidden gems, and local favorites
+        </p>
+      </section>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <select
-          value={filters.district}
-          onChange={(e) => setFilters({ ...filters, district: e.target.value })}
-          className="border border-gray-300 rounded px-2 py-1 text-sm"
-        >
-          <option value="">All Districts</option>
-          <option value="East Khasi Hills">East Khasi Hills</option>
-          <option value="West Jaintia Hills">West Jaintia Hills</option>
-          <option value="Ri-Bhoi">Ri-Bhoi</option>
-          {/* Add more districts as needed */}
-        </select>
-      </div>
+      {/* Filter Component */}
+      <DynamicFilterComponent
+        table="destinations"
+        filtersConfig={[
+          { type: "location" },
+          { type: "district" },
+          { type: "tags" },
+        ]}
+        onFilterChange={(newFilter) => {
+          setFilter(newFilter);
+          setPage(1);
+        }}
+      />
 
-      {/* List/Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {items.map((dest, index) => (
-          <Fragment key={dest.id}>
+      {/* Featured Destinations */}
+      <section className="p-4">
+        <h2 className="text-lg font-semibold mb-2">Featured Destinations</h2>
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          {featured?.map((dest) => (
             <Link
-              href={`/destinations/${dest.id}`}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300"
+              key={dest.id}
+              href={`/destinations/${dest.slug ?? dest.id}`}
+              className="group min-w-[160px] max-w-[180px] bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] flex-shrink-0"
             >
-              <div className="w-full h-32 bg-gray-100">
-                {dest.image && dest.image.startsWith('https') ? (
-                  <Image src={dest.image} alt={dest.name || "Destination"} width={400} height={150} className="w-full h-full object-cover" />
+              <div className="relative w-full aspect-square bg-gray-100">
+                {dest.image && dest.image.startsWith("https") ? (
+                  <>
+                    <Image src={dest.image} alt={dest.name ?? "Destination image"} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                  </>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-sm text-gray-400">No image</div>
+                  <div className="flex items-center justify-center h-full text-xs text-gray-400">No image</div>
                 )}
               </div>
-              <div className="p-2">
+              <div className="p-3">
                 <h3 className="text-sm font-semibold text-gray-800 truncate">{dest.name}</h3>
-                {dest.location && (
+                <p className="text-xs text-gray-500 truncate">{dest.location}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* All Destinations */}
+      <section className="p-4">
+        <h2 className="text-lg font-semibold mb-2">All Destinations</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {items.map((dest, index) => (
+            <Fragment key={dest.id}>
+              <Link
+                href={`/destinations/${dest.slug ?? dest.id}`}
+                className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] flex flex-col"
+              >
+                <div className="relative w-full aspect-square bg-gray-100">
+                  {dest.image && dest.image.startsWith("https") ? (
+                    <>
+                      <Image src={dest.image} alt={dest.name ?? "Destination image"} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    </>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-xs text-gray-400">No image</div>
+                  )}
+                </div>
+                <div className="p-3 flex flex-col flex-grow">
+                  <h3 className="text-sm font-semibold text-gray-800 truncate">{dest.name}</h3>
                   <p className="text-xs text-gray-500 flex items-center truncate">
                     <MapPin size={12} className="mr-1" /> {dest.location}
                   </p>
-                )}
-              </div>
-            </Link>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {dest.tags && Array.isArray(dest.tags) && dest.tags.slice(0, 2).map((tag) => (
+                      <span
+                        key={tag}
+                        className="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </Link>
 
-            {(index + 1) % 8 === 0 && (
-              <div key={`ad-${index}`} className="col-span-full">
-                <CarouselBanner />
-              </div>
-            )}
-          </Fragment>
-        ))}
-      </div>
+              {(index + 1) % 8 === 0 && (
+                <div key={`ad-${index}`} className="col-span-2">
+                  <CarouselBanner />
+                </div>
+              )}
+            </Fragment>
+          ))}
+        </div>
 
-      {/* Loader / End */}
-      <div ref={observerRef} className="mt-6 text-center">
-        {loading ? (
-          <p className="text-sm text-gray-500">Loading more destinations...</p>
-        ) : items.length >= (totalCount ?? 0) ? (
-          <p className="text-sm text-gray-400">No more destinations.</p>
-        ) : null}
-      </div>
+        <div ref={observerRef} className="text-center mt-4">
+          {loading && <p className="text-sm text-gray-500">Loading...</p>}
+          {items.length >= (totalCount ?? 0) && !loading && (
+            <p className="text-sm text-gray-400">No more destinations.</p>
+          )}
+        </div>
+      </section>
     </main>
   );
 }
