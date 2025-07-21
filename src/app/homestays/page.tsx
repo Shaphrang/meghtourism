@@ -58,9 +58,6 @@ export default function HomestayListingPage() {
         <p className="text-sm text-gray-700 mt-1">Explore cozy and affordable stays across the state</p>
       </section>
 
-      {/* Featured Ads */}
-      <FeaturedBannerAds category="homestays" className="px-4 mt-4" />
-
       {/* Filter Bar */}
       <DynamicFilterComponent
         table="homestays"
@@ -74,32 +71,10 @@ export default function HomestayListingPage() {
         }}
       />
 
-      {/* Popular Stays */}
+      {/* Featured Ads */}
       <section className="p-4">
         <h2 className="text-lg font-semibold mb-2">Popular Stays</h2>
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {popular.slice(0, 10).map((stay) => (
-            <Link
-              key={stay.id}
-              href={`/homestays/${stay.slug}`}
-              className="min-w-[160px] bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all"
-            >
-              <div className="h-24 relative bg-gray-100">
-                {stay.image && stay.image.startsWith("https") ? (
-                  <Image src={stay.image} alt={stay.name || "Stay"} fill className="object-cover" />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-xs text-gray-400">
-                    No image
-                  </div>
-                )}
-              </div>
-              <div className="p-2">
-                <p className="text-sm font-semibold truncate">{stay.name}</p>
-                {stay.location && <p className="text-xs text-gray-500 truncate">{stay.location}</p>}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <FeaturedBannerAds category="homestays"/>
       </section>
 
       {/* Attractive Stays */}

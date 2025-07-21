@@ -62,8 +62,6 @@ export default function DestinationsListingPage() {
         </p>
       </section>
 
-      {/* Featured Ads */}
-      <FeaturedBannerAds category="destinations" className="px-4 mt-4" />
 
       {/* Filter Component */}
       <DynamicFilterComponent
@@ -78,34 +76,11 @@ export default function DestinationsListingPage() {
           setPage(1);
         }}
       />
-
-      {/* Featured Destinations */}
+        
+      {/* Featured Ads */}
       <section className="p-4">
         <h2 className="text-lg font-semibold mb-2">Featured Destinations</h2>
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {featured?.map((dest) => (
-            <Link
-              key={dest.id}
-              href={`/destinations/${dest.slug ?? dest.id}`}
-              className="group min-w-[160px] max-w-[180px] bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] flex-shrink-0"
-            >
-              <div className="relative w-full aspect-square bg-gray-100">
-                {dest.image && dest.image.startsWith("https") ? (
-                  <>
-                    <Image src={dest.image} alt={dest.name ?? "Destination image"} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                  </>
-                ) : (
-                  <div className="flex items-center justify-center h-full text-xs text-gray-400">No image</div>
-                )}
-              </div>
-              <div className="p-3">
-                <h3 className="text-sm font-semibold text-gray-800 truncate">{dest.name}</h3>
-                <p className="text-xs text-gray-500 truncate">{dest.location}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <FeaturedBannerAds category="destinations"/>
       </section>
 
       {/* All Destinations */}

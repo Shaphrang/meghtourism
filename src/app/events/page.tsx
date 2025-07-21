@@ -54,9 +54,6 @@ export default function EventsListingPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">What’s Happening in Meghalaya?</h1>
       </section>
 
-      {/* Featured Ads */}
-      <FeaturedBannerAds category="events" className="px-4 mt-4" />
-
       {/* Filter Bar */}
       <DynamicFilterComponent
         table="events"
@@ -67,32 +64,10 @@ export default function EventsListingPage() {
         }}
       />
 
-      {/* Featured Events */}
+      {/* Featured Ads */}
       <section className="p-4">
         <h2 className="text-lg font-semibold mb-2">Featured Events</h2>
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {featured.slice(0, 10).map((event) => (
-            <Link
-              key={event.id}
-              href={`/events/${event.slug ?? event.id}`}
-              className="min-w-[200px] bg-white rounded-xl shadow-md overflow-hidden"
-            >
-              <div className="h-32 relative bg-gray-100">
-                {event.image && event.image.startsWith('https') ? (
-                  <Image src={event.image} alt={event.name || "Event"} fill className="object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-                )}
-              </div>
-              <div className="p-2">
-                <h3 className="text-sm font-semibold truncate">{event.name}</h3>
-                {event.location && (
-                  <p className="text-xs text-gray-500 truncate">{event.location}</p>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <FeaturedBannerAds category="events"/>
       </section>
 
       {/* Upcoming Events */}

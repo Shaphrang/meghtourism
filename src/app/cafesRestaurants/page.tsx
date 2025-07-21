@@ -65,9 +65,6 @@ export default function RestaurantsListingPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-pink-800">Dine in Meghalaya</h1>
       </section>
 
-      {/* Featured Ads */}
-      <FeaturedBannerAds category="cafesRestaurants" className="px-4 mt-4" />
-
       {/* Filter Bar */}
       <DynamicFilterComponent
         table="cafes_and_restaurants"
@@ -78,32 +75,10 @@ export default function RestaurantsListingPage() {
         }}
       />
 
-      {/* Popular Restaurants */}
+      {/* Featured Ads */}
       <section className="p-4">
         <h2 className="text-lg font-semibold mb-2">Popular Restaurants</h2>
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {popular.slice(0, 10).map((rest) => (
-            <Link
-              key={rest.id}
-              href={`/cafesRestaurants/${rest.slug ?? rest.id}`}
-              className="min-w-[180px] bg-white rounded-xl shadow-md overflow-hidden"
-            >
-              <div className="h-32 relative bg-gray-100">
-                {rest.image && rest.image.startsWith('https') ? (
-                  <Image src={rest.image} alt={rest.name} fill className="object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-                )}
-              </div>
-              <div className="p-2">
-                <h3 className="text-sm font-semibold truncate">{rest.name}</h3>
-                <p className="text-xs text-gray-500 flex items-center">
-                  <MapPin size={12} className="mr-1" /> {rest.location}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <FeaturedBannerAds category="cafesRestaurants"/>
       </section>
 
       {/* All Restaurants (Vertical Cards) */}

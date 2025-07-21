@@ -60,9 +60,6 @@ export default function ItinerariesListingPage() {
           Ready-Made Meghalaya Travel Plans
         </h1>
       </section>
-
-      {/* Featured Ads */}
-      <FeaturedBannerAds category="itineraries" className="px-4 mt-4" />
       
       <DynamicFilterComponent
         table="itineraries"
@@ -76,40 +73,10 @@ export default function ItinerariesListingPage() {
         }}
       />
 
-
-      {/* Top Adventures */}
+      {/* Featured Ads */}
       <section className="p-4">
         <h2 className="text-lg font-semibold mb-2">Top Adventures</h2>
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {top.slice(0, 10).map((itin) => (
-            <Link
-              key={itin.id}
-              href={`/itineraries/${itin.slug ?? itin.id}`}
-              className="min-w-[160px] bg-white rounded-xl shadow-sm overflow-hidden"
-            >
-              <div className="h-32 relative bg-gray-100">
-                {itin.image && itin.image.startsWith("/") ? (
-                  <Image
-                    src={itin.image}
-                    alt={itin.title || "Itinerary"}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
-                    No image
-                  </div>
-                )}
-              </div>
-              <div className="p-2">
-                <h3 className="text-sm font-semibold truncate">{itin.title}</h3>
-                {itin.days && (
-                  <p className="text-xs text-gray-500 truncate">{itin.days} Days</p>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <FeaturedBannerAds category="itineraries"/>
       </section>
 
       {/* All Itineraries */}

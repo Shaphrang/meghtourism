@@ -56,9 +56,6 @@ export default function ThrillsListingPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-green-800">Experience the Thrill of Meghalaya</h1>
       </section>
 
-      {/* Featured Ads */}
-      <FeaturedBannerAds category="thrills" className="px-4 mt-4" />
-
       {/* Filter Bar */}
       <DynamicFilterComponent
         table="thrills"
@@ -69,34 +66,10 @@ export default function ThrillsListingPage() {
         }}
       />
 
-      {/* Top Adventures */}
+      {/* Featured Ads */}
       <section className="p-4">
         <h2 className="text-lg font-semibold mb-2">Top Adventures</h2>
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {popular.slice(0, 10).map((thrill) => (
-            <Link
-              key={thrill.id}
-              href={`/thrills/${thrill.slug ?? thrill.id}`}
-              className="min-w-[200px] bg-white rounded-xl shadow-md overflow-hidden"
-            >
-              <div className="h-32 relative bg-gray-100">
-                {thrill.image && thrill.image.startsWith('https') ? (
-                  <Image src={thrill.image} alt={thrill.name || "Thrill"} fill className="object-cover" />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-xs text-gray-400">No image</div>
-                )}
-              </div>
-              <div className="p-2">
-                <h3 className="text-sm font-semibold truncate">{thrill.name}</h3>
-                {thrill.location && (
-                  <p className="text-xs text-gray-500 flex items-center">
-                    <MapPin size={12} className="mr-1" /> {thrill.location}
-                  </p>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <FeaturedBannerAds category="thrills"/>
       </section>
 
       {/* All Activities */}
