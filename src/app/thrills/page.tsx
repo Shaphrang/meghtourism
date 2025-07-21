@@ -3,21 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Filter,
-  MapPin,
-  SlidersHorizontal,
-  SortAsc,
-} from "lucide-react";
+import { MapPin } from "lucide-react";
 import useSupabaseList from "@/hooks/useSupabaseList";
+import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
 import { Thrill } from "@/types/thrill";
 
 export default function ThrillsListingPage() {
   const [page, setPage] = useState(1);
   const [thrills, setThrills] = useState<Thrill[]>([]);
+  const [filter, setFilter] = useState<{ field: string; value: any } | null>(null);
   const { data, totalCount, loading } = useSupabaseList<Thrill>("thrills", {
     sortBy: "created_at",
     ascending: false,
+    filter,
     page,
     pageSize: 6,
   });
@@ -58,17 +56,14 @@ export default function ThrillsListingPage() {
       </section>
 
       {/* Filter Bar */}
-      <section className="p-4 flex flex-wrap justify-center gap-3">
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-800 text-sm font-medium">
-          <SortAsc size={16} /> Sort
-        </button>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
-          <SlidersHorizontal size={16} /> Type
-        </button>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-100 text-yellow-800 text-sm font-medium">
-          <Filter size={16} /> District
-        </button>
-      </section>
+      <DynamicFilterComponent
+        table="thrills"
+        filtersConfig={[{ type: "location" }]}
+        onFilterChange={(newFilter) => {
+          setFilter(newFilter);
+          setPage(1);
+        }}
+      />
 
       {/* Top Adventures */}
       <section className="p-4">

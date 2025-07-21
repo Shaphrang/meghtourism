@@ -31,5 +31,7 @@ export interface CafeAndRestaurant {
   season: string;
   popularityindex: number;
   visibilitystatus: string;
+  adSlot?: import('../lib/adSlots').AdSlot;
+  adActive?: boolean;
   created_at: string;
 }

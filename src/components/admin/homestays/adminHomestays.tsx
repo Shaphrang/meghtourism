@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import HomestayFormModal from './homestayFormModal';
 import DeleteConfirmModal from '../deleteConfirmModal';
 import { toast } from 'react-hot-toast';
+import { LOCATION_ZONES } from '@/lib/locationZones';
 
 export default function AdminHomestays() {
   const [homestays, setHomestays] = useState<any[]>([]);
@@ -12,15 +13,20 @@ export default function AdminHomestays() {
   const [editingHomestay, setEditingHomestay] = useState<any | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedHomestay, setSelectedHomestay] = useState<any | null>(null);
+  const [search, setSearch] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
 
   const fetchHomestays = async () => {
-    const { data } = await supabase.from('homestays').select('*').order('created_at', { ascending: false });
+    let query = supabase.from('homestays').select('*');
+    if (search) query = query.ilike('name', `%${search}%`);
+    if (locationFilter) query = query.eq('location', locationFilter);
+    const { data } = await query.order('created_at', { ascending: false });
     setHomestays(data || []);
   };
 
   useEffect(() => {
     fetchHomestays();
-  }, []);
+  }, [search, locationFilter]);
 
   const openAddModal = () => {
     setEditingHomestay(null);
@@ -52,7 +58,27 @@ export default function AdminHomestays() {
 
   return (
     <div>
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <div className="flex gap-2">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name"
+            className="border px-3 py-2 rounded w-full"
+          />
+          <select
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+            className="border px-3 py-2 rounded"
+          >
+            <option value="">All locations</option>
+            {LOCATION_ZONES.map((z) => (
+              <option key={z} value={z}>
+                {z}
+              </option>
+            ))}
+          </select>
+        </div>
         <button
           onClick={openAddModal}
           className="bg-emerald-600 text-white px-4 py-2 rounded"

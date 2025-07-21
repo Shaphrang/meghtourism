@@ -5,17 +5,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import useSupabaseList from "@/hooks/useSupabaseList";
+import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
 import { CafeAndRestaurant } from "@/types/cafeRestaurants";
 
 export default function RestaurantsListingPage() {
   const [page, setPage] = useState(1);
   const [restaurants, setRestaurants] = useState<CafeAndRestaurant[]>([]);
+  const [filter, setFilter] = useState<{ field: string; value: any } | null>(null);
 
     const { data, totalCount, loading } = useSupabaseList<CafeAndRestaurant>(
     "cafes_and_restaurants",
     {
       sortBy: "created_at",
       ascending: false,
+      filter,
       page,
       pageSize: 6,
     }
@@ -62,11 +65,14 @@ export default function RestaurantsListingPage() {
       </section>
 
       {/* Filter Bar */}
-      <section className="p-4 flex flex-wrap justify-center gap-3">
-        <button className="px-4 py-2 bg-pink-100 text-pink-800 rounded-full text-sm font-medium">Sort</button>
-        <button className="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">Cuisine</button>
-        <button className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Location</button>
-      </section>
+      <DynamicFilterComponent
+        table="cafes_and_restaurants"
+        filtersConfig={[{ type: "location" }, { type: "cuisine" }]}
+        onFilterChange={(newFilter) => {
+          setFilter(newFilter);
+          setPage(1);
+        }}
+      />
 
       {/* Popular Restaurants */}
       <section className="p-4">

@@ -9,6 +9,7 @@ import { toast } from 'react-hot-toast';
 import { uploadImageToSupabase } from '@/lib/uploadToSupabase';
 import { deleteImageFromSupabase } from '@/lib/deleteImageFromSupabase';
 import { LOCATION_ZONES } from '@/lib/locationZones';
+import { AD_SLOTS } from '@/lib/adSlots';
 
 interface Props {
   initialData?: any;
@@ -51,6 +52,8 @@ export default function CafeRestaurantFormModal({ initialData, onClose, onSave }
       season: '',
       popularityindex: 0,
       visibilitystatus: '',
+      adSlot: 'none',
+      adActive: false,
     }
   );
 
@@ -118,6 +121,22 @@ export default function CafeRestaurantFormModal({ initialData, onClose, onSave }
       <input type="checkbox" checked={form[key]} onChange={(e) => handleChange(key, e.target.checked)} />
       <label className="text-sm">{label}</label>
     </div>
+      );
+  const renderAdSlot = () => (
+    <div className="mb-3">
+      <label className="block font-medium text-sm mb-1">Ad Slot</label>
+      <select
+        value={form.adSlot}
+        onChange={(e) => handleChange('adSlot', e.target.value)}
+        className="w-full border px-3 py-2 rounded"
+      >
+        {AD_SLOTS.map((s) => (
+          <option key={s} value={s}>
+            {s}
+          </option>
+        ))}
+      </select>
+    </div>
   );
     const renderSelect = (label: string, key: string) => (
     <div className="mb-3">
@@ -160,6 +179,8 @@ export default function CafeRestaurantFormModal({ initialData, onClose, onSave }
           {renderInput('Contact', 'contact')}
           {renderInput('Email', 'email')}
           {renderInput('Website', 'website')}
+          {renderAdSlot()}
+          {renderCheckbox('Ad Active', 'adActive')}
           {renderInput('Average Cost', 'averagecost', 'number')}
           {renderInput('Ratings', 'ratings', 'number')}
           {renderInput('Popularity Index', 'popularityindex', 'number')}

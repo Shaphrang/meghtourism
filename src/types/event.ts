@@ -44,5 +44,7 @@ export interface Event {
   };
   tips?: string[];
   warnings?: string[];
+  adSlot?: import('../lib/adSlots').AdSlot;
+  adActive?: boolean;
   created_at?: string; // ISO timestamp format
 }

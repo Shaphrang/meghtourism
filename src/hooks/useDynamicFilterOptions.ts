@@ -24,7 +24,7 @@ export default function useDynamicFilterOptions(table: string) {
       let columns = "location";
 
       if (table === "destinations") columns += ", district, tags";
-      if (table === "cafesRestaurants") columns += ", cuisine";
+      if (table === "cafes_and_restaurants") columns += ", cuisine";
       if (table === "rentals") columns += ", carType";
 
       const { data, error } = await supabase
@@ -45,13 +45,13 @@ export default function useDynamicFilterOptions(table: string) {
       const carTypeSet = new Set<string>();
 
       data?.forEach((item: any) => {
-        if (item?.location && item.location !== "") locSet.add(item.location);
-        if (item?.district && item.district !== "") districtSet.add(item.district);
-        if (item?.cuisine && item.cuisine !== "") cuisineSet.add(item.cuisine);
-        if (item?.carType && item.carType !== "") carTypeSet.add(item.carType);
+        if (item?.location && item.location.trim() !== "") locSet.add(item.location.trim());
+        if (item?.district && item.district.trim() !== "") districtSet.add(item.district.trim());
+        if (item?.cuisine && item.cuisine.trim() !== "") cuisineSet.add(item.cuisine.trim());
+        if (item?.carType && item.carType.trim() !== "") carTypeSet.add(item.carType.trim());
         if (item?.tags && Array.isArray(item.tags)) {
           item.tags.forEach((t: string) => {
-            if (t && t !== "") tagSet.add(t);
+            if (t && t.trim() !== "") tagSet.add(t.trim());
           });
         }
       });

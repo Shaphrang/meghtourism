@@ -4,17 +4,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import useSupabaseList from "@/hooks/useSupabaseList";
+import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
 import { Itinerary } from "@/types/itineraries";
 import { MapPin } from "lucide-react";
 
 export default function ItinerariesListingPage() {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Itinerary[]>([]);
+  const [filter, setFilter] = useState<{ field: string; value: any } | null>(null);
   const { data, totalCount, loading } = useSupabaseList<Itinerary>(
     "itineraries",
     {
       sortBy: "created_at",
       ascending: false,
+      filter,
       page,
       pageSize: 6,
     }
@@ -56,6 +59,18 @@ export default function ItinerariesListingPage() {
           Ready-Made Meghalaya Travel Plans
         </h1>
       </section>
+      <DynamicFilterComponent
+        table="itineraries"
+        filtersConfig={[
+          { type: "location", field: "starting_point" },
+          { type: "days", field: "days" },
+        ]}
+        onFilterChange={(newFilter) => {
+          setFilter(newFilter);
+          setPage(1);
+        }}
+      />
+
 
       {/* Top Adventures */}
       <section className="p-4">

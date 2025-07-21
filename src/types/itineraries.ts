@@ -28,5 +28,7 @@ export interface Itinerary {
   ratings: number;
   reviews: string[];
   visibilitystatus: string;
+  adSlot?: import('../lib/adSlots').AdSlot;
+  adActive?: boolean;
   created_at: string;
 }

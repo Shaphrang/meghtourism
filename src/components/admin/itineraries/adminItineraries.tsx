@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import ItineraryFormModal from './itinerariesFormModal';
 import DeleteConfirmModal from '../deleteConfirmModal';
 import { toast } from 'react-hot-toast';
+import { LOCATION_ZONES } from '@/lib/locationZones';
 
 export default function AdminItineraries() {
   const [items, setItems] = useState<any[]>([]);
@@ -12,18 +13,20 @@ export default function AdminItineraries() {
   const [editing, setEditing] = useState<any | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
+  const [search, setSearch] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
 
   const fetchItineraries = async () => {
-    const { data } = await supabase
-      .from('itineraries')
-      .select('*')
-      .order('created_at', { ascending: false });
+    let query = supabase.from('itineraries').select('*');
+    if (search) query = query.ilike('title', `%${search}%`);
+    if (locationFilter) query = query.eq('region', locationFilter);
+    const { data } = await query.order('created_at', { ascending: false });
     setItems(data || []);
   };
 
   useEffect(() => {
     fetchItineraries();
-  }, []);
+  }, [search, locationFilter]);
 
   const openAddModal = () => {
     setEditing(null);
@@ -55,7 +58,27 @@ export default function AdminItineraries() {
 
   return (
     <div>
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <div className="flex gap-2">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name"
+            className="border px-3 py-2 rounded w-full"
+          />
+          <select
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+            className="border px-3 py-2 rounded"
+          >
+            <option value="">All locations</option>
+            {LOCATION_ZONES.map((z) => (
+              <option key={z} value={z}>
+                {z}
+              </option>
+            ))}
+          </select>
+        </div>
         <button onClick={openAddModal} className="bg-emerald-600 text-white px-4 py-2 rounded">
           + Add Itinerary
         </button>

@@ -45,10 +45,13 @@ export default function useSupabaseList<T>(table: string, options: Options = {})
 
       if (search) query = query.ilike('name', `%${search}%`);
       if (filter && filter.value != null && filter.value !== "") {
-        if (filter.field === "tags") {
-          query = query.contains("tags", [filter.value]);
+        if (typeof filter.value === 'object' && (filter.value.gte !== undefined || filter.value.lte !== undefined)) {
+          if (filter.value.gte !== undefined) query = query.gte(filter.field, filter.value.gte)
+          if (filter.value.lte !== undefined) query = query.lte(filter.field, filter.value.lte)
+        } else if (filter.field === 'tags') {
+          query = query.contains('tags', [filter.value])
         } else {
-          query = query.eq(filter.field, filter.value);
+          query = query.eq(filter.field, filter.value)
         }
       }
 

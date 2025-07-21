@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-hot-toast';
 import { uploadImageToSupabase } from '@/lib/uploadToSupabase';
 import { deleteImageFromSupabase } from '@/lib/deleteImageFromSupabase';
+import { AD_SLOTS } from '@/lib/adSlots';
 
 interface Props {
   initialData?: any;
@@ -49,6 +50,8 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
       reviews: [] as string[],
       visibilitystatus: '',
       region: '',
+      adSlot: 'none',
+      adActive: false,
     }
   );
 
@@ -121,6 +124,22 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
     <div className="mb-3 flex items-center gap-2">
       <input type="checkbox" checked={form[key]} onChange={(e) => handleChange(key, e.target.checked)} />
       <label className="text-sm">{label}</label>
+    </div>
+  );
+    const renderAdSlot = () => (
+    <div className="mb-3">
+      <label className="block font-medium text-sm mb-1">Ad Slot</label>
+      <select
+        value={form.adSlot}
+        onChange={(e) => handleChange('adSlot', e.target.value)}
+        className="w-full border px-3 py-2 rounded"
+      >
+        {AD_SLOTS.map((s) => (
+          <option key={s} value={s}>
+            {s}
+          </option>
+        ))}
+      </select>
     </div>
   );
 
