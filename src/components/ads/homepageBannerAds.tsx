@@ -1,181 +1,239 @@
-'use client';
+'use client'
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import useSupabaseList from '@/hooks/useSupabaseList';
-import { cn } from '@/lib/utils';
+import Image from 'next/image'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import useFilteredList from '@/hooks/useFilteredList'
+import { cn } from '@/lib/utils'
 
-export interface AdCardProps {
-  image: string;
-  title: string;
-  description: string;
-  link: string;
-}
-
-type Category = 'homestays' | 'events' | 'thrills' | 'cafes' | 'itineraries';
+/**
+ * Supported ad categories for the homepage banner component.
+ */
+export type HomepageAdCategory =
+  | 'destinations'
+  | 'homestays'
+  | 'events'
+  | 'thrills'
+  | 'cafesRestaurants'
+  | 'itineraries'
 
 interface BannerProps {
-  category: Category;
-  className?: string;
+  /** Table/category from which to fetch homepage ads */
+  category: HomepageAdCategory
+  /** Optional wrapper classes */
+  className?: string
 }
 
-const categoryMap: Record<Category, {
-  table: string;
-  getTitle: (item: any) => string;
-  getDescription: (item: any) => string;
-  getImage: (item: any) => string | undefined;
-  getLink: (item: any) => string;
-}> = {
+/** Configuration map for each category.
+ *  Defines the Supabase table and card renderer.
+ */
+const categoryConfig: Record<
+  HomepageAdCategory,
+  {
+    table: string
+    Card: (props: { item: any }) => React.ReactElement
+  }
+> = {
+  destinations: {
+    table: 'destinations',
+    Card: ({ item }) => (
+      <div className="min-w-[160px] max-w-[180px] bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 flex flex-col">
+        <div className="relative w-full h-28 bg-gray-100">
+          {item.image ? (
+            <Image src={item.image} alt={item.name || 'Destination'} fill sizes="180px" className="object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
+          )}
+        </div>
+        <div className="flex flex-col flex-1 p-2">
+          <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
+          {item.location && <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.location}</p>}
+          <div className="mt-auto pt-1">
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/destinations/${item.slug ?? item.id}`}>Learn More</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    ),
+  },
   homestays: {
     table: 'homestays',
-    getTitle: (i) => i.name ?? 'Untitled',
-    getDescription: (i) => i.description ?? '',
-    getImage: (i) => i.image,
-    getLink: (i) => `/homestays/${i.slug ?? i.id}`,
+    Card: ({ item }) => (
+      <div className="min-w-[160px] max-w-[180px] bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 flex flex-col">
+        <div className="relative w-full h-28 bg-gray-100">
+          {item.image ? (
+            <Image src={item.image} alt={item.name || 'Homestay'} fill sizes="180px" className="object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
+          )}
+        </div>
+        <div className="flex flex-col flex-1 p-2">
+          <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
+          {item.location && <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.location}</p>}
+          {item.pricepernight && (
+            <p className="text-xs text-emerald-600 mt-1">₹{item.pricepernight.toLocaleString()}/night</p>
+          )}
+          <div className="mt-auto pt-1">
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/homestays/${item.slug ?? item.id}`}>Learn More</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    ),
   },
   events: {
     table: 'events',
-    getTitle: (i) => i.name ?? 'Untitled',
-    getDescription: (i) => i.description ?? '',
-    getImage: (i) => i.image,
-    getLink: (i) => `/events/${i.slug ?? i.id}`,
+    Card: ({ item }) => (
+      <div className="w-[100px] sm:w-[120px] flex flex-col items-center space-y-1 flex-shrink-0">
+        <div className="w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] rounded-full bg-white shadow-md overflow-hidden relative border">
+          {item.image ? (
+            <Image src={item.image} alt={item.name || 'Event'} fill sizes="(max-width: 640px) 100px, 120px" className="object-cover rounded-full" />
+          ) : (
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center text-[10px] text-gray-500 text-center px-1">
+              {item.name?.slice(0, 20) || 'Unnamed'}
+            </div>
+          )}
+        </div>
+        <div className="w-full text-center">
+          <p className="text-[10px] font-semibold text-gray-800 truncate w-full">{item.name?.slice(0, 20)}</p>
+          {item.date && (
+            <p className="text-[10px] text-gray-600 truncate w-full">
+              {new Date(item.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            </p>
+          )}
+          <div className="mt-1">
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/events/${item.slug ?? item.id}`}>Learn More</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    ),
   },
   thrills: {
     table: 'thrills',
-    getTitle: (i) => i.name ?? 'Untitled',
-    getDescription: (i) => i.description ?? '',
-    getImage: (i) => i.image,
-    getLink: (i) => `/thrills/${i.slug ?? i.id}`,
+    Card: ({ item }) => (
+      <div className="min-w-[160px] max-w-[180px] bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 flex flex-col">
+        <div className="relative w-full h-28 bg-gray-100">
+          {item.image ? (
+            <Image src={item.image} alt={item.name || 'Thrill'} fill sizes="180px" className="object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
+          )}
+        </div>
+        <div className="flex flex-col flex-1 p-2">
+          <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
+          {item.location && <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.location}</p>}
+          {item.priceperperson && (
+            <p className="text-xs text-emerald-600 mt-1">₹{item.priceperperson.toLocaleString()} per person</p>
+          )}
+          <div className="mt-auto pt-1">
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/thrills/${item.slug ?? item.id}`}>Learn More</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    ),
   },
-  cafes: {
+  cafesRestaurants: {
     table: 'cafes_and_restaurants',
-    getTitle: (i) => i.name ?? 'Untitled',
-    getDescription: (i) => i.description ?? '',
-    getImage: (i) => i.image,
-    getLink: (i) => `/cafesRestaurants/${i.slug ?? i.id}`,
+    Card: ({ item }) => (
+      <div className="flex bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 w-[240px]">
+        <div className="relative w-24 h-24 flex-shrink-0 bg-gray-100">
+          {item.image ? (
+            <Image src={item.image} alt={item.name || 'Cafe'} fill sizes="96px" className="object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
+          )}
+        </div>
+        <div className="flex flex-col justify-between p-2 flex-1">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
+            {item.description && (
+              <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.description}</p>
+            )}
+            <p className="text-[11px] text-gray-500 mt-1 flex items-center">
+              {item.location}
+            </p>
+            <p className="text-[11px] text-gray-500">
+              {(item.cuisine?.length ? item.cuisine.join(', ') : 'No cuisine')} • {item.type} • ⭐ {item.ratings ?? 'N/A'}
+            </p>
+          </div>
+          <div className="mt-1">
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/cafesRestaurants/${item.slug ?? item.id}`}>Learn More</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    ),
   },
   itineraries: {
     table: 'itineraries',
-    getTitle: (i) => i.title ?? 'Untitled',
-    getDescription: (i) => i.description ?? '',
-    getImage: (i) => i.image,
-    getLink: (i) => `/itineraries/${i.slug ?? i.id}`,
+    Card: ({ item }) => (
+      <div className="min-w-[160px] max-w-[180px] bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 flex flex-col">
+        <div className="relative w-full h-28 bg-gray-100">
+          {item.image ? (
+            <Image src={item.image} alt={item.title || 'Itinerary'} fill sizes="180px" className="object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
+          )}
+        </div>
+        <div className="flex flex-col flex-1 p-2">
+          <h3 className="text-sm font-semibold text-gray-800 truncate">{item.title || 'Untitled'}</h3>
+          {item.starting_point && <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.starting_point}</p>}
+          {item.estimated_cost?.min && (
+            <p className="text-xs text-emerald-600 mt-1">₹{item.estimated_cost.min.toLocaleString()}</p>
+          )}
+          <div className="mt-auto pt-1">
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/itineraries/${item.slug ?? item.id}`}>Learn More</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    ),
   },
-};
+}
 
-function useAdData(category: Category) {
-  const config = categoryMap[category];
-  const { data, loading } = useSupabaseList<any>(config.table, {
-    sortBy: 'created_at',
-    ascending: false,
+/**
+ * Hook to fetch ads for the given category filtered by `adSlot='homepage'` and `adActive=true`.
+ */
+function useHomepageAds(category: HomepageAdCategory) {
+  const config = categoryConfig[category]
+  const { data, loading } = useFilteredList<any>(config.table, {
+    filters: [
+      { field: 'adSlot', op: 'eq', value: 'homepage' },
+      { field: 'adActive', op: 'eq', value: true },
+    ],
+    sort: { field: 'created_at', ascending: false },
     pageSize: 10,
-  });
-  return { data, loading, config };
-}
-
-function VerticalCard({ image, title, description, link }: AdCardProps) {
-  return (
-    <div className="min-w-[160px] max-w-[180px] bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 flex flex-col">
-      <div className="relative w-full h-28 bg-gray-100">
-        {image ? (
-          <Image src={image} alt={title} fill sizes="180px" className="object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-        )}
-      </div>
-      <div className="flex flex-col flex-1 p-2">
-        <h3 className="text-sm font-semibold text-gray-800 truncate">{title}</h3>
-        <p className="text-xs text-gray-600 mt-1 line-clamp-2">{description}</p>
-        <div className="mt-auto pt-1">
-          <Button variant="outline" size="sm" asChild>
-            <Link href={link}>Learn More</Link>
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HorizontalCard({ image, title, description, link }: AdCardProps) {
-  return (
-    <div className="flex bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 w-[240px]">
-      <div className="relative w-24 h-24 flex-shrink-0 bg-gray-100">
-        {image ? (
-          <Image src={image} alt={title} fill sizes="96px" className="object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-        )}
-      </div>
-      <div className="flex flex-col justify-between p-2 flex-1">
-        <div>
-          <h3 className="text-sm font-semibold text-gray-800 truncate">{title}</h3>
-          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{description}</p>
-        </div>
-        <div className="mt-1">
-          <Button variant="outline" size="sm" asChild>
-            <Link href={link}>Learn More</Link>
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
+  })
+  return { data: data || [], loading, Card: config.Card }
 }
 
 /**
- * Vertical banner ads for the homepage. Fetches 10 items
- * from the chosen category and displays them in a scrollable row.
+ * Render homepage banner ads for a specific category.
+ * Automatically chooses the correct card layout for the category.
  */
-export function VerticalHomepageAd({ category, className }: BannerProps) {
-  const { data, loading, config } = useAdData(category);
+export default function HomepageBannerAds({ category, className }: BannerProps) {
+  const { data, loading, Card } = useHomepageAds(category)
 
   if (loading) {
-    return <p className="text-sm text-gray-500 px-2">Loading ads...</p>;
+    return <p className="text-sm text-gray-500 px-2">Loading ads...</p>
   }
   if (!data.length) {
-    return <p className="text-sm text-gray-500 px-2">No ads available.</p>;
+    return <p className="text-sm text-gray-500 px-2">No ads available.</p>
   }
 
   return (
     <div className={cn('flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2', className)}>
-      {data.map((item: any) => (
-        <VerticalCard
-          key={item.id}
-          image={config.getImage(item) ?? ''}
-          title={config.getTitle(item)}
-          description={config.getDescription(item)}
-          link={config.getLink(item)}
-        />
+      {data.map((item) => (
+        <Card key={item.id} item={item} />
       ))}
     </div>
-  );
-}
-
-/**
- * Horizontal banner ads for the homepage. Fetches 10 items
- * from the chosen category and displays them in a scrollable row.
- */
-export function HorizontalHomepageAd({ category, className }: BannerProps) {
-  const { data, loading, config } = useAdData(category);
-
-  if (loading) {
-    return <p className="text-sm text-gray-500 px-2">Loading ads...</p>;
-  }
-  if (!data.length) {
-    return <p className="text-sm text-gray-500 px-2">No ads available.</p>;
-  }
-
-  return (
-    <div className={cn('flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2', className)}>
-      {data.map((item: any) => (
-        <HorizontalCard
-          key={item.id}
-          image={config.getImage(item) ?? ''}
-          title={config.getTitle(item)}
-          description={config.getDescription(item)}
-          link={config.getLink(item)}
-        />
-      ))}
-    </div>
-  );
+  )
 }

@@ -62,7 +62,8 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
   const handleSubmit = async () => {
     try {
       const slug = await generateSlug(supabase, form.title, form.slug);
-      const payload = { ...form, slug };
+      const { adSlot, adActive, ...rest } = form;
+      const payload = { ...rest, slug, adslot: adSlot, adactive: adActive };
       if (isEditMode) {
         const { error } = await supabase.from('itineraries').update(payload).eq('id', form.id);
         if (error) throw error;
@@ -162,6 +163,8 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
           {renderInput('Author', 'author')}
           {renderInput('Ratings', 'ratings', 'number')}
           {renderInput('Region', 'region')}
+          {renderAdSlot()}
+          {renderCheckbox('Ad Active', 'adActive')}
         </div>
 
         {renderInput('Description', 'description')}

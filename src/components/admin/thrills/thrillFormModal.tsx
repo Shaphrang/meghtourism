@@ -66,7 +66,8 @@ export default function ThrillFormModal({ initialData, onClose, onSave }: Props)
   const handleSubmit = async () => {
     try {
       const slug = await generateSlug(supabase, form.name, (form as any).slug);
-      const payload = { ...form, slug };
+      const { adSlot, adActive, ...rest } = form;
+      const payload = { ...rest, slug, adslot: adSlot, adactive: adActive };
       if (isEditMode) {
         const { error } = await supabase.from('thrills').update(payload).eq('id', form.id);
         if (error) throw error;
@@ -186,6 +187,8 @@ export default function ThrillFormModal({ initialData, onClose, onSave }: Props)
           {renderInput('Contact', 'contact')}
           {renderInput('Email', 'email')}
           {renderInput('Website', 'website')}
+          {renderAdSlot()}
+          {renderCheckbox('Ad Active', 'adActive')}
         </div>
 
         {renderInput('Address', 'address')}

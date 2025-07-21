@@ -66,7 +66,8 @@ export default function CafeRestaurantFormModal({ initialData, onClose, onSave }
     console.log("Submitting form data:", form);
     try {
       const slug = await generateSlug(supabase, form.name, (form as any).slug);
-      const payload = { ...form, slug };
+      const { adSlot, adActive, ...rest } = form;
+      const payload = { ...rest, slug, adslot: adSlot, adactive: adActive };
       if (isEditMode) {
         const { error, data } = await supabase
           .from('cafes_and_restaurants')

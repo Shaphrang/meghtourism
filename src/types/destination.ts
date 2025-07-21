@@ -27,5 +27,7 @@ export interface Destination {
   averagecostestimate: Record<string, any> | null;
   tips: string[] | null;
   warnings: string[] | null;
+  adSlot?: import('../lib/adSlots').AdSlot;
+  adActive?: boolean;
   created_at: string | null; // or `Date | null` if you parse it as a JS date
 }

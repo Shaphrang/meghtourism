@@ -61,7 +61,8 @@ export default function HomestayFormModal({ initialData, onClose, onSave }: Prop
   const handleSubmit = async () => {
     try {
       const slug = await generateSlug(supabase, form.name, (form as any).slug);
-      const payload = { ...form, slug };
+      const { adSlot, adActive, ...rest } = form;
+      const payload = { ...rest, slug, adslot: adSlot, adactive: adActive };
       if (isEditMode) {
         const { error } = await supabase.from('homestays').update(payload).eq('id', form.id);
         if (error) throw error;
