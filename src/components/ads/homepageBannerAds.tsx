@@ -137,31 +137,27 @@ const categoryConfig: Record<
   cafesRestaurants: {
     table: 'cafes_and_restaurants',
     Card: ({ item }) => (
-      <div className="flex bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 w-[240px]">
-        <div className="relative w-24 h-24 flex-shrink-0 bg-gray-100">
+      <div className="flex gap-3 bg-white rounded-xl shadow-md overflow-hidden p-2 flex-shrink-0">
+        <div className="relative w-[100px] h-[100px] flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
           {item.image ? (
-            <Image src={item.image} alt={item.name || 'Cafe'} fill sizes="96px" className="object-cover" />
+            <Image src={item.image} alt={item.name || 'Cafe'} fill sizes="100px" className="object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
+            <div className="flex items-center justify-center h-full text-sm text-gray-400">No Image</div>
           )}
         </div>
-        <div className="flex flex-col justify-between p-2 flex-1">
+        <div className="flex flex-col justify-between py-1 pr-1">
           <div>
             <h3 className="text-sm font-semibold text-gray-800 truncate">{item.name || 'Untitled'}</h3>
             {item.description && (
-              <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.description}</p>
+              <p className="text-xs text-gray-600">{item.description}</p>
             )}
-            <p className="text-[11px] text-gray-500 mt-1 flex items-center">
+            <p className="text-xs text-gray-500 mt-1 flex items-center">
+              <MapPin size={12} className="mr-1" />
               {item.location}
             </p>
-            <p className="text-[11px] text-gray-500">
-              {(item.cuisine?.length ? item.cuisine.join(', ') : 'No cuisine')} • {item.type} • ⭐ {item.ratings ?? 'N/A'}
-            </p>
           </div>
-          <div className="mt-1">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/cafesRestaurants/${item.slug ?? item.id}`}>Learn More</Link>
-            </Button>
+          <div className="text-xs text-gray-500 mt-1">
+            {(item.cuisine?.length ? item.cuisine.join(', ') : 'No cuisine')} • {item.type} • ⭐ {item.ratings ?? 'N/A'}
           </div>
         </div>
       </div>
