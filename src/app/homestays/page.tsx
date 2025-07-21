@@ -7,6 +7,7 @@ import { MapPin } from "lucide-react";
 import useSupabaseList from "@/hooks/useSupabaseList";
 import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
 import { Homestay } from "@/types/homestay";
+import FeaturedBannerAds from "@/components/ads/featuredBannerAds";
 
 export default function HomestayListingPage() {
   const [page, setPage] = useState(1);
@@ -56,6 +57,9 @@ export default function HomestayListingPage() {
         </h1>
         <p className="text-sm text-gray-700 mt-1">Explore cozy and affordable stays across the state</p>
       </section>
+
+      {/* Featured Ads */}
+      <FeaturedBannerAds category="homestays" className="px-4 mt-4" />
 
       {/* Filter Bar */}
       <DynamicFilterComponent

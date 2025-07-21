@@ -7,6 +7,7 @@ import useSupabaseList from "@/hooks/useSupabaseList";
 import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
 import { Itinerary } from "@/types/itineraries";
 import { MapPin } from "lucide-react";
+import FeaturedBannerAds from "@/components/ads/featuredBannerAds";
 
 export default function ItinerariesListingPage() {
   const [page, setPage] = useState(1);
@@ -59,6 +60,10 @@ export default function ItinerariesListingPage() {
           Ready-Made Meghalaya Travel Plans
         </h1>
       </section>
+
+      {/* Featured Ads */}
+      <FeaturedBannerAds category="itineraries" className="px-4 mt-4" />
+      
       <DynamicFilterComponent
         table="itineraries"
         filtersConfig={[

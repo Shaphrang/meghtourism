@@ -6,6 +6,7 @@ import { Calendar, Clock } from "lucide-react";
 import useSupabaseList from "@/hooks/useSupabaseList";
 import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
 import { Event } from "@/types/event";
+import FeaturedBannerAds from "@/components/ads/featuredBannerAds";
 
 export default function EventsListingPage() {
   const [page, setPage] = useState(1);
@@ -52,6 +53,9 @@ export default function EventsListingPage() {
       <section className="bg-gradient-to-r from-blue-100 to-green-100 p-6 text-center">
         <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">What’s Happening in Meghalaya?</h1>
       </section>
+
+      {/* Featured Ads */}
+      <FeaturedBannerAds category="events" className="px-4 mt-4" />
 
       {/* Filter Bar */}
       <DynamicFilterComponent

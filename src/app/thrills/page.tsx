@@ -7,6 +7,7 @@ import { MapPin } from "lucide-react";
 import useSupabaseList from "@/hooks/useSupabaseList";
 import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
 import { Thrill } from "@/types/thrill";
+import FeaturedBannerAds from "@/components/ads/featuredBannerAds";
 
 export default function ThrillsListingPage() {
   const [page, setPage] = useState(1);
@@ -54,6 +55,9 @@ export default function ThrillsListingPage() {
       <section className="bg-gradient-to-r from-yellow-100 to-green-100 p-6 text-center">
         <h1 className="text-2xl sm:text-3xl font-bold text-green-800">Experience the Thrill of Meghalaya</h1>
       </section>
+
+      {/* Featured Ads */}
+      <FeaturedBannerAds category="thrills" className="px-4 mt-4" />
 
       {/* Filter Bar */}
       <DynamicFilterComponent

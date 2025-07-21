@@ -8,6 +8,7 @@ import useSupabaseList from "@/hooks/useSupabaseList";
 import { Destination } from "@/types/destination";
 import CarouselBanner from "@/components/common/carouselBanner";
 import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
+import FeaturedBannerAds from "@/components/ads/featuredBannerAds";
 
 export default function DestinationsListingPage() {
   const [page, setPage] = useState(1);
@@ -60,6 +61,9 @@ export default function DestinationsListingPage() {
           Discover beautiful places, hidden gems, and local favorites
         </p>
       </section>
+
+      {/* Featured Ads */}
+      <FeaturedBannerAds category="destinations" className="px-4 mt-4" />
 
       {/* Filter Component */}
       <DynamicFilterComponent
