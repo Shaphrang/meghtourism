@@ -38,7 +38,7 @@ export default function ClientPage() {
     : [];
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 px-4 pb-10 overflow-x-hidden">
+    <main className="bg-gradient-to-b from-sky-50 to-white w-full min-h-screen text-gray-800 px-4 pb-10 overflow-x-hidden">
       <div className="max-w-screen-md mx-auto">
 
         {/* Image Swiper */}
@@ -70,17 +70,17 @@ export default function ClientPage() {
           </h1>
           <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
             {itinerary.days && (
-              <span className="bg-gray-100 px-3 py-1 rounded-full">
+              <span className="bg-sky-100 text-sky-700 px-3 py-1 rounded-full">
                 {itinerary.days} Days
               </span>
             )}
             {itinerary.starting_point && (
-              <span className="bg-gray-100 px-3 py-1 rounded-full">
+              <span className="bg-sky-100 text-sky-700 px-3 py-1 rounded-full">
                 Start: {itinerary.starting_point}
               </span>
             )}
             {itinerary.season && (
-              <span className="bg-gray-100 px-3 py-1 rounded-full">
+              <span className="bg-sky-100 text-sky-700 px-3 py-1 rounded-full">
                 Season: {itinerary.season}
               </span>
             )}

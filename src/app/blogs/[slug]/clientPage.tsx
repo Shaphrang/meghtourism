@@ -36,7 +36,7 @@ export default function ClientPage() {
     : [];
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden pb-10">
+    <main className="bg-gradient-to-b from-stone-50 to-white w-full min-h-screen text-gray-800 overflow-x-hidden pb-10">
 
       {/* ✅ Full Width Image Swiper */}
       {gallery.length > 0 && (

@@ -42,7 +42,7 @@ export default function ClientPage() {
     : [];
 
   return (
-    <main className="bg-white text-gray-800 w-full min-h-screen pb-10">
+    <main className="bg-gradient-to-b from-yellow-50 to-white text-gray-800 w-full min-h-screen pb-10">
       {/* Full-width Swiper */}
 <div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-[calc((100vw-100%)/2)]">
         <Swiper spaceBetween={10} slidesPerView={1} centeredSlides className="w-full h-full">
@@ -71,12 +71,12 @@ export default function ClientPage() {
           {/* Chips */}
           <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
             {thrill.location && (
-              <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+              <span className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
                 <MapPin size={14} /> {thrill.location}
               </span>
             )}
             {thrill.duration && (
-              <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+              <span className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
                 <Clock size={14} /> {thrill.duration}
               </span>
             )}
@@ -89,7 +89,7 @@ export default function ClientPage() {
 
           {/* Price - centered */}
           {thrill.priceperperson && (
-            <p className="text-green-700 font-semibold text-lg text-right mb-2">
+            <p className="text-green-600 font-medium text-base mt-2">
               ₹{thrill.priceperperson.toLocaleString()}/person
             </p>
           )}

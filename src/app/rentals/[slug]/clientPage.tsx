@@ -45,7 +45,7 @@ export default function ClientPage() {
     : [];
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 pb-20 px-4">
+    <main className="bg-gradient-to-b from-slate-50 to-white w-full min-h-screen text-gray-800 pb-10 px-4">
       <div className="max-w-screen-md mx-auto">
       <Swiper spaceBetween={10} slidesPerView={1.2} className="w-full h-64 md:h-96">
         {gallery.map((img, idx) => (
@@ -69,7 +69,7 @@ export default function ClientPage() {
               </p>
             )}
             {typeof rental.rentalrate === "object" && rental.rentalrate?.price && (
-              <p className="text-base font-semibold text-green-600 mt-1">
+              <p className="text-green-600 font-medium text-base mt-2">
                 ₹{rental.rentalrate.price}/day
               </p>
             )}

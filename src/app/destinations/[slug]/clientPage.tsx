@@ -36,7 +36,7 @@ export default function ClientPage() {
   if (!destination) return <p className="p-4">Loading...</p>;
 
   return (
-    <main className="pb-10 text-gray-800 bg-white w-full">
+    <main className="bg-gradient-to-b from-emerald-50 to-white text-gray-800 w-full min-h-screen pb-10">
       {/* Full-width hero image */}
       <div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-[calc((100vw-100%)/2)]">
         {destination.image && destination.image.startsWith("https") ? (
@@ -61,12 +61,12 @@ export default function ClientPage() {
           transition={{ delay: 0.2 }}
           className="mt-5"
         >
-          <h1 className="text-xl font-bold text-gray-800">{destination.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-800">{destination.name}</h1>
           <div className="flex flex-wrap gap-2 mt-2">
             {destination.tags?.map((tag, i) => (
               <span
                 key={i}
-                className="px-2 py-1 text-xs bg-emerald-100 text-emerald-700 rounded-full"
+                className="px-3 py-1 text-xs bg-emerald-100 text-emerald-700 rounded-full"
               >
                 {tag}
               </span>

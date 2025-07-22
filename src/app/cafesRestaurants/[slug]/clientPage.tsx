@@ -34,7 +34,7 @@ export default function ClientPage() {
   const gallery = cafe.gallery?.length ? cafe.gallery : cafe.image ? [cafe.image] : [];
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 pb-20">
+    <main className="bg-gradient-to-b from-orange-50 to-white w-full min-h-screen text-gray-800 pb-10">
       {/* Image Swiper */}
       <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-64 md:h-96">
         {gallery.map((img, idx) => (
@@ -71,7 +71,7 @@ export default function ClientPage() {
               {cafe.cuisine.map((c) => (
                 <span
                   key={c}
-                  className="px-3 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full"
+                  className="px-3 py-1 text-xs bg-orange-100 text-orange-700 rounded-full"
                 >
                   {c}
                 </span>
@@ -79,9 +79,9 @@ export default function ClientPage() {
             </div>
           )}
 
-          {/* Price - Centered */}
+          {/* Price */}
           {cafe.averagecost && (
-            <p className="text-lg font-semibold text-green-700 text-center mt-4">
+            <p className="text-green-600 font-medium text-base mt-2">
               ₹{cafe.averagecost}/person
             </p>
           )}
@@ -97,7 +97,7 @@ export default function ClientPage() {
           {cafe.contact && (
             <a
               href={`tel:${cafe.contact}`}
-              className="block text-blue-700 mt-1 text-sm"
+              className="inline-block text-blue-700 bg-blue-50 px-4 py-2 rounded-full mt-2 text-sm"
             >
               <Phone size={14} className="inline-block mr-1" /> {cafe.contact}
             </a>

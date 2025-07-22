@@ -43,7 +43,7 @@ export default function ClientPage() {
     : [];
 
   return (
-    <main className="bg-white text-gray-800 w-full min-h-screen overflow-x-hidden">
+    <main className="bg-gradient-to-b from-indigo-50 to-white text-gray-800 w-full min-h-screen overflow-x-hidden pb-10">
       {/* Full Width Image */}
       <div className="w-full">
         <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-64 sm:h-80 md:h-96">
@@ -74,7 +74,7 @@ export default function ClientPage() {
         </div>
 
         {homestay.pricepernight && (
-          <p className="text-green-700 font-semibold text-lg text-center mb-4">
+          <p className="text-green-600 font-medium text-base mt-2">
             ₹{homestay.pricepernight.toLocaleString()}/night
           </p>
         )}
