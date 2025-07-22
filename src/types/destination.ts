@@ -1,6 +1,6 @@
 export interface Destination {
   id: string;
-  name: string | null;
+  name: string;
   slug?: string;
   description: string | null;
   location: string | null;

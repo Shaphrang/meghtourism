@@ -6,13 +6,14 @@ import { Rental } from "@/types/rentals";
 import { Destination } from "@/types/destination";
 import { Homestay } from "@/types/homestay";
 import Image from "next/image";
-import { MapPin, Phone, Share2 } from "lucide-react";
+import { MapPin, Phone } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
+import ShareBar from "@/components/common/shareBar";
 
 export default function ClientPage() {
   const { slug } = useParams();
@@ -43,19 +44,9 @@ export default function ClientPage() {
     ? [rental.image]
     : [];
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      await navigator.share({
-        title: rental.title || rental.type || "Rental",
-        url: window.location.href,
-      });
-    } else {
-      alert("Sharing not supported on this device");
-    }
-  };
-
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 pb-20">
+    <main className="w-full min-h-screen bg-white text-gray-800 pb-20 px-4">
+      <div className="max-w-screen-md mx-auto">
       <Swiper spaceBetween={10} slidesPerView={1.2} className="w-full h-64 md:h-96">
         {gallery.map((img, idx) => (
           <SwiperSlide key={idx} className="relative w-full h-full rounded-lg overflow-hidden">
@@ -86,11 +77,10 @@ export default function ClientPage() {
               <p className="text-sm text-blue-700 font-medium mt-1">Status: {rental.availability}</p>
             )}
           </div>
-          <button onClick={handleShare} className="text-blue-600 p-1">
-            <Share2 size={20} />
-          </button>
         </div>
       </section>
+
+      <ShareBar title={rental.title || rental.type} text={rental.description?.slice(0,80)} />
 
       {rental.description && (
         <section className="p-4">
@@ -161,6 +151,7 @@ export default function ClientPage() {
           </button>
         </div>
       )}
+      </div>
     </main>
   );
 }

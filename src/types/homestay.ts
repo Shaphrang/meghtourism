@@ -1,6 +1,6 @@
 export type Homestay = {
   id: string;
-  name?: string;
+  name: string;
   slug?: string;
   description?: string;
   location?: string;
