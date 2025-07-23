@@ -10,15 +10,19 @@ import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
-import NearbyListings from "@/components/common/nearbyListings";
+//import NearbyListings from "@/components/common/nearbyListings";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import useRelatedForHomestay from "@/hooks/useRelatedForHomestay";
+import HorizontalSection from "@/components/common/horizonatlSection";
 
 export default function ClientPage() {
   const { slug } = useParams();
   const itemSlug = normalizeSlug(String(slug));
   const [homestay, setHomestay] = useState<Homestay | null>(null);
   const [showContact, setShowContact] = useState(false);
+  const related = useRelatedForHomestay(homestay);
+  console.log('Homestay Data', related)
 
   useEffect(() => {
     async function fetchData() {
@@ -31,6 +35,7 @@ export default function ClientPage() {
       if (stay) {
         setHomestay(stay);
       }
+      console.log('Homestay Data_1', stay)
     }
 
     fetchData();
@@ -143,17 +148,42 @@ export default function ClientPage() {
 
         {/* Nearby Sections */}
         <div className="pt-6 space-y-6">
-          <NearbyListings
+           {/*<NearbyListings
             type="destinations"
             location={homestay.location ?? null}
             title="Nearby Attractions"
-          />
-          <NearbyListings
-            type="homestays"
-            location={homestay.location ?? null}
-            excludeId={homestay.id}
-            title="Similar Stays"
-          />
+          />*/}
+         {/*<NearbyListings
+          type="homestays"
+          location={homestay.location ?? null}
+          excludeId={homestay.id}
+          title="Similar Stays"
+        />*/}
+        <HorizontalSection
+          title="Nearby Destinations"
+          type="destinations"
+          items={related.destinations}
+        />
+        <HorizontalSection
+          title="🎉 What's Happening"
+          type="events"
+          items={related.events}
+        />
+        <HorizontalSection
+          title="🌄 Adventure Nearby"
+          type="thrills"
+          items={related.thrills}
+        />
+        <HorizontalSection
+          title="🍴 Places to Eat"
+          type="cafesRestaurants"
+          items={related.restaurants}
+        />
+        <HorizontalSection
+          title="🛵 Get a Rental"
+          type="rentals"
+          items={related.rentals}
+        />
         </div>
 
         {/* Reviews */}
