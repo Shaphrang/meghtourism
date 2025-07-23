@@ -4,9 +4,7 @@ import { redirect } from 'next/navigation';
 import LogoutButton from '@/components/admin/logoutButton';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  // ✅ Safe cookies wrapper
-  const getCookies = () => cookies();
-  const supabase = createServerComponentClient({ cookies: getCookies });
+  const supabase = createServerComponentClient({ cookies }); // ✅ PASS cookies directly
 
   const {
     data: { session },

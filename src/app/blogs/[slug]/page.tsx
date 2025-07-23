@@ -3,12 +3,11 @@ import { cookies } from 'next/headers';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import ClientPage from './clientPage';
 
-export async function generateMetadata(_: any): Promise<Metadata> {
-  const cookieStore = cookies();
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const cookieStore = await cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
 
-  const url = new URL(_.params?.slug ?? '', 'https://example.com');
-  const slug = url.pathname.split('/').pop();
+  const slug = params.slug;
   if (!slug) return { title: 'Blog Not Found' };
 
   const { data: blog } = await supabase
