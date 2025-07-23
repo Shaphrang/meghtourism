@@ -18,7 +18,8 @@ const categories = [
   { key: 'itineraries', label: 'Itineraries' },
   { key: 'rentals', label: 'Rentals' },
   { key: 'cafes_and_restaurants', label: 'Cafes & Restaurants' },
-  { key: 'faqs', label: 'FAQs' }
+  { key: 'faqs', label: 'FAQs' },
+  { key: 'reviews', label: 'Ratings & Reviews' }
 ];
 
 export default function Sidebar({ current, onSelect }: Props) {

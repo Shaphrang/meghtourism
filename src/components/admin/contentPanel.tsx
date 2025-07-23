@@ -12,6 +12,7 @@ const AdminItineraries = dynamic(() => import('./itineraries/adminItineraries'))
 const AdminRentals = dynamic(() => import('./rentals/adminRentals'));
 const AdminCafeRestaurants = dynamic(() => import('./cafeRestaurants/adminCafeRestaurants'));
 const AdminFaqs = dynamic(() => import('./faqs/adminFaqs'));
+const AdminReviews = dynamic(() => import('./reviews/adminReviews'));
 
 interface Props {
   active: string;
@@ -30,6 +31,7 @@ export default function ContentPanel({ active }: Props) {
       {active === 'rentals' && <AdminRentals />}
       {active === 'cafes_and_restaurants' && <AdminCafeRestaurants />}
       {active === 'faqs' && <AdminFaqs />}
+      {active === 'reviews' && <AdminReviews />}
     </div>
   );
 }
