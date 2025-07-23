@@ -15,7 +15,7 @@ export default function AverageRating({ category, itemId }: Props) {
   useEffect(() => {
     async function fetchAverage() {
       const { data, error } = await supabase
-        .from("reviews")
+        .from("ratings_reviews")
         .select("rating")
         .eq("category", category)
         .eq("item_id", itemId)
@@ -31,13 +31,13 @@ export default function AverageRating({ category, itemId }: Props) {
   }, [category, itemId]);
 
   if (average === null || count === 0)
-    return <div className="text-sm text-gray-600">No reviews yet</div>;
+    return <div className="text-sm text-gray-600">No ratings</div>;
 
   return (
     <div className="flex items-center gap-1 text-sm font-medium text-gray-700">
       <Star size={16} className="text-yellow-500 fill-yellow-300" />
       {average.toFixed(1)}
-      <span className="text-gray-500">· Based on {count} reviews</span>
+      <span className="text-[10px] text-gray-500">{count} ratings</span>
     </div>
   );
 }

@@ -11,7 +11,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import ReviewSection from "@/components/reviews/reviewSection";
-import AverageRating from "@/components/reviews/AverageRating";
+import AverageRating from "@/components/reviews/averageRating";
 
 export default function ClientPage() {
   const { slug } = useParams();

@@ -12,7 +12,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
 import ReviewSection from "@/components/reviews/reviewSection";
-import AverageRating from "@/components/reviews/AverageRating";
+import AverageRating from "@/components/reviews/averageRating";
 
 export default function ClientPage() {
   const { slug } = useParams();
