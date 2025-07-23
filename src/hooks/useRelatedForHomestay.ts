@@ -7,6 +7,7 @@ import { Itinerary } from '@/types/itineraries';
 import { Rental } from '@/types/rentals';
 import extractMatchFields from '@/lib/extractMatchFields';
 import useInternalLinks from './useInternalLinks';
+import useSupabaseNearby from './useSupabaseNearby';
 
 export default function useRelatedForHomestay(homestay: Homestay | null) {
   const { location, district } = extractMatchFields(homestay);
@@ -48,6 +49,14 @@ export default function useRelatedForHomestay(homestay: Homestay | null) {
     targetType: 'rentals',
   });
 
+  // Add nearby homestays (excluding the current one by id or slug)
+  const nearbyHomestays = useSupabaseNearby<Homestay>(
+    'homestays',
+    location,
+    homestay?.id || homestay?.slug || undefined,
+    4
+  );
+
   return {
     destinations: destinations.data,
     events: events.data,
@@ -55,5 +64,6 @@ export default function useRelatedForHomestay(homestay: Homestay | null) {
     restaurants: restaurants.data,
     itineraries: itineraries.data,
     rentals: rentals.data,
+    nearbyHomestays: nearbyHomestays.data,
   };
 }
