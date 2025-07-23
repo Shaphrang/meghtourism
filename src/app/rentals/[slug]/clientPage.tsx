@@ -14,27 +14,28 @@ import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
 import ShareBar from "@/components/common/shareBar";
+import ReviewSection from "@/components/reviews/reviewSection";
+import AverageRating from "@/components/reviews/AverageRating";
 
 export default function ClientPage() {
   const { slug } = useParams();
-
+  const itemSlug = normalizeSlug(String(slug));
   const [rental, setRental] = useState<Rental | null>(null);
   const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      const fixedSlug = normalizeSlug(String(slug));
       const { data } = await supabase
         .from("rentals")
         .select("*")
-        .eq("slug", fixedSlug)
+        .eq("slug", itemSlug)
         .single();
       if (data) {
         setRental(data);
       }
     }
     fetchData();
-  }, [slug]);
+  }, [itemSlug]);
 
   if (!rental) return <p className="p-4">Loading...</p>;
 
@@ -62,7 +63,10 @@ export default function ClientPage() {
       <section className="p-4">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold mb-1">{rental.title || rental.type}</h1>
+            <div className="flex items-center justify-between mb-1">
+              <h1 className="text-2xl font-bold">{rental.title || rental.type}</h1>
+              <AverageRating category="rental" itemId={itemSlug} />
+            </div>
             {rental.address && (
               <p className="text-sm text-gray-600 flex items-center gap-2">
                 <MapPin size={14} /> {rental.address}
@@ -124,16 +128,7 @@ export default function ClientPage() {
         title="Nearby Stays"
       />
 
-      {Array.isArray(rental.reviews) && rental.reviews.length > 0 && (
-        <section className="p-4">
-          <h3 className="font-semibold mb-2">Reviews</h3>
-          {rental.reviews.map((rev, i) => (
-            <div key={i} className="mb-2 border-b pb-2">
-              <p className="text-sm">{rev}</p>
-            </div>
-          ))}
-        </section>
-      )}
+      <ReviewSection category="rental" itemId={itemSlug} />
 
       {rental.contact && (
         <div className="p-4 fixed bottom-10 left-0 right-0">

@@ -12,25 +12,27 @@ import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
 import ShareBar from "@/components/common/shareBar";
+import ReviewSection from "@/components/reviews/reviewSection";
+import AverageRating from "@/components/reviews/AverageRating";
 
 export default function ClientPage() {
   const { slug } = useParams();
+  const itemSlug = normalizeSlug(String(slug));
   const [event, setEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     async function fetchData() {
-      const fixedSlug = normalizeSlug(String(slug));
       const { data: ev } = await supabase
         .from("events")
         .select("*")
-        .eq("slug", fixedSlug)
+        .eq("slug", itemSlug)
         .single();
       if (ev) {
         setEvent(ev);
       }
     }
     fetchData();
-  }, [slug]);
+  }, [itemSlug]);
 
   if (!event) return <p className="p-4">Loading...</p>;
 
@@ -74,25 +76,28 @@ export default function ClientPage() {
 
 
       <section className="p-4">
-        <h1 className="text-2xl font-bold text-blue-800 mb-2">{event.name}</h1>
-{/* Chips Section - Centered */}
-<div className="flex flex-wrap justify gap-2 text-sm text-gray-600">
-  {event.date && (
-    <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
-      <Calendar size={14} /> {event.date}
-    </span>
-  )}
-  {event.time && (
-    <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
-      <Clock size={14} /> {event.time}
-    </span>
-  )}
-  {event.location && (
-    <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
-      <MapPin size={14} /> {event.location}
-    </span>
-  )}
-</div>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-bold text-blue-800">{event.name}</h1>
+          <AverageRating category="event" itemId={itemSlug} />
+        </div>
+          {/* Chips Section - Centered */}
+          <div className="flex flex-wrap justify gap-2 text-sm text-gray-600">
+            {event.date && (
+              <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+                <Calendar size={14} /> {event.date}
+              </span>
+            )}
+            {event.time && (
+              <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+                <Clock size={14} /> {event.time}
+              </span>
+            )}
+            {event.location && (
+              <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+                <MapPin size={14} /> {event.location}
+              </span>
+            )}
+          </div>
 
         {event.entryfee?.amount && (
           <p className="mt-1 text-sm text-green-700 font-medium">
@@ -131,19 +136,8 @@ export default function ClientPage() {
         location={event.location ?? null}
         title="Nearby Homestays"
       />
-
-      {Array.isArray((event as any).reviews) && (event as any).reviews.length > 0 && (
-        <section className="p-4">
-          <h3 className="font-semibold mb-2">Guest Reviews</h3>
-          {(event as any).reviews.map((r: any, i: number) => (
-            <div key={i} className="mb-2 border-b pb-2">
-              <p className="text-sm font-medium">{r.user || r.name}</p>
-              <p className="text-xs text-gray-400">{r.date}</p>
-              <p className="text-sm">{r.comment}</p>
-            </div>
-          ))}
-        </section>
-      )}
+            {/*Reviews*/}
+      <ReviewSection category="event" itemId={itemSlug} />
       </div>
     </main>
   );

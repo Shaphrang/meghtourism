@@ -11,23 +11,25 @@ import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
+import ReviewSection from "@/components/reviews/reviewSection";
+import AverageRating from "@/components/reviews/AverageRating";
 
 export default function ClientPage() {
   const { slug } = useParams();
+  const itemSlug = normalizeSlug(String(slug));
   const [cafe, setCafe] = useState<CafeAndRestaurant | null>(null);
 
   useEffect(() => {
     async function fetchData() {
-      const fixedSlug = normalizeSlug(String(slug));
       const { data } = await supabase
         .from("cafes_and_restaurants")
         .select("*")
-        .eq("slug", fixedSlug)
+        .eq("slug", itemSlug)
         .single();
       setCafe(data);
     }
     fetchData();
-  }, [slug]);
+  }, [itemSlug]);
 
   if (!cafe) return <p className="p-4">Loading...</p>;
 
@@ -58,7 +60,10 @@ export default function ClientPage() {
       <div className="max-w-screen-md mx-auto px-4">
         {/* Title & Chips */}
         <section className="pt-5 pb-3">
-          <h1 className="text-2xl font-bold text-green-800">{cafe.name}</h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-2xl font-bold text-green-800">{cafe.name}</h1>
+            <AverageRating category="cafeRestaurant" itemId={itemSlug} />
+          </div>
 
           {cafe.address && (
             <p className="flex items-center gap-2 text-sm text-gray-600 mt-1">
@@ -171,19 +176,7 @@ export default function ClientPage() {
         />
 
         {/* Reviews */}
-        {Array.isArray(cafe.reviews) && cafe.reviews.length > 0 && (
-          <section className="pb-4">
-            <h2 className="font-semibold mb-1">Reviews</h2>
-            {cafe.reviews.map((rev, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-50 p-3 rounded-lg shadow-sm mb-2"
-              >
-                <p className="text-sm">{rev}</p>
-              </div>
-            ))}
-          </section>
-        )}
+          <ReviewSection category="cafeRestaurant" itemId={itemSlug} />
       </div>
     </main>
   );

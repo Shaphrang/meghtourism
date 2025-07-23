@@ -11,19 +11,21 @@ import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
+import ReviewSection from "@/components/reviews/reviewSection";
+import AverageRating from "@/components/reviews/AverageRating";
 
 export default function ClientPage() {
   const { slug } = useParams();
+  const itemSlug = normalizeSlug(String(slug));
   const [homestay, setHomestay] = useState<Homestay | null>(null);
   const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      const fixedSlug = normalizeSlug(String(slug));
       const { data: stay } = await supabase
         .from("homestays")
         .select("*")
-        .eq("slug", fixedSlug)
+        .eq("slug", itemSlug)
         .single();
 
       if (stay) {
@@ -32,7 +34,7 @@ export default function ClientPage() {
     }
 
     fetchData();
-  }, [slug]);
+  }, [itemSlug]);
 
   if (!homestay) return <p className="p-4">Loading...</p>;
 
@@ -63,7 +65,10 @@ export default function ClientPage() {
 
       {/* Main Content */}
       <div className="max-w-screen-md mx-auto px-4 pt-5 pb-10">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">{homestay.name}</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-bold text-gray-900">{homestay.name}</h1>
+          <AverageRating category="homestay" itemId={itemSlug} />
+        </div>
 
         <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
           {homestay.address && (
@@ -152,16 +157,7 @@ export default function ClientPage() {
         </div>
 
         {/* Reviews */}
-        {homestay.reviews?.length ? (
-          <section className="pt-6">
-            <h3 className="text-base font-semibold mb-2">Guest Reviews</h3>
-            {homestay.reviews.map((rev, i) => (
-              <div key={i} className="mb-3">
-                <p className="text-sm">{rev}</p>
-              </div>
-            ))}
-          </section>
-        ) : null}
+        <ReviewSection category="homestay" itemId={itemSlug} />
       </div>
     </main>
   );

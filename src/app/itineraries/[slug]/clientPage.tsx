@@ -10,24 +10,26 @@ import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import ReviewSection from "@/components/reviews/reviewSection";
+import AverageRating from "@/components/reviews/AverageRating";
 
 export default function ClientPage() {
   const { slug } = useParams();
+  const itemSlug = normalizeSlug(String(slug));
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchData() {
-      const fixedSlug = normalizeSlug(String(slug));
       const { data } = await supabase
         .from("itineraries")
         .select("*")
-        .eq("slug", fixedSlug)
+        .eq("slug", itemSlug)
         .single();
       setItinerary(data);
     }
     fetchData();
-  }, [slug]);
+  }, [itemSlug]);
 
   if (!itinerary) return <p className="p-4">Loading...</p>;
 
@@ -65,9 +67,12 @@ export default function ClientPage() {
 
         {/* Title and Chips */}
         <section className="px-2 pt-4">
-          <h1 className="text-2xl font-bold text-blue-900 mb-1 leading-snug">
-            {itinerary.title}
-          </h1>
+          <div className="flex items-center justify-between mb-1">
+            <h1 className="text-2xl font-bold text-blue-900 leading-snug">
+              {itinerary.title}
+            </h1>
+            <AverageRating category="itinerary" itemId={itemSlug} />
+          </div>
           <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
             {itinerary.days && (
               <span className="bg-sky-100 text-sky-700 px-3 py-1 rounded-full">
@@ -159,20 +164,7 @@ export default function ClientPage() {
         )}
 
         {/* Reviews */}
-        {Array.isArray((itinerary as any).reviews) &&
-          (itinerary as any).reviews.length > 0 && (
-            <section className="p-4">
-              <h2 className="text-lg font-semibold mb-2">Reviews</h2>
-              {(itinerary as any).reviews.map((rev: any, i: number) => (
-                <div
-                  key={i}
-                  className="mb-3 bg-gray-50 p-3 rounded-lg shadow-sm"
-                >
-                  <p className="text-sm">{rev.comment || rev}</p>
-                </div>
-              ))}
-            </section>
-          )}
+        <ReviewSection category="itinerary" itemId={itemSlug} />
       </div>
     </main>
   );

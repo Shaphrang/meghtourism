@@ -14,24 +14,26 @@ import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
 import ShareBar from "@/components/common/shareBar";
+import ReviewSection from "@/components/reviews/reviewSection";
+import AverageRating from "@/components/reviews/AverageRating";
 
 export default function ClientPage() {
   const { slug } = useParams();
+  const itemSlug = normalizeSlug(String(slug));
   const [destination, setDestination] = useState<Destination | null>(null);
   const [showFullDesc, setShowFullDesc] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      const fixedSlug = normalizeSlug(String(slug));
       const { data: dest } = await supabase
         .from("destinations")
         .select("*")
-        .eq("slug", fixedSlug)
+        .eq("slug", itemSlug)
         .single();
       setDestination(dest);
     }
     fetchData();
-  }, [slug]);
+  }, [itemSlug]);
 
   if (!destination) return <p className="p-4">Loading...</p>;
 
@@ -61,7 +63,10 @@ export default function ClientPage() {
           transition={{ delay: 0.2 }}
           className="mt-5"
         >
-          <h1 className="text-2xl font-bold text-gray-800">{destination.name}</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-800">{destination.name}</h1>
+            <AverageRating category="destination" itemId={itemSlug} />
+          </div>
           <div className="flex flex-wrap gap-2 mt-2">
             {destination.tags?.map((tag, i) => (
               <span
@@ -147,6 +152,8 @@ export default function ClientPage() {
             </Button>
           </form>
         </motion.div>
+        {/*Reviews*/}
+        <ReviewSection category="destination" itemId={itemSlug} />
       </div>
     </main>
   );

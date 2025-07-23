@@ -4,26 +4,28 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Thrill } from "@/types/thrill";
 import Image from "next/image";
-import { MapPin, Clock, Star, TrendingUp } from "lucide-react";
+import { MapPin, Clock, TrendingUp } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
+import ReviewSection from "@/components/reviews/reviewSection";
+import AverageRating from "@/components/reviews/AverageRating";
 
 export default function ClientPage() {
   const { slug } = useParams();
+  const itemSlug = normalizeSlug(String(slug));
   const [thrill, setThrill] = useState<Thrill | null>(null);
   const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      const fixedSlug = normalizeSlug(String(slug));
       const { data: th } = await supabase
         .from("thrills")
         .select("*")
-        .eq("slug", fixedSlug)
+        .eq("slug", itemSlug)
         .single();
 
       if (th) {
@@ -31,7 +33,7 @@ export default function ClientPage() {
       }
     }
     fetchData();
-  }, [slug]);
+  }, [itemSlug]);
 
   if (!thrill) return <p className="p-4">Loading...</p>;
 
@@ -64,9 +66,12 @@ export default function ClientPage() {
       <div className="max-w-screen-md mx-auto px-4 sm:px-6">
         <section className="pt-4 pb-2">
           {/* Title */}
-          <h1 className="text-2xl font-extrabold text-green-800 mb-2 leading-snug">
-            {thrill.name}
-          </h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-2xl font-extrabold text-green-800 leading-snug">
+              {thrill.name}
+            </h1>
+            <AverageRating category="thrill" itemId={itemSlug} />
+          </div>
 
           {/* Chips */}
           <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
@@ -145,25 +150,7 @@ export default function ClientPage() {
         )}
 
         {/* Reviews */}
-        {Array.isArray((thrill as any).reviews) && (thrill as any).reviews.length > 0 && (
-          <section className="py-4">
-            <h2 className="text-lg font-semibold mb-2">Reviews</h2>
-            {(thrill as any).reviews.map((rev: any, i: number) => (
-              <div key={i} className="mb-3">
-                <p className="font-semibold text-sm text-gray-800">{rev.name || rev.user}</p>
-                {rev.date && <p className="text-xs text-gray-500">{rev.date}</p>}
-                {rev.rating && (
-                  <div className="flex gap-1 mt-1">
-                    {Array.from({ length: rev.rating }, (_, idx) => (
-                      <Star key={idx} size={14} className="text-yellow-500 fill-yellow-300" />
-                    ))}
-                  </div>
-                )}
-                <p className="text-sm text-gray-700 mt-1">{rev.comment}</p>
-              </div>
-            ))}
-          </section>
-        )}
+        <ReviewSection category="thrill" itemId={itemSlug} />
 
         {/* Nearby Listings */}
         <NearbyListings
