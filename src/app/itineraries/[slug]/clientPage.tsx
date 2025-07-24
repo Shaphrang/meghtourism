@@ -12,6 +12,8 @@ import { normalizeSlug } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import useRelatedForItinerary from "@/hooks/useRelatedForItinerary";
+import HorizontalSection from "@/components/common/horizonatlSection";
 import Head from "next/head";
 
 export default function ClientPage() {
@@ -19,6 +21,7 @@ export default function ClientPage() {
   const itemSlug = normalizeSlug(String(slug));
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
+  const related = useRelatedForItinerary(itinerary);
 
   useEffect(() => {
     async function fetchData() {
@@ -188,6 +191,39 @@ export default function ClientPage() {
             </ul>
           </section>
         )}
+
+        <div className="pt-6 space-y-6">
+          <HorizontalSection
+            title="Destinations"
+            type="destinations"
+            items={related.destinations}
+          />
+          <HorizontalSection
+            title="Places to Stay"
+            type="homestays"
+            items={related.homestays}
+          />
+          <HorizontalSection
+            title="🎉 What's Happening"
+            type="events"
+            items={related.events}
+          />
+          <HorizontalSection
+            title="🌄 Adventure Nearby"
+            type="thrills"
+            items={related.thrills}
+          />
+          <HorizontalSection
+            title="🍴 Places to Eat"
+            type="cafesRestaurants"
+            items={related.restaurants}
+          />
+          <HorizontalSection
+            title="🛵 Get a Rental"
+            type="rentals"
+            items={related.rentals}
+          />
+        </div>
 
         {/* Reviews */}
         <ReviewSection category="itinerary" itemId={itemSlug} />

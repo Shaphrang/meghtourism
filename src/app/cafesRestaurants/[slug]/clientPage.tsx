@@ -10,7 +10,8 @@ import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
-import NearbyListings from "@/components/common/nearbyListings";
+import useRelatedForRestaurant from "@/hooks/useRelatedForRestaurant";
+import HorizontalSection from "@/components/common/horizonatlSection";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
 import Head from "next/head";
@@ -19,6 +20,7 @@ export default function ClientPage() {
   const { slug } = useParams();
   const itemSlug = normalizeSlug(String(slug));
   const [cafe, setCafe] = useState<CafeAndRestaurant | null>(null);
+  const related = useRelatedForRestaurant(cafe);
 
   useEffect(() => {
     async function fetchData() {
@@ -188,17 +190,38 @@ export default function ClientPage() {
           </section>
         )}
 
-        {/* Nearby */}
-        <NearbyListings
-          type="destinations"
-          location={cafe.location}
-          title="Nearby Attractions"
-        />
-        <NearbyListings
-          type="homestays"
-          location={cafe.location}
-          title="Nearby Stays"
-        />
+        <div className="pt-6 space-y-6">
+          <HorizontalSection
+            title="Nearby Attractions"
+            type="destinations"
+            items={related.destinations}
+          />
+          <HorizontalSection
+            title="Nearby Stays"
+            type="homestays"
+            items={related.homestays}
+          />
+          <HorizontalSection
+            title="🎉 What's Happening"
+            type="events"
+            items={related.events}
+          />
+          <HorizontalSection
+            title="🌄 Adventure Nearby"
+            type="thrills"
+            items={related.thrills}
+          />
+          <HorizontalSection
+            title="📜 Itineraries"
+            type="itineraries"
+            items={related.itineraries}
+          />
+          <HorizontalSection
+            title="🛵 Get a Rental"
+            type="rentals"
+            items={related.rentals}
+          />
+        </div>
 
         {/* Reviews */}
           <ReviewSection category="cafeRestaurant" itemId={itemSlug} />

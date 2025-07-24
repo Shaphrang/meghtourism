@@ -10,8 +10,8 @@ import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
-import NearbyListings from "@/components/common/nearbyListings";
-import ShareBar from "@/components/common/shareBar";
+import useRelatedForEvent from "@/hooks/useRelatedForEvent";
+import HorizontalSection from "@/components/common/horizonatlSection";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
 import Head from "next/head";
@@ -20,6 +20,7 @@ export default function ClientPage() {
   const { slug } = useParams();
   const itemSlug = normalizeSlug(String(slug));
   const [event, setEvent] = useState<Event | null>(null);
+  const related = useRelatedForEvent(event);
 
   useEffect(() => {
     async function fetchData() {
@@ -54,7 +55,6 @@ export default function ClientPage() {
   const desc = event.description?.slice(0, 150) || "";
   const img = event.image || event.gallery?.[0] || "";
 
-
   return (
     <>
       <Head>
@@ -69,44 +69,36 @@ export default function ClientPage() {
         {img && <meta name="twitter:image" content={img} />}
       </Head>
 
-      <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden relative pb-20 px-4">
-      {/* Full Width Image Swiper */}
-<div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-4">
-  <Swiper
-    spaceBetween={10}
-    slidesPerView={1}
-    centeredSlides
-    className="w-full h-full"
-  >
-    {gallery.map((img, idx) => (
-      <SwiperSlide
-        key={idx}
-        className="relative w-full h-full flex items-center justify-center overflow-hidden"
-      >
-        {img && img.startsWith("https") ? (
-          <Image
-            src={img}
-            alt={event.name || "Event"}
-            fill
-            className="object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-gray-100">
-            No image
-          </div>
-        )}
-      </SwiperSlide>
-    ))}
-  </Swiper>
-
-
-      <section className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-bold text-blue-800">{event.name}</h1>
-          <AverageRating category="event" itemId={itemSlug} />
+      <main className="bg-gradient-to-b from-emerald-50 to-white text-gray-800 w-full min-h-screen pb-10">
+        {/* Full-width image swiper */}
+        <div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-[calc((100vw-100%)/2)]">
+          <Swiper spaceBetween={10} slidesPerView={1} centeredSlides className="w-full h-full">
+            {gallery.map((img, idx) => (
+              <SwiperSlide
+                key={idx}
+                className="relative w-full h-full flex items-center justify-center overflow-hidden"
+              >
+                {img && img.startsWith("https") ? (
+                  <Image src={img} alt={event.name || "Event"} fill className="object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-gray-100">
+                    No image
+                  </div>
+                )}
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
-          {/* Chips Section - Centered */}
-          <div className="flex flex-wrap justify gap-2 text-sm text-gray-600">
+
+        {/* Main content */}
+        <div className="max-w-screen-md mx-auto px-4">
+          <div className="flex items-center justify-between mt-5">
+            <h1 className="text-2xl font-bold text-gray-800">{event.name}</h1>
+            <AverageRating category="event" itemId={itemSlug} />
+          </div>
+
+          {/* Centered chips */}
+          <div className="flex flex-wrap gap-2 mt-2 text-sm text-gray-600">
             {event.date && (
               <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
                 <Calendar size={14} /> {event.date}
@@ -124,47 +116,59 @@ export default function ClientPage() {
             )}
           </div>
 
-        {event.entryfee?.amount && (
-          <p className="mt-1 text-sm text-green-700 font-medium">
-            {event.entryfee?.type === "Free" ? "Free Entry" : `₹${event.entryfee.amount}`}
-          </p>
-        )}
-      </section>
+          {/* Entry fee */}
+          {event.entryfee?.amount && (
+            <p className="mt-1 text-sm text-green-700 font-medium">
+              {event.entryfee?.type === "Free" ? "Free Entry" : `₹${event.entryfee.amount}`}
+            </p>
+          )}
 
-      {/*<ShareBar title={event.name} text={event.description?.slice(0,80)} />*/}
+          {/* Description */}
+          {event.description && (
+            <section className="mt-6">
+              <h3 className="font-semibold mb-2">About the Event</h3>
+              <DescriptionToggle text={event.description} />
+            </section>
+          )}
 
-      {event.highlights?.length ? (
-        <section className="p-4">
-          <h3 className="font-semibold mb-2">Event Highlights</h3>
-          <ul className="list-disc pl-5 text-sm text-gray-700">
-            {event.highlights.map((h, i) => (
-              <li key={i}>{h}</li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+          {/* Related sections */}
+          <div className="pt-6 space-y-6">
+            <HorizontalSection
+              title="Nearby Attractions"
+              type="destinations"
+              items={related.destinations}
+            />
+            <HorizontalSection
+              title="Nearby Homestays"
+              type="homestays"
+              items={related.homestays}
+            />
+            <HorizontalSection
+              title="🌄 Adventure Nearby"
+              type="thrills"
+              items={related.thrills}
+            />
+            <HorizontalSection
+              title="🍴 Places to Eat"
+              type="cafes_and_restaurants"
+              items={related.restaurants}
+            />
+            <HorizontalSection
+              title="📜 Itineraries"
+              type="itineraries"
+              items={related.itineraries}
+            />
+            <HorizontalSection
+              title="🛵 Get a Rental"
+              type="rentals"
+              items={related.rentals}
+            />
+          </div>
 
-      {event.description && (
-        <section className="p-2">
-          <h3 className="font-semibold mb-2">About the Event</h3>
-          <DescriptionToggle text={event.description} />
-        </section>
-      )}
-
-      <NearbyListings
-        type="destinations"
-        location={event.location ?? null}
-        title="Nearby Attractions"
-      />
-      <NearbyListings
-        type="homestays"
-        location={event.location ?? null}
-        title="Nearby Homestays"
-      />
-            {/*Reviews*/}
-      <ReviewSection category="event" itemId={itemSlug} />
-      </div>
-    </main>
+          {/* Reviews */}
+          <ReviewSection category="event" itemId={itemSlug} />
+        </div>
+      </main>
     </>
   );
 }

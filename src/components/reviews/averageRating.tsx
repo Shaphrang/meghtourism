@@ -31,7 +31,7 @@ export default function AverageRating({ category, itemId }: Props) {
   }, [category, itemId]);
 
   if (average === null || count === 0)
-    return <div className="text-sm text-gray-600">No ratings</div>;
+    return <div className="text-[10px] text-gray-600"></div>;
 
   return (
     <div className="flex items-center gap-1 text-sm font-medium text-gray-700">

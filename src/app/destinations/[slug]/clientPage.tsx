@@ -12,8 +12,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
-import NearbyListings from "@/components/common/nearbyListings";
-import ShareBar from "@/components/common/shareBar";
+import useRelatedForDestination from "@/hooks/useRelatedForDestination";
+import HorizontalSection from "@/components/common/horizonatlSection";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
 import Head from "next/head";
@@ -23,6 +23,7 @@ export default function ClientPage() {
   const itemSlug = normalizeSlug(String(slug));
   const [destination, setDestination] = useState<Destination | null>(null);
   const [showFullDesc, setShowFullDesc] = useState(false);
+  const related = useRelatedForDestination(destination);
 
   useEffect(() => {
     async function fetchData() {
@@ -109,8 +110,6 @@ export default function ClientPage() {
           )}
         </motion.div>
 
-        <ShareBar title={destination.name} text={destination.description?.slice(0, 80)} />
-
         {/* Description */}
         {destination.description && (
           <motion.div
@@ -135,17 +134,38 @@ export default function ClientPage() {
           </motion.div>
         )}
 
-        <NearbyListings
-          type="homestays"
-          location={destination.location}
-          title="Nearby Homestays"
-        />
-        <NearbyListings
-          type="destinations"
-          location={destination.location}
-          excludeId={destination.id}
-          title="Nearby Attractions"
-        />
+        <div className="pt-6 space-y-6">
+          <HorizontalSection
+            title="Nearby Homestays"
+            type="homestays"
+            items={related.homestays}
+          />
+          <HorizontalSection
+            title="🎉 What's Happening"
+            type="events"
+            items={related.events}
+          />
+          <HorizontalSection
+            title="🌄 Adventure Nearby"
+            type="thrills"
+            items={related.thrills}
+          />
+          <HorizontalSection
+            title="🍴 Places to Eat"
+            type="cafesRestaurants"
+            items={related.restaurants}
+          />
+          <HorizontalSection
+            title="📜 Itineraries"
+            type="itineraries"
+            items={related.itineraries}
+          />
+          <HorizontalSection
+            title="🛵 Get a Rental"
+            type="rentals"
+            items={related.rentals}
+          />
+        </div>
 
         {/* Contact Form */}
         <motion.div

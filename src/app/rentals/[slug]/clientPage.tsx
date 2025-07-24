@@ -12,10 +12,10 @@ import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
-import NearbyListings from "@/components/common/nearbyListings";
-import ShareBar from "@/components/common/shareBar";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import useRelatedForRental from "@/hooks/useRelatedForRental";
+import HorizontalSection from "@/components/common/horizonatlSection";
 import Head from "next/head";
 
 export default function ClientPage() {
@@ -23,6 +23,7 @@ export default function ClientPage() {
   const itemSlug = normalizeSlug(String(slug));
   const [rental, setRental] = useState<Rental | null>(null);
   const [showContact, setShowContact] = useState(false);
+  const related = useRelatedForRental(rental);
 
   useEffect(() => {
     async function fetchData() {
@@ -110,8 +111,6 @@ export default function ClientPage() {
         </div>
       </section>
 
-      <ShareBar title={rental.title || rental.type} text={rental.description?.slice(0,80)} />
-
       {rental.description && (
         <section className="p-4">
           <DescriptionToggle text={rental.description} />
@@ -142,17 +141,38 @@ export default function ClientPage() {
         </section>
       ) : null}
 
-      <NearbyListings
-        type="destinations"
-        location={rental.location}
-        title="Nearby Attractions"
-      />
-
-      <NearbyListings
-        type="homestays"
-        location={rental.location}
-        title="Nearby Stays"
-      />
+      <div className="pt-6 space-y-6">
+        <HorizontalSection
+          title="Nearby Attractions"
+          type="destinations"
+          items={related.destinations}
+        />
+        <HorizontalSection
+          title="Nearby Stays"
+          type="homestays"
+          items={related.homestays}
+        />
+        <HorizontalSection
+          title="🎉 What's Happening"
+          type="events"
+          items={related.events}
+        />
+        <HorizontalSection
+          title="🌄 Adventure Nearby"
+          type="thrills"
+          items={related.thrills}
+        />
+        <HorizontalSection
+          title="🍴 Places to Eat"
+          type="cafesRestaurants"
+          items={related.restaurants}
+        />
+        <HorizontalSection
+          title="📜 Itineraries"
+          type="itineraries"
+          items={related.itineraries}
+        />
+      </div>
 
       <ReviewSection category="rental" itemId={itemSlug} />
 

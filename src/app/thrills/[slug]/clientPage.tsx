@@ -10,7 +10,8 @@ import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
-import NearbyListings from "@/components/common/nearbyListings";
+import useRelatedForThrill from "@/hooks/useRelatedForThrill";
+import HorizontalSection from "@/components/common/horizonatlSection";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
 import Head from "next/head";
@@ -20,6 +21,7 @@ export default function ClientPage() {
   const itemSlug = normalizeSlug(String(slug));
   const [thrill, setThrill] = useState<Thrill | null>(null);
   const [showContact, setShowContact] = useState(false);
+  const related = useRelatedForThrill(thrill);
 
   useEffect(() => {
     async function fetchData() {
@@ -173,20 +175,36 @@ export default function ClientPage() {
           </section>
         )}
 
+        <div className="pt-6 space-y-6">
+          <HorizontalSection
+            title="Nearby Attractions"
+            type="destinations"
+            items={related.destinations}
+          />
+          <HorizontalSection
+            title="Nearby Homestays"
+            type="homestays"
+            items={related.homestays}
+          />
+          <HorizontalSection
+            title="🍴 Places to Eat"
+            type="cafesRestaurants"
+            items={related.restaurants}
+          />
+          <HorizontalSection
+            title="📜 Itineraries"
+            type="itineraries"
+            items={related.itineraries}
+          />
+          <HorizontalSection
+            title="🛵 Get a Rental"
+            type="rentals"
+            items={related.rentals}
+          />
+
         {/* Reviews */}
         <ReviewSection category="thrill" itemId={itemSlug} />
-
-        {/* Nearby Listings */}
-        <NearbyListings
-          type="destinations"
-          location={thrill.location ?? null}
-          title="Nearby Attractions"
-        />
-        <NearbyListings
-          type="homestays"
-          location={thrill.location ?? null}
-          title="Nearby Homestays"
-        />
+        </div>
       </div>
     </main>
     </>

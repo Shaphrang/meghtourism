@@ -9,54 +9,43 @@ import extractMatchFields from '@/lib/extractMatchFields';
 import useInternalLinks from './useInternalLinks';
 
 export default function useRelatedForDestination(destination: Destination | null) {
-  const { location, district, tags } = extractMatchFields(destination);
+  const { location, district } = extractMatchFields(destination);
 
-  const homestays = useInternalLinks<Homestay>({
+  const commonParams = {
     sourceType: 'destinations',
-    targetType: 'homestays',
     location,
     district,
-    tags,
+    limit: 10,
+  };
+
+  const homestays = useInternalLinks<Homestay>({
+    ...commonParams,
+    targetType: 'homestays',
   });
 
   const events = useInternalLinks<Event>({
-    sourceType: 'destinations',
+    ...commonParams,
     targetType: 'events',
-    location,
-    district,
-    tags,
   });
 
   const thrills = useInternalLinks<Thrill>({
-    sourceType: 'destinations',
+    ...commonParams,
     targetType: 'thrills',
-    location,
-    district,
-    tags,
   });
 
   const restaurants = useInternalLinks<CafeAndRestaurant>({
-    sourceType: 'destinations',
-    targetType: 'cafesRestaurants',
-    location,
-    district,
-    tags,
+    ...commonParams,
+    targetType: 'cafes_and_restaurants',
   });
 
   const itineraries = useInternalLinks<Itinerary>({
-    sourceType: 'destinations',
+    ...commonParams,
     targetType: 'itineraries',
-    location,
-    district,
-    tags,
   });
 
   const rentals = useInternalLinks<Rental>({
-    sourceType: 'destinations',
+    ...commonParams,
     targetType: 'rentals',
-    location,
-    district,
-    tags,
   });
 
   return {
