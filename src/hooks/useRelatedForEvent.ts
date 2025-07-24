@@ -18,6 +18,12 @@ export default function useRelatedForEvent(event: Event | null) {
     limit: 10,
   };
 
+  const nearbyEvents = useInternalLinks<Event>({
+    ...commonParams,
+    targetType: 'events',
+    excludeId: event?.id,
+  });
+
   const destinations = useInternalLinks<Destination>({
     ...commonParams,
     targetType: 'destinations',
@@ -49,6 +55,7 @@ export default function useRelatedForEvent(event: Event | null) {
   });
 
   return {
+    nearbyEvents: nearbyEvents.data,
     destinations: destinations.data,
     homestays: homestays.data,
     thrills: thrills.data,

@@ -7,6 +7,7 @@ interface Params {
   location: string | null;
   district?: string | null;
   limit?: number;
+  excludeId?: string;
 }
 
 export default function useInternalLinks<T>({
@@ -15,6 +16,7 @@ export default function useInternalLinks<T>({
   location,
   district,
   limit = 10,
+  excludeId,
 }: Params) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,6 +71,13 @@ export default function useInternalLinks<T>({
           setLoading(false);
           return;
         }
+        if (excludeId) {
+          query = query.neq('id', excludeId).neq('slug', excludeId);
+        }
+
+        if (limit) {
+          query = query.limit(limit);
+        }
 
         const { data: results, error: fetchError } = await query;
 
@@ -96,7 +105,7 @@ export default function useInternalLinks<T>({
     }
 
     fetchData();
-  }, [sourceType, targetType, location, district, limit]);
+  }, [sourceType, targetType, location, district, limit, excludeId]);
 
   return { data, loading, error };
 }

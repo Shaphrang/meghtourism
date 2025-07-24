@@ -18,6 +18,13 @@ export default function useRelatedForThrill(thrill: Thrill | null) {
     limit: 10,
   };
 
+  const nearbyThrills = useInternalLinks<Thrill>({
+    ...commonParams,
+    targetType: 'thrills',
+    excludeId: thrill?.id,
+  });
+
+
   const destinations = useInternalLinks<Destination>({
     ...commonParams,
     targetType: 'destinations',
@@ -49,6 +56,7 @@ export default function useRelatedForThrill(thrill: Thrill | null) {
   });
 
   return {
+    nearbyThrills: nearbyThrills.data,
     destinations: destinations.data,
     homestays: homestays.data,
     events: events.data,

@@ -18,6 +18,12 @@ export default function useRelatedForRestaurant(restaurant: CafeAndRestaurant | 
     limit: 10,
   };
 
+  const nearbyRestaurants = useInternalLinks<CafeAndRestaurant>({
+    ...commonParams,
+    targetType: 'cafes_and_restaurants',
+    excludeId: restaurant?.id,
+  });
+
   const destinations = useInternalLinks<Destination>({
     ...commonParams,
     targetType: 'destinations',
@@ -49,6 +55,7 @@ export default function useRelatedForRestaurant(restaurant: CafeAndRestaurant | 
   });
 
   return {
+    nearbyRestaurants: nearbyRestaurants.data,
     destinations: destinations.data,
     homestays: homestays.data,
     events: events.data,

@@ -18,6 +18,12 @@ export default function useRelatedForDestination(destination: Destination | null
     limit: 10,
   };
 
+  const nearbyDestinations = useInternalLinks<Destination>({
+    ...commonParams,
+    targetType: 'destinations',
+    excludeId: destination?.id,
+  });
+
   const homestays = useInternalLinks<Homestay>({
     ...commonParams,
     targetType: 'homestays',
@@ -49,6 +55,7 @@ export default function useRelatedForDestination(destination: Destination | null
   });
 
   return {
+    nearbyDestinations: nearbyDestinations.data,
     homestays: homestays.data,
     events: events.data,
     thrills: thrills.data,

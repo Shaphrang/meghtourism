@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import useRelatedForRestaurant from "@/hooks/useRelatedForRestaurant";
 import HorizontalSection from "@/components/common/horizonatlSection";
+import VerticalSection from "@/components/common/verticalSection";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
 import Head from "next/head";
@@ -191,6 +192,11 @@ export default function ClientPage() {
         )}
 
         <div className="pt-6 space-y-6">
+          <VerticalSection
+            title="Nearby Restaurants"
+            type="cafesRestaurants"
+            items={related.nearbyRestaurants}
+          />
           <HorizontalSection
             title="Nearby Attractions"
             type="destinations"

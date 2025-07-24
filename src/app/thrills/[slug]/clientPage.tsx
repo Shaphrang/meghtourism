@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { normalizeSlug } from "@/lib/utils";
 import useRelatedForThrill from "@/hooks/useRelatedForThrill";
 import HorizontalSection from "@/components/common/horizonatlSection";
+import VerticalSection from "@/components/common/verticalSection";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
 import Head from "next/head";
@@ -176,6 +177,16 @@ export default function ClientPage() {
         )}
 
         <div className="pt-6 space-y-6">
+          <VerticalSection
+            title="Nearby Thrills Vertical"
+            type="thrills"
+            items={related.nearbyThrills}
+          />
+          <HorizontalSection
+            title="Nearby Thrills Horizontal"
+            type="thrills"
+            items={related.nearbyThrills}
+          />
           <HorizontalSection
             title="Nearby Attractions"
             type="destinations"

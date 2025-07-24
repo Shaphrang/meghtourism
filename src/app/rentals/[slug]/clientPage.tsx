@@ -16,6 +16,7 @@ import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
 import useRelatedForRental from "@/hooks/useRelatedForRental";
 import HorizontalSection from "@/components/common/horizonatlSection";
+import VerticalSection from "@/components/common/verticalSection";
 import Head from "next/head";
 
 export default function ClientPage() {
@@ -142,6 +143,11 @@ export default function ClientPage() {
       ) : null}
 
       <div className="pt-6 space-y-6">
+        <VerticalSection
+          title="Nearby Attractions"
+          type="rentals"
+          items={related.nearbyRentals}
+        />
         <HorizontalSection
           title="Nearby Attractions"
           type="destinations"

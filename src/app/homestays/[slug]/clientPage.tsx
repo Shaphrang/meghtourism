@@ -15,6 +15,7 @@ import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
 import useRelatedForHomestay from "@/hooks/useRelatedForHomestay";
 import HorizontalSection from "@/components/common/horizonatlSection";
+import VerticalSection from "@/components/common/verticalSection";
 import Head from "next/head";
 
 export default function ClientPage() {
@@ -173,17 +174,11 @@ export default function ClientPage() {
 
         {/* Nearby Sections */}
         <div className="pt-6 space-y-6">
-           {/*<NearbyListings
-            type="destinations"
-            location={homestay.location ?? null}
-            title="Nearby Attractions"
-          />*/}
-         {/*<NearbyListings
+        <VerticalSection
+          title="Nearby Destinations"
           type="homestays"
-          location={homestay.location ?? null}
-          excludeId={homestay.id}
-          title="Similar Stays"
-        />*/}
+          items={related.nearbyHomestays}
+        />
         <HorizontalSection
           title="Nearby Destinations"
           type="destinations"

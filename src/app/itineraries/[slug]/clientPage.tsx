@@ -14,6 +14,7 @@ import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
 import useRelatedForItinerary from "@/hooks/useRelatedForItinerary";
 import HorizontalSection from "@/components/common/horizonatlSection";
+import VerticalSection from "@/components/common/verticalSection";
 import Head from "next/head";
 
 export default function ClientPage() {
@@ -180,19 +181,12 @@ export default function ClientPage() {
             </section>
           )}
 
-        {/* Travel Tips */}
-        {itinerary.tips?.length > 0 && (
-          <section className="p-4">
-            <h2 className="text-lg font-semibold mb-2">Travel Tips</h2>
-            <ul className="list-disc list-inside text-sm text-gray-700">
-              {itinerary.tips.map((tip, i) => (
-                <li key={i}>{tip}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-
         <div className="pt-6 space-y-6">
+          <VerticalSection
+            title="Destinations"
+            type="itineraries"
+            items={related.nearbyItineraries}
+          />
           <HorizontalSection
             title="Destinations"
             type="destinations"
