@@ -16,6 +16,7 @@ import NearbyListings from "@/components/common/nearbyListings";
 import ShareBar from "@/components/common/shareBar";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import Head from "next/head";
 
 export default function ClientPage() {
   const { slug } = useParams();
@@ -37,7 +38,15 @@ export default function ClientPage() {
     fetchData();
   }, [itemSlug]);
 
-  if (!rental) return <p className="p-4">Loading...</p>;
+  if (!rental)
+    return (
+      <>
+        <Head>
+          <title>Loading Rental... | Meghtourism</title>
+        </Head>
+        <p className="p-4">Loading...</p>
+      </>
+    );
 
   const gallery = rental.gallery?.length
     ? rental.gallery
@@ -45,8 +54,25 @@ export default function ClientPage() {
     ? [rental.image]
     : [];
 
+  const desc = rental.description?.slice(0, 150) || "";
+  const img = rental.image || rental.gallery?.[0] || "";
+
+
   return (
-    <main className="bg-gradient-to-b from-slate-50 to-white w-full min-h-screen text-gray-800 pb-10 px-4">
+    <>
+      <Head>
+        <title>{rental.title || rental.type} | Meghtourism</title>
+        <meta name="description" content={desc} />
+        <meta property="og:title" content={`${rental.title || rental.type} | Meghtourism`} />
+        <meta property="og:description" content={desc} />
+        {img && <meta property="og:image" content={img} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${rental.title || rental.type} | Meghtourism`} />
+        <meta name="twitter:description" content={desc} />
+        {img && <meta name="twitter:image" content={img} />}
+      </Head>
+
+      <main className="bg-gradient-to-b from-slate-50 to-white w-full min-h-screen text-gray-800 pb-10 px-4">
       <div className="max-w-screen-md mx-auto">
       <Swiper spaceBetween={10} slidesPerView={1.2} className="w-full h-64 md:h-96">
         {gallery.map((img, idx) => (
@@ -148,5 +174,6 @@ export default function ClientPage() {
       )}
       </div>
     </main>
+    </>
   );
 }

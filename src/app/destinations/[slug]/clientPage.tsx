@@ -16,6 +16,7 @@ import NearbyListings from "@/components/common/nearbyListings";
 import ShareBar from "@/components/common/shareBar";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import Head from "next/head";
 
 export default function ClientPage() {
   const { slug } = useParams();
@@ -35,10 +36,34 @@ export default function ClientPage() {
     fetchData();
   }, [itemSlug]);
 
-  if (!destination) return <p className="p-4">Loading...</p>;
+  if (!destination)
+    return (
+      <>
+        <Head>
+          <title>Loading Destination... | Meghtourism</title>
+        </Head>
+        <p className="p-4">Loading...</p>
+      </>
+    );
+
+  const desc = destination.description?.slice(0, 150) || "";
+  const img = destination.image || destination.gallery?.[0] || "";
 
   return (
-    <main className="bg-gradient-to-b from-emerald-50 to-white text-gray-800 w-full min-h-screen pb-10">
+    <>
+      <Head>
+        <title>{destination.name} | Meghtourism</title>
+        <meta name="description" content={desc} />
+        <meta property="og:title" content={`${destination.name} | Meghtourism`} />
+        <meta property="og:description" content={desc} />
+        {img && <meta property="og:image" content={img} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${destination.name} | Meghtourism`} />
+        <meta name="twitter:description" content={desc} />
+        {img && <meta name="twitter:image" content={img} />}
+      </Head>
+
+      <main className="bg-gradient-to-b from-emerald-50 to-white text-gray-800 w-full min-h-screen pb-10">
       {/* Full-width hero image */}
       <div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-[calc((100vw-100%)/2)]">
         {destination.image && destination.image.startsWith("https") ? (
@@ -156,5 +181,6 @@ export default function ClientPage() {
         <ReviewSection category="destination" itemId={itemSlug} />
       </div>
     </main>
+    </>
   );
 }

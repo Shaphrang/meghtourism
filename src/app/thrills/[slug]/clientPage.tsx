@@ -13,6 +13,7 @@ import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import Head from "next/head";
 
 export default function ClientPage() {
   const { slug } = useParams();
@@ -34,8 +35,15 @@ export default function ClientPage() {
     }
     fetchData();
   }, [itemSlug]);
-
-  if (!thrill) return <p className="p-4">Loading...</p>;
+  if (!thrill)
+    return (
+      <>
+        <Head>
+          <title>Loading Adventure... | Meghtourism</title>
+        </Head>
+        <p className="p-4">Loading...</p>
+      </>
+    );
 
   const gallery = thrill.gallery?.length
     ? thrill.gallery
@@ -43,8 +51,24 @@ export default function ClientPage() {
     ? [thrill.image]
     : [];
 
+  const desc = thrill.description?.slice(0, 150) || "";
+  const img = thrill.image || thrill.gallery?.[0] || "";
+
   return (
-    <main className="bg-gradient-to-b from-yellow-50 to-white text-gray-800 w-full min-h-screen pb-10">
+    <>
+      <Head>
+        <title>{thrill.name} | Meghtourism</title>
+        <meta name="description" content={desc} />
+        <meta property="og:title" content={`${thrill.name} | Meghtourism`} />
+        <meta property="og:description" content={desc} />
+        {img && <meta property="og:image" content={img} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${thrill.name} | Meghtourism`} />
+        <meta name="twitter:description" content={desc} />
+        {img && <meta name="twitter:image" content={img} />}
+      </Head>
+
+      <main className="bg-gradient-to-b from-yellow-50 to-white text-gray-800 w-full min-h-screen pb-10">
       {/* Full-width Swiper */}
 <div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-[calc((100vw-100%)/2)]">
         <Swiper spaceBetween={10} slidesPerView={1} centeredSlides className="w-full h-full">
@@ -165,5 +189,6 @@ export default function ClientPage() {
         />
       </div>
     </main>
+    </>
   );
 }

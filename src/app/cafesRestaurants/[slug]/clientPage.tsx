@@ -13,6 +13,7 @@ import { normalizeSlug } from "@/lib/utils";
 import NearbyListings from "@/components/common/nearbyListings";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import Head from "next/head";
 
 export default function ClientPage() {
   const { slug } = useParams();
@@ -31,12 +32,36 @@ export default function ClientPage() {
     fetchData();
   }, [itemSlug]);
 
-  if (!cafe) return <p className="p-4">Loading...</p>;
+  if (!cafe)
+    return (
+      <>
+        <Head>
+          <title>Loading Restaurant... | Meghtourism</title>
+        </Head>
+        <p className="p-4">Loading...</p>
+      </>
+    );
 
   const gallery = cafe.gallery?.length ? cafe.gallery : cafe.image ? [cafe.image] : [];
 
+  const desc = cafe.description?.slice(0, 150) || "";
+  const img = cafe.image || cafe.gallery?.[0] || "";
+
   return (
-    <main className="bg-gradient-to-b from-orange-50 to-white w-full min-h-screen text-gray-800 pb-10">
+    <>
+      <Head>
+        <title>{cafe.name} | Meghtourism</title>
+        <meta name="description" content={desc} />
+        <meta property="og:title" content={`${cafe.name} | Meghtourism`} />
+        <meta property="og:description" content={desc} />
+        {img && <meta property="og:image" content={img} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${cafe.name} | Meghtourism`} />
+        <meta name="twitter:description" content={desc} />
+        {img && <meta name="twitter:image" content={img} />}
+      </Head>
+
+      <main className="bg-gradient-to-b from-orange-50 to-white w-full min-h-screen text-gray-800 pb-10">
       {/* Image Swiper */}
       <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-64 md:h-96">
         {gallery.map((img, idx) => (
@@ -177,7 +202,8 @@ export default function ClientPage() {
 
         {/* Reviews */}
           <ReviewSection category="cafeRestaurant" itemId={itemSlug} />
-      </div>
-    </main>
+        </div>
+      </main>
+    </>
   );
 }

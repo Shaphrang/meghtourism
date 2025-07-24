@@ -12,6 +12,7 @@ import { normalizeSlug } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import Head from "next/head";
 
 export default function ClientPage() {
   const { slug } = useParams();
@@ -31,7 +32,15 @@ export default function ClientPage() {
     fetchData();
   }, [itemSlug]);
 
-  if (!itinerary) return <p className="p-4">Loading...</p>;
+  if (!itinerary)
+    return (
+      <>
+        <Head>
+          <title>Loading Itinerary... | Meghtourism</title>
+        </Head>
+        <p className="p-4">Loading...</p>
+      </>
+    );
 
   const gallery = itinerary.gallery?.length
     ? itinerary.gallery
@@ -39,8 +48,25 @@ export default function ClientPage() {
     ? [itinerary.image]
     : [];
 
+  const desc = itinerary.description?.slice(0, 150) || "";
+  const img = itinerary.image || itinerary.gallery?.[0] || "";
+
+
   return (
-    <main className="bg-gradient-to-b from-sky-50 to-white w-full min-h-screen text-gray-800 px-4 pb-10 overflow-x-hidden">
+    <>
+      <Head>
+        <title>{itinerary.title} | Meghtourism</title>
+        <meta name="description" content={desc} />
+        <meta property="og:title" content={`${itinerary.title} | Meghtourism`} />
+        <meta property="og:description" content={desc} />
+        {img && <meta property="og:image" content={img} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${itinerary.title} | Meghtourism`} />
+        <meta name="twitter:description" content={desc} />
+        {img && <meta name="twitter:image" content={img} />}
+      </Head>
+
+      <main className="bg-gradient-to-b from-sky-50 to-white w-full min-h-screen text-gray-800 px-4 pb-10 overflow-x-hidden">
       <div className="max-w-screen-md mx-auto">
 
         {/* Image Swiper */}
@@ -167,5 +193,6 @@ export default function ClientPage() {
         <ReviewSection category="itinerary" itemId={itemSlug} />
       </div>
     </main>
+    </>
   );
 }

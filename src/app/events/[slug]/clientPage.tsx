@@ -14,6 +14,7 @@ import NearbyListings from "@/components/common/nearbyListings";
 import ShareBar from "@/components/common/shareBar";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import Head from "next/head";
 
 export default function ClientPage() {
   const { slug } = useParams();
@@ -34,7 +35,15 @@ export default function ClientPage() {
     fetchData();
   }, [itemSlug]);
 
-  if (!event) return <p className="p-4">Loading...</p>;
+  if (!event)
+    return (
+      <>
+        <Head>
+          <title>Loading Event... | Meghtourism</title>
+        </Head>
+        <p className="p-4">Loading...</p>
+      </>
+    );
 
   const gallery = event.gallery?.length
     ? event.gallery
@@ -42,9 +51,25 @@ export default function ClientPage() {
     ? [event.image]
     : [];
 
+  const desc = event.description?.slice(0, 150) || "";
+  const img = event.image || event.gallery?.[0] || "";
+
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden relative pb-20 px-4">
+    <>
+      <Head>
+        <title>{event.name} | Meghtourism</title>
+        <meta name="description" content={desc} />
+        <meta property="og:title" content={`${event.name} | Meghtourism`} />
+        <meta property="og:description" content={desc} />
+        {img && <meta property="og:image" content={img} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${event.name} | Meghtourism`} />
+        <meta name="twitter:description" content={desc} />
+        {img && <meta name="twitter:image" content={img} />}
+      </Head>
+
+      <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden relative pb-20 px-4">
       {/* Full Width Image Swiper */}
 <div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-4">
   <Swiper
@@ -140,5 +165,6 @@ export default function ClientPage() {
       <ReviewSection category="event" itemId={itemSlug} />
       </div>
     </main>
+    </>
   );
 }
