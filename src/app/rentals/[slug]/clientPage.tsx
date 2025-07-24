@@ -143,8 +143,8 @@ export default function ClientPage() {
       ) : null}
 
       <div className="pt-6 space-y-6">
-        <VerticalSection
-          title="Nearby Attractions"
+        <HorizontalSection
+          title="Nearby Rentals"
           type="rentals"
           items={related.nearbyRentals}
         />

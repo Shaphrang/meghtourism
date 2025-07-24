@@ -134,8 +134,8 @@ export default function ClientPage() {
 
           {/* Related sections */}
           <div className="pt-6 space-y-6">
-            <VerticalSection
-              title="Nearby Attractions"
+            <HorizontalSection
+              title="Nearby Events"
               type="events"
               items={related.nearbyEvents}
             />
