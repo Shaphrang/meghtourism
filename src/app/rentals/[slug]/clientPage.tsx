@@ -6,7 +6,8 @@ import { Rental } from "@/types/rentals";
 import { Destination } from "@/types/destination";
 import { Homestay } from "@/types/homestay";
 import Image from "next/image";
-import { MapPin, Phone } from "lucide-react";
+import { MapPin } from "lucide-react";
+import ContactReveal from "@/components/contactReveal";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
@@ -23,7 +24,6 @@ export default function ClientPage() {
   const { slug } = useParams();
   const itemSlug = normalizeSlug(String(slug));
   const [rental, setRental] = useState<Rental | null>(null);
-  const [showContact, setShowContact] = useState(false);
   const related = useRelatedForRental(rental);
 
   useEffect(() => {
@@ -183,20 +183,9 @@ export default function ClientPage() {
       <ReviewSection category="rental" itemId={itemSlug} />
 
       {rental.contact && (
-        <div className="p-4 fixed bottom-10 left-0 right-0">
-          <button
-            onClick={() => setShowContact(true)}
-            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl text-center"
-          >
-            {showContact ? (
-              <span className="flex items-center justify-center gap-2">
-                <Phone size={18} /> {rental.contact}
-              </span>
-            ) : (
-              "Contact to Book"
-            )}
-          </button>
-        </div>
+        <section className="p-4 fixed bottom-10 left-0 right-0">
+          <ContactReveal phone={rental.contact} />
+        </section>
       )}
       </div>
     </main>

@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { CafeAndRestaurant } from "@/types/cafeRestaurants";
 import Image from "next/image";
-import { MapPin, Phone, Clock } from "lucide-react";
+import { MapPin, Clock } from "lucide-react";
+import ContactReveal from "@/components/contactReveal";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DescriptionToggle from "@/components/common/descriptionToggle";
@@ -127,13 +128,10 @@ export default function ClientPage() {
               <Clock size={14} /> {cafe.timing}
             </p>
           )}
-          {cafe.contact && (
-            <a
-              href={`tel:${cafe.contact}`}
-              className="inline-block text-blue-700 bg-blue-50 px-4 py-2 rounded-full mt-2 text-sm"
-            >
-              <Phone size={14} className="inline-block mr-1" /> {cafe.contact}
-            </a>
+        {cafe.contact && (
+            <section className="mt-4">
+              <ContactReveal phone={cafe.contact} />
+            </section>
           )}
         </section>
 

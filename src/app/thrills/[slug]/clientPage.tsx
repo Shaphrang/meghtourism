@@ -15,13 +15,13 @@ import HorizontalSection from "@/components/common/horizonatlSection";
 import VerticalSection from "@/components/common/verticalSection";
 import ReviewSection from "@/components/reviews/reviewSection";
 import AverageRating from "@/components/reviews/averageRating";
+import ContactReveal from "@/components/contactReveal";
 import Head from "next/head";
 
 export default function ClientPage() {
   const { slug } = useParams();
   const itemSlug = normalizeSlug(String(slug));
   const [thrill, setThrill] = useState<Thrill | null>(null);
-  const [showContact, setShowContact] = useState(false);
   const related = useRelatedForThrill(thrill);
 
   useEffect(() => {
@@ -128,18 +128,9 @@ export default function ClientPage() {
 
           {/* Contact */}
           {thrill.contact && (
-            <div className="mt-2">
-              {showContact ? (
-                <p className="text-sm font-medium text-blue-600">{thrill.contact}</p>
-              ) : (
-                <button
-                  onClick={() => setShowContact(true)}
-                  className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow hover:bg-blue-100 transition"
-                >
-                  📞 Reveal Contact Number
-                </button>
-              )}
-            </div>
+            <section className="mt-4">
+              <ContactReveal phone={thrill.contact} />
+            </section>
           )}
         </section>
 
