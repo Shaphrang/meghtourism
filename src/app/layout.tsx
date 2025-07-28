@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import Script from "next/script";
 import Header from "@/components/common/header";
 import FooterNav from "@/components/common/footer";
+import ContactCTA from "@/components/common/contactCTA";
 
 
 const geistSans = Geist({
@@ -57,8 +58,12 @@ export default function RootLayout({
         <Header />
         <main className="min-h-screen pt-[var(--header-height)] pb-[var(--footer-height)]">
           {children}
+          <ContactCTA />
         </main>
+
         <FooterNav />
+        {/* Sticky contact CTA */}
+
         <Toaster />
       </body>
     </html>

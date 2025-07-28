@@ -15,27 +15,28 @@ export default function HomePage() {
     <main className="w-full min-h-screen bg-gradient-to-b from-green-50 to-blue-50 text-gray-800">
       {/* Hero */}
       <HeroSection />
+            <CarouselBanner id="homepage"/>
 
       {/* Destinations */}
       <section className="mt-4">
         <DestinationsSection />
       </section>
+      <CarouselBanner id="destinations"/>
 
-      <CarouselBanner />
 
       {/* Accommodations */}
       <section className="mt-4">
         <AccommodationsSection />
       </section>
+      <CarouselBanner id="homestays"/>
 
-      <CarouselBanner />
 
       {/* Events */}
       <section className="mt-4">
         <EventsSection />
       </section>
 
-      <CarouselBanner />
+      <CarouselBanner id="events"/>
 
       {/* Thrills */}
       <section className="mt-4">
@@ -47,15 +48,18 @@ export default function HomePage() {
         <CafesSection />
       </section>
 
+
       {/* Itineraries */}
       <section className="mt-4">
         <ItinerariesSection />
       </section>
+      <CarouselBanner id="business"/>
 
       {/* Blogs */}
       <section className="mt-4 pb-6">
         <BlogsSection />
       </section>
+
     </main>
   );
 }

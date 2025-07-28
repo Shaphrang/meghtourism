@@ -87,48 +87,65 @@ export default function DestinationsListingPage() {
       <section className="p-4">
         <h2 className="text-lg font-semibold mb-2">All Destinations</h2>
         <div className="grid grid-cols-2 gap-3">
-          {items.map((dest, index) => (
-            <Fragment key={dest.id}>
-              <Link
-                href={`/destinations/${dest.slug ?? dest.id}`}
-                className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] flex flex-col"
-              >
-                <div className="relative w-full aspect-square bg-gray-100">
-                  {dest.image && dest.image.startsWith("https") ? (
-                    <>
-                      <Image src={dest.image} alt={dest.name ?? "Destination image"} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                    </>
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-xs text-gray-400">No image</div>
-                  )}
-                </div>
-                <div className="p-3 flex flex-col flex-grow">
-                  <h3 className="text-sm font-semibold text-gray-800 truncate">{dest.name}</h3>
-                  <p className="text-xs text-gray-500 flex items-center truncate">
-                    <MapPin size={12} className="mr-1" /> {dest.location}
+  {items.map((dest, index) => (
+    <Fragment key={dest.id}>
+      {/* ⭐ Use new destination card format */}
+      <Link
+        href={`/destinations/${dest.slug ?? dest.id}`}
+        className="relative rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] block h-[160px]"
+      >
+        <div className="relative w-full h-full">
+          {dest.image ? (
+            <>
+              <Image
+                src={dest.image}
+                alt={dest.name ?? "Destination image"}
+                fill
+                sizes="(min-width: 640px) 180px, 100vw"
+                className="object-cover transition-transform duration-300"
+              />
+              <div className="absolute bottom-0 w-full px-2 py-2 bg-gradient-to-t from-black/100 via-black/70 to-transparent text-white">
+                <h3 className="text-sm font-semibold truncate">{dest.name}</h3>
+                {dest.location && (
+                  <p className="text-xs text-gray-300 truncate flex items-center gap-1 mt-0.5">
+                    <MapPin className="w-3 h-3" />
+                    {dest.location}
                   </p>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {dest.tags && Array.isArray(dest.tags) && dest.tags.slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-full"
-                      >
-                        {tag}
-                      </span>
+                )}
+                {/*{dest.rating && (
+                  <div className="flex items-center text-xs mt-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3 h-3 ${
+                          i < Math.round(dest.rating) ? 'text-yellow-400' : 'text-gray-400'
+                        }`}
+                        fill={i < Math.round(dest.rating) ? 'currentColor' : 'none'}
+                      />
                     ))}
+                    <span className="ml-1">{dest.rating.toFixed(1)}</span>
                   </div>
-                </div>
-              </Link>
-
-              {(index + 1) % 8 === 0 && (
-                <div key={`ad-${index}`} className="col-span-2">
-                  <CarouselBanner />
-                </div>
-              )}
-            </Fragment>
-          ))}
+                )}*/}
+              </div>
+            </>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-100 text-xs text-gray-400">
+              No image
+            </div>
+          )}
         </div>
+      </Link>
+
+      {/* 👇 Carousel insertion every 8 items */}
+      {(index + 1) % 8 === 0 && (
+        <div key={`ad-${index}`} className="col-span-2">
+          <CarouselBanner id="homestays" />
+        </div>
+      )}
+    </Fragment>
+  ))}
+</div>
+
 
         <div ref={observerRef} className="text-center mt-4">
           {loading && <p className="text-sm text-gray-500">Loading...</p>}
