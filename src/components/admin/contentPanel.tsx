@@ -13,6 +13,7 @@ const AdminRentals = dynamic(() => import('./rentals/adminRentals'));
 const AdminCafeRestaurants = dynamic(() => import('./cafeRestaurants/adminCafeRestaurants'));
 const AdminFaqs = dynamic(() => import('./faqs/adminFaqs'));
 const AdminReviews = dynamic(() => import('./reviews/adminReviews'));
+const GenericAdmin = dynamic(() => import('./generic/genericAdmin'));
 
 interface Props {
   active: string;
@@ -32,6 +33,19 @@ export default function ContentPanel({ active }: Props) {
       {active === 'cafes_and_restaurants' && <AdminCafeRestaurants />}
       {active === 'faqs' && <AdminFaqs />}
       {active === 'reviews' && <AdminReviews />}
+      {[
+        'destinations',
+        'homestays',
+        'events',
+        'thrills',
+        'blogs',
+        'travel_tips',
+        'itineraries',
+        'rentals',
+        'cafes_and_restaurants',
+        'prebuilt_faqs',
+        'reviews_ratings',
+      ].includes(active) ? null : <GenericAdmin category={active as any} />}
     </div>
   );
 }
