@@ -11,6 +11,7 @@ import { uploadImageToSupabase } from '@/lib/uploadToSupabase';
 import { deleteImageFromSupabase } from '@/lib/deleteImageFromSupabase';
 import { LOCATION_ZONES } from '@/lib/locationZones';
 import { AD_SLOTS } from '@/lib/adSlots';
+import { FIELD_OPTIONS } from '@/lib/fieldOption';
 
 interface Props {
   initialData?: any;
@@ -21,36 +22,108 @@ interface Props {
 export default function HomestayFormModal({ initialData, onClose, onSave }: Props) {
   const isEditMode = !!initialData;
   const createDefaultForm = () => ({
-      id: uuidv4(),
-      name: '',
-      description: '',
-      location: '',
-      district: '',
-      image: '',
-      gallery: [],
-      pricepernight: '',
-      occupancy: '',
-      mealincluded: false,
-      priceincludes: [],
-      amenities: [],
-      contact: '',
-      email: '',
-      website: '',
-      ratings: null,
-      reviews: [],
-      tags: [],
-      latitude: null,
-      longitude: null,
-      maplink: '',
-      address: '',
-      distancefromshillong: '',
-      nearbydestinations: [],
-      averagecostestimate: {},
-      tips: [],
-      warnings: [],
-      adSlot: 'none',
-      adActive: false,
-    });
+    // 🔑 Core Identity
+    id: uuidv4(),
+    name: '',
+    description: '',
+
+    // 📍 Location Info
+    location: '',
+    area: '',
+    address: '',
+    district: '',
+    distancefromshillong: '',
+    distancefromguwahati: '',
+
+    // 🖼 Media & Visuals
+    image: '',
+    gallery: [],
+    cover_image_alt: '',
+    media: [],
+
+    // 💰 Price & Room Info
+    pricepernight: null,
+    rooms: [],
+    totalrooms: 0,
+    checkin_time: '',
+    checkout_time: '',
+    cancellationpolicy: '',
+
+    // 🌟 Features & Services
+    occupancy: null,
+    amenities: [],
+    mealincluded: false,
+    priceincludes: [],
+    petfriendly: false,
+    wifi: false,
+    hasparking: false,
+    hasbalcony: false,
+
+    // 📞 Contact & Booking
+    contact: '',
+    email: '',
+    website: '',
+    instant_booking: false,
+    availability_status: 'available',
+
+    // 🧭 Nearby & Experiences
+    nearbydestinations: [],
+    nearby_points_of_interest: [],
+    localexperience: [],
+    suitablefor: [],
+    accessibilityfeatures: [],
+
+    // 💸 Cost Estimates
+    averagecostestimate: {},
+
+    // 📘 Visitor Guidance
+    tips: [],
+    warnings: [],
+
+    // 🏷️ Tags & Themes
+    tags: [],
+    theme: [],
+    visitseason: [],
+
+    // 📣 SEO & Visibility
+    meta_title: '',
+    meta_description: '',
+    visibilitystatus: 'visible',
+    summary: '',
+    sponsoredby: '',
+
+    // 📈 Analytics & Performance (optional in form)
+    view_count: 0,
+    click_count: 0,
+    bookings_count: 0,
+    lastbookedat: '',
+    viewcount: 0,
+
+    // 💼 Business Details
+    gst_number: '',
+    business_type: 'individual',
+    specialoffers: '',
+
+    // 📢 Ads & Marketing
+    adSlot: 'none',
+    adActive: false,
+
+    // 🧠 AI Functionality
+    include_in_ai_search: true,
+    search_keywords: [],
+    faq_answers: [],
+    ai_score: null,
+    searchboost: null,
+
+    // 🗺️ Map
+    latitude: null,
+    longitude: null,
+    maplink: '',
+
+    // 🕓 Timestamps
+    created_at: '',
+  });
+
 
   const mapInitialData = (data: any) => {
     if (!data) return createDefaultForm();
@@ -73,6 +146,31 @@ export default function HomestayFormModal({ initialData, onClose, onSave }: Prop
   const handleChange = (field: string, value: any) => {
     setForm((prev: any) => ({ ...prev, [field]: value }));
   };
+
+      const addRoom = () => {
+      const newRoom = {
+        name: '',
+        description: '',
+        pricepernight: 0,
+        occupancy: 1,
+        availabilitystatus: 'available',
+      };
+      setForm((prev: any) => ({
+        ...prev,
+        rooms: [...(prev.rooms || []), newRoom],
+      }));
+    };
+
+    const updateRoom = (index: number, field: string, value: any) => {
+      const updatedRooms = [...(form.rooms || [])];
+      updatedRooms[index] = { ...updatedRooms[index], [field]: value };
+      setForm((prev: any) => ({ ...prev, rooms: updatedRooms }));
+    };
+    const removeRoom = (index: number) => {
+      const updatedRooms = (form.rooms || []).filter((_: unknown, i: number) => i !== index);
+      setForm((prev: typeof form) => ({ ...prev, rooms: updatedRooms }));
+    };
+
 
   const handleSubmit = async () => {
     try {
@@ -185,6 +283,100 @@ export default function HomestayFormModal({ initialData, onClose, onSave }: Prop
     </div>
   );
 
+    const renderMultiSelect = (label: string, key: string, options: string[]) => (
+      <div className="mb-3">
+        <label className="block font-medium text-sm mb-1">{label}</label>
+        <select
+          multiple
+          value={form[key] || []}
+          onChange={(e) => {
+            const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
+            handleChange(key, selected);
+          }}
+          className="w-full border px-3 py-2 rounded h-32"
+        >
+          {options.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+
+      const renderRooms = () => (
+        <div className="mb-6">
+          <label className="block font-semibold text-base mb-2">Rooms</label>
+          {(form.rooms || []).map((room: any, index: number) => (
+            <div key={index} className="border rounded p-4 mb-3 relative">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  value={room.name}
+                  placeholder="Room Name"
+                  onChange={(e) =>
+                    updateRoom(index, 'name', e.target.value)
+                  }
+                  className="border px-3 py-2 rounded"
+                />
+                <input
+                  type="number"
+                  value={room.pricepernight}
+                  placeholder="Price Per Night"
+                  onChange={(e) =>
+                    updateRoom(index, 'pricepernight', Number(e.target.value))
+                  }
+                  className="border px-3 py-2 rounded"
+                />
+                <input
+                  type="number"
+                  value={room.occupancy}
+                  placeholder="Occupancy"
+                  onChange={(e) =>
+                    updateRoom(index, 'occupancy', Number(e.target.value))
+                  }
+                  className="border px-3 py-2 rounded"
+                />
+                <select
+                  value={room.availabilitystatus || ''}
+                  onChange={(e) =>
+                    updateRoom(index, 'availabilitystatus', e.target.value)
+                  }
+                  className="border px-3 py-2 rounded"
+                >
+                  <option value="">Availability</option>
+                  <option value="available">Available</option>
+                  <option value="full">Full</option>
+                  <option value="limited">Limited</option>
+                </select>
+              </div>
+              <textarea
+                value={room.description || ''}
+                placeholder="Room Description"
+                onChange={(e) =>
+                  updateRoom(index, 'description', e.target.value)
+                }
+                className="w-full border px-3 py-2 mt-3 rounded"
+              />
+              <button
+                onClick={() => removeRoom(index)}
+                className="absolute top-2 right-2 text-sm text-red-600"
+              >
+                ✕ Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addRoom}
+            className="mt-2 text-sm bg-emerald-500 text-white px-4 py-2 rounded"
+          >
+            + Add Room
+          </button>
+        </div>
+      );
+
+
   return (
     <Dialog open={true} onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
@@ -209,6 +401,9 @@ export default function HomestayFormModal({ initialData, onClose, onSave }: Prop
         {renderInput('Contact', 'contact')}
         {renderInput('Email', 'email')}
         {renderInput('Website', 'website')}
+        {renderInput('Cover Image Alt Text', 'cover_image_alt')}
+        {renderArrayInput('Media (YouTube, Instagram links)', 'media')}
+
         {renderInput('Map Link', 'maplink')}
         {renderInput('Ratings', 'ratings', 'number')}
         {renderAdSlot()}
@@ -217,14 +412,68 @@ export default function HomestayFormModal({ initialData, onClose, onSave }: Prop
         {renderCheckbox('Meal Included', 'mealincluded')}
 
         {renderArrayInput('Price Includes', 'priceincludes')}
+        {renderRooms()}
         {renderArrayInput('Amenities', 'amenities')}
         {renderArrayInput('Tags', 'tags')}
         {renderArrayInput('Tips', 'tips')}
         {renderArrayInput('Warnings', 'warnings')}
         {renderArrayInput('Nearby Destinations', 'nearbydestinations')}
+
+        {renderMultiSelect('Tags', 'tags', FIELD_OPTIONS.homestays.tags as unknown as string[])}
+        {renderMultiSelect('Theme', 'theme', FIELD_OPTIONS.homestays.theme as unknown as string[])}
+        {renderMultiSelect('Visit Season', 'visitseason', FIELD_OPTIONS.homestays.visitseason as unknown as string[])}
+        {renderMultiSelect('Amenities', 'amenities', FIELD_OPTIONS.homestays.amenities as unknown as string[])}
+        {renderMultiSelect('Price Includes', 'priceincludes', FIELD_OPTIONS.homestays.priceincludes as unknown as string[])}
+        {renderMultiSelect('Local Experience', 'localexperience', FIELD_OPTIONS.homestays.localexperience as unknown as string[])}
+        {renderMultiSelect('Suitable For', 'suitablefor', FIELD_OPTIONS.homestays.suitablefor as unknown as string[])}
+        {renderMultiSelect('Accessibility Features', 'accessibilityfeatures', FIELD_OPTIONS.homestays.accessibilityfeatures as unknown as string[])}
+        {renderMultiSelect('House Rules', 'house_rules', FIELD_OPTIONS.homestays.houserules as unknown as string[])}
+
         {renderArrayInput('Reviews', 'reviews')}
 
         {renderJSONInput('Average Cost Estimate', 'averagecostestimate')}
+
+        {renderInput('Meta Title', 'meta_title')}
+
+        {renderInput('Sponsored By', 'sponsoredby')}
+        {renderInput('Summary (AI Preview)', 'summary')}
+        {renderInput('Meta Description', 'meta_description')}
+
+        <div className="mb-3">
+          <label className="block font-medium text-sm mb-1">Visibility Status</label>
+          <select
+            value={form.visibilitystatus}
+            onChange={(e) => handleChange('visibilitystatus', e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+          >
+            <option value="visible">Visible</option>
+            <option value="hidden">Hidden</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+
+        {renderCheckbox('Include in AI Search', 'include_in_ai_search')}
+        {renderArrayInput('Search Keywords', 'search_keywords')}
+        {renderInput('AI Score (0–100)', 'ai_score', 'number')}
+        {renderInput('Search Boost (0–100)', 'searchboost', 'number')}
+        {renderJSONInput('FAQ Answers', 'faq_answers')}
+
+        {renderInput('GST Number', 'gst_number')}
+
+        <div className="mb-3">
+          <label className="block font-medium text-sm mb-1">Business Type</label>
+          <select
+            value={form.business_type}
+            onChange={(e) => handleChange('business_type', e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+          >
+            <option value="individual">Individual</option>
+            <option value="agency">Agency</option>
+          </select>
+        </div>
+
+
+
 
         {/* Image Upload */}
         <div className="mb-4">
