@@ -14,7 +14,7 @@ export default function RestaurantsListingPage() {
   const [restaurants, setRestaurants] = useState<CafeAndRestaurant[]>([]);
   const [filter, setFilter] = useState<{ field: string; value: any } | null>(null);
 
-    const { data, totalCount, loading } = useSupabaseList<CafeAndRestaurant>(
+  const { data, totalCount, loading } = useSupabaseList<CafeAndRestaurant>(
     "cafes_and_restaurants",
     {
       sortBy: "created_at",
@@ -58,9 +58,67 @@ export default function RestaurantsListingPage() {
     return () => observer.disconnect();
   }, [restaurants, loading, totalCount]);
 
+  // Inline Card Component
+  function Card({ item }: { item: CafeAndRestaurant }) {
+    const [expanded, setExpanded] = useState(false);
+    return (
+      <div className="flex gap-3 bg-white rounded-xl shadow-md overflow-hidden p-2 flex-shrink-0">
+        <div className="relative w-[100px] h-[100px] flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt={item.name || "Cafe"}
+              fill
+              sizes="100px"
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-sm text-charcoal/50">
+              No Image
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col justify-between py-1 pr-1">
+          <div>
+            <h3 className="text-sm font-semibold text-deepIndigo truncate">
+              {item.name || "Untitled"}
+            </h3>
+            <p className="text-xs text-charcoal mt-0.5">
+              {expanded
+                ? item.description
+                : `${item.description?.slice(0, 100)}${
+                    item.description && item.description.length > 100 ? "..." : ""
+                  }`}
+              {item.description && item.description.length > 100 && (
+                <button
+                  onClick={() => setExpanded(!expanded)}
+                  className="ml-1 text-meghGreen text-[11px] font-medium hover:underline"
+                >
+                  {expanded ? "Show less" : "Show more"}
+                </button>
+              )}
+            </p>
+            <p className="text-xs text-meghGreen mt-1 flex items-center">
+              <MapPin size={12} className="mr-1" />
+              {item.location}
+            </p>
+          </div>
+          <div className="text-xs text-gray-500 mt-1">
+            {(item.cuisine?.length ? item.cuisine.join(", ") : "No cuisine")}
+            {" • "}
+            <span className="text-deepIndigo">{item.type}</span>
+            {" • "}
+            <span className="text-warmAmber font-bold">
+              ⭐ {item.ratings ?? "N/A"}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800">
+    <main className="w-full min-h-screen bg-stoneGray text-charcoal">
       <section className="bg-gradient-to-r from-pink-100 to-yellow-100 p-6 text-center">
         <h1 className="text-2xl sm:text-3xl font-bold text-pink-800">Dine in Meghalaya</h1>
       </section>
@@ -77,47 +135,32 @@ export default function RestaurantsListingPage() {
 
       {/* Featured Ads */}
       <section className="p-4">
-        <h2 className="text-lg font-semibold mb-2">Popular Restaurants</h2>
-        <FeaturedBannerAds category="cafesRestaurants"/>
+        <h2 className="text-lg font-semibold mb-2 text-meghGreen font-geist font-sans">
+          Popular Restaurants
+        </h2>
+        <FeaturedBannerAds category="cafesRestaurants" />
       </section>
 
       {/* All Restaurants (Vertical Cards) */}
       <section className="p-4">
-        <h2 className="text-lg font-semibold mb-2">Explore More Restaurants</h2>
+        <h2 className="text-lg font-semibold mb-2 text-meghGreen font-geist font-sans">
+          All Restaurants
+        </h2>
         <div className="flex flex-col gap-3">
           {restaurants.map((rest) => (
             <Link
               key={rest.id}
               href={`/cafesRestaurants/${rest.slug ?? rest.id}`}
-              className="flex items-center bg-white rounded-xl shadow-sm overflow-hidden"
+              className="block hover:scale-[1.01] transition-transform duration-200"
             >
-              <div className="relative w-24 h-24 bg-gray-100">
-                {rest.image && rest.image.startsWith('https') ? (
-                  <Image src={rest.image} alt={rest.name} fill className="object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No image</div>
-                )}
-              </div>
-              <div className="flex-1 p-3">
-                <h3 className="text-base font-semibold">{rest.name}</h3>
-                <p className="text-sm text-gray-500 flex items-center">
-                  <MapPin size={14} className="mr-1" /> {rest.location}
-                </p>
-                <div className="mt-1 flex flex-wrap gap-1 text-xs">
-                  {rest.cuisine?.map((c) => (
-                    <span key={c} className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
-                      {c}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <Card item={rest} />
             </Link>
           ))}
         </div>
-                <div ref={observerRef} className="text-center mt-4">
-          {loading && <p className="text-sm text-gray-500">Loading...</p>}
+        <div ref={observerRef} className="text-center mt-4">
+          {loading && <p className="text-sm text-meghGreen font-geist font-sans">Loading...</p>}
           {restaurants.length >= (totalCount ?? 0) && !loading && (
-            <p className="text-sm text-gray-400">No more restaurants.</p>
+            <p className="text-sm text-charcoal/40 font-geist font-sans">No more restaurants.</p>
           )}
         </div>
       </section>

@@ -41,7 +41,7 @@ export default function TravelTipsListingPage() {
   }, [items, loading, totalCount]);
 
   return (
-    <main className="px-4 py-6">
+     <main className="bg-stoneGray text-charcoal px-4 py-6">
       <h1 className="text-xl font-bold mb-4">Travel Tips</h1>
       <div className="grid gap-4 sm:grid-cols-2">
         {items.map((tip) => (

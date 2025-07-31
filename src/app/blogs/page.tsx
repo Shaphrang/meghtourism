@@ -48,9 +48,9 @@ export default function BlogsListingPage() {
           <Link
             key={blog.id}
             href={`/blogs/${blog.slug ?? blog.id}`}
-            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+            className="bg-stoneGray rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
-            <div className="relative w-full h-40 bg-gray-100">
+            <div className="relative w-full h-40 bg-cloudMist">
               {blog.cover_image && blog.cover_image.startsWith('https') ? (
                 <Image src={blog.cover_image} alt={blog.title} fill className="object-cover" />
               ) : (
@@ -58,8 +58,8 @@ export default function BlogsListingPage() {
               )}
             </div>
             <div className="p-3">
-              <h3 className="text-sm font-semibold text-gray-800 mb-1 truncate">{blog.title}</h3>
-              <p className="text-xs text-gray-600 line-clamp-2">{blog.summary}</p>
+              <h3 className="text-sm font-semibold text-charcoal mb-1 truncate">{blog.title}</h3>
+              <p className="text-xs text-charcoal line-clamp-2">{blog.summary}</p>
             </div>
           </Link>
         ))}

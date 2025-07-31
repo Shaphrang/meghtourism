@@ -51,13 +51,13 @@ export default function DestinationsListingPage() {
   }, [items, loading, totalCount]);
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden">
+    <main className="w-full min-h-screen bg-stoneGray text-charcoal overflow-x-hidden">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-green-100 to-teal-100 p-6 text-center">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-800">
+      <section className="bg-gradient-to-br from-cloudMist to-stoneGray p-6 text-center">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-deepIndigo">
           Explore Meghalaya's Destinations
         </h1>
-        <p className="text-sm text-gray-700 mt-1">
+        <p className="text-sm text-charcoal mt-1">
           Discover beautiful places, hidden gems, and local favorites
         </p>
       </section>
@@ -129,7 +129,7 @@ export default function DestinationsListingPage() {
               </div>
             </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100 text-xs text-gray-400">
+            <div className="w-full h-full flex items-center justify-center bg-cloudMist text-xs text-gray-400">
               No image
             </div>
           )}

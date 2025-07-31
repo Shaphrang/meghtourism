@@ -65,7 +65,7 @@ export default function ClientPage() {
         {img && <meta name="twitter:image" content={img} />}
       </Head>
 
-      <main className="bg-gradient-to-b from-emerald-50 to-white text-gray-800 w-full min-h-screen pb-10">
+      <main className="bg-gradient-to-b from-cloudMist to-stoneGray text-charcoal w-full min-h-screen pb-10">
       {/* Full-width hero image */}
       <div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-[calc((100vw-100%)/2)]">
         {destination.image && destination.image.startsWith("https") ? (
@@ -76,7 +76,7 @@ export default function ClientPage() {
             className="object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+          <div className="w-full h-full bg-cloudMist flex items-center justify-center text-sm text-gray-500">
             No Image
           </div>
         )}
@@ -91,7 +91,7 @@ export default function ClientPage() {
           className="mt-5"
         >
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-800">{destination.name}</h1>
+            <h1 className="text-2xl font-bold text-charcoal">{destination.name}</h1>
             <AverageRating category="destination" itemId={itemSlug} />
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
@@ -105,7 +105,7 @@ export default function ClientPage() {
             ))}
           </div>
           {destination.address && (
-            <p className="flex items-center text-sm text-gray-600 mt-1">
+            <p className="flex items-center text-sm text-charcoal mt-1">
               <MapPin size={14} className="mr-1" /> {destination.address}
             </p>
           )}
@@ -172,37 +172,6 @@ export default function ClientPage() {
             items={related.rentals}
           />
         </div>
-
-        {/* Contact Form */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-          className="mt-8"
-        >
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-            Contact for Help or Booking
-          </h2>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              toast.success("Message submitted!");
-              console.log("Form submitted");
-            }}
-            className="space-y-3"
-          >
-            <Input name="name" placeholder="Name" required />
-            <Input name="email" placeholder="Email" type="email" required />
-            <Input name="phone" placeholder="Phone" required />
-            <Textarea name="message" placeholder="Message" rows={3} required />
-            <Button
-              type="submit"
-              className="bg-emerald-600 text-white hover:bg-emerald-700"
-            >
-              Send Message
-            </Button>
-          </form>
-        </motion.div>
         {/*Reviews*/}
         <ReviewSection category="destination" itemId={itemSlug} />
       </div>

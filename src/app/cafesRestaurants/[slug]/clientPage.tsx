@@ -65,7 +65,7 @@ export default function ClientPage() {
         {img && <meta name="twitter:image" content={img} />}
       </Head>
 
-      <main className="bg-gradient-to-b from-orange-50 to-white w-full min-h-screen text-gray-800 pb-10">
+      <main className="bg-gradient-to-b from-orange-50 to-white w-full min-h-screen text-charcoal pb-10">
       {/* Image Swiper */}
       <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-64 md:h-96">
         {gallery.map((img, idx) => (
@@ -95,7 +95,7 @@ export default function ClientPage() {
           </div>
 
           {cafe.address && (
-            <p className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+            <p className="flex items-center gap-2 text-sm text-charcoal mt-1">
               <MapPin size={14} /> {cafe.address}
             </p>
           )}

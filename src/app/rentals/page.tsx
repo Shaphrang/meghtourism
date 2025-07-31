@@ -47,7 +47,7 @@ export default function RentalsListingPage() {
 
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden">
+    <main className="w-full min-h-screen bg-stoneGray text-charcoal overflow-x-hidden">
       {/* Hero */}
       <section className="bg-gradient-to-r from-green-100 to-blue-100 p-6 text-center">
         <h1 className="text-2xl sm:text-3xl font-bold text-green-800">
@@ -77,9 +77,9 @@ export default function RentalsListingPage() {
             <Link
               key={rental.id}
               href={`/rentals/${rental.slug ?? rental.id}`}
-              className="min-w-[160px] bg-white rounded-xl shadow-md overflow-hidden"
+              className="min-w-[160px] bg-stoneGray rounded-xl shadow-md overflow-hidden"
             >
-              <div className="h-24 relative bg-gray-100">
+              <div className="h-24 relative bg-cloudMist">
                 {rental.image && rental.image.startsWith('https') ? (
                   <Image src={rental.image} alt={rental.title || rental.type} fill className="object-cover" />
                 ) : (
@@ -103,9 +103,9 @@ export default function RentalsListingPage() {
             <Link
               key={rental.id}
               href={`/rentals/${rental.slug ?? rental.id}`}
-              className="flex items-center bg-white rounded-xl shadow-sm overflow-hidden"
+              className="flex items-center bg-stoneGray rounded-xl shadow-sm overflow-hidden"
             >
-              <div className="relative w-24 h-24 bg-gray-100">
+              <div className="relative w-24 h-24 bg-cloudMist">
                 {rental.image && rental.image.startsWith('https') ? (
                   <Image src={rental.image} alt={rental.title || rental.type} fill className="object-cover" />
                 ) : (
@@ -122,11 +122,11 @@ export default function RentalsListingPage() {
                   </p>
                 )}
                 {rental.availability && (
-                  <p className="text-sm text-gray-600">Status: {rental.availability}</p>
+                  <p className="text-sm text-charcoal">Status: {rental.availability}</p>
                 )}
-                {typeof rental.rentalrate === "object" && rental.rentalrate?.price && (
+                {typeof rental.rentalrate === "object" && rental.rentalrate?.min && (
                   <p className="text-green-600 text-sm font-medium mt-1">
-                    ₹{rental.rentalrate.price}/day
+                    ₹{rental.rentalrate.min}/day
                   </p>
                 )}
               </div>

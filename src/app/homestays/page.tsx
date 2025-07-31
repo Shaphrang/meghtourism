@@ -49,13 +49,13 @@ export default function HomestayListingPage() {
   }, [items, loading, totalCount]);
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden">
+    <main className="w-full min-h-screen bg-stoneGray text-charcoal overflow-x-hidden">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-green-100 to-blue-100 p-6 text-center">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-800">
+      <section className="bg-gradient-to-br from-cloudMist to-stoneGray p-6 text-center">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-deepIndigo">
           Find Homestays in Meghalaya
         </h1>
-        <p className="text-sm text-gray-700 mt-1">Explore cozy and affordable stays across the state</p>
+        <p className="text-sm text-charcoal mt-1">Explore cozy and affordable stays across the state</p>
       </section>
 
       {/* Filter Bar */}
@@ -85,9 +85,9 @@ export default function HomestayListingPage() {
             <Link
               key={stay.id}
               href={`/homestays/${stay.slug}`}
-              className="bg-gray-50 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all"
+              className="bg-cloudMist rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all"
             >
-              <div className="relative w-full h-40 bg-gray-100">
+              <div className="relative w-full h-40 bg-cloudMist">
                 {stay.image && stay.image.startsWith("https") ? (
                   <Image src={stay.image} alt={stay.name || "Stay"} fill className="object-cover" />
                 ) : (
@@ -99,7 +99,7 @@ export default function HomestayListingPage() {
               <div className="p-4">
                 <h3 className="text-lg font-bold truncate">{stay.name}</h3>
                 {stay.location && (
-                  <div className="flex items-center text-sm text-gray-600 mt-1">
+                  <div className="flex items-center text-sm text-charcoal mt-1">
                     <MapPin size={14} className="mr-1" /> {stay.location}
                   </div>
                 )}
@@ -109,7 +109,7 @@ export default function HomestayListingPage() {
                   </p>
                 )}
                 {stay.description && (
-                  <p className="text-sm text-gray-700 mt-2 line-clamp-2">{stay.description}</p>
+                  <p className="text-sm text-charcoal mt-2 line-clamp-2">{stay.description}</p>
                 )}
               </div>
             </Link>

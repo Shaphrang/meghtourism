@@ -74,7 +74,7 @@ export default function ClientPage() {
         {img && <meta name="twitter:image" content={img} />}
       </Head>
 
-      <main className="bg-gradient-to-b from-slate-50 to-white w-full min-h-screen text-gray-800 pb-10 px-4">
+      <main className="bg-gradient-to-b from-slate-50 to-white w-full min-h-screen text-charcoal pb-10 px-4">
       <div className="max-w-screen-md mx-auto">
       <Swiper spaceBetween={10} slidesPerView={1.2} className="w-full h-64 md:h-96">
         {gallery.map((img, idx) => (
@@ -96,13 +96,13 @@ export default function ClientPage() {
               <AverageRating category="rental" itemId={itemSlug} />
             </div>
             {rental.address && (
-              <p className="text-sm text-gray-600 flex items-center gap-2">
+              <p className="text-sm text-charcoal flex items-center gap-2">
                 <MapPin size={14} /> {rental.address}
               </p>
             )}
-            {typeof rental.rentalrate === "object" && rental.rentalrate?.price && (
+            {typeof rental.rentalrate === "object" && rental.rentalrate?.min && (
               <p className="text-green-600 font-medium text-base mt-2">
-                ₹{rental.rentalrate.price}/day
+                ₹{rental.rentalrate.min}/day
               </p>
             )}
             {rental.availability && (

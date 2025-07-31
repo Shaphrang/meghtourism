@@ -70,7 +70,7 @@ export default function ClientPage() {
         {img && <meta name="twitter:image" content={img} />}
       </Head>
 
-      <main className="bg-gradient-to-b from-emerald-50 to-white text-gray-800 w-full min-h-screen pb-10">
+      <main className="bg-gradient-to-b from-cloudMist to-stoneGray text-charcoal w-full min-h-screen pb-10">
         {/* Full-width image swiper */}
         <div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-[calc((100vw-100%)/2)]">
           <Swiper spaceBetween={10} slidesPerView={1} centeredSlides className="w-full h-full">
@@ -82,7 +82,7 @@ export default function ClientPage() {
                 {img && img.startsWith("https") ? (
                   <Image src={img} alt={event.name || "Event"} fill className="object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-gray-100">
+                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-cloudMist">
                     No image
                   </div>
                 )}
@@ -94,24 +94,24 @@ export default function ClientPage() {
         {/* Main content */}
         <div className="max-w-screen-md mx-auto px-4">
           <div className="flex items-center justify-between mt-5">
-            <h1 className="text-2xl font-bold text-gray-800">{event.name}</h1>
+            <h1 className="text-2xl font-bold text-charcoal">{event.name}</h1>
             <AverageRating category="event" itemId={itemSlug} />
           </div>
 
           {/* Centered chips */}
-          <div className="flex flex-wrap gap-2 mt-2 text-sm text-gray-600">
+          <div className="flex flex-wrap gap-2 mt-2 text-sm text-charcoal">
             {event.date && (
-              <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+              <span className="flex items-center gap-1 bg-cloudMist px-3 py-1 rounded-full">
                 <Calendar size={14} /> {event.date}
               </span>
             )}
             {event.time && (
-              <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+              <span className="flex items-center gap-1 bg-cloudMist px-3 py-1 rounded-full">
                 <Clock size={14} /> {event.time}
               </span>
             )}
             {event.location && (
-              <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+              <span className="flex items-center gap-1 bg-cloudMist px-3 py-1 rounded-full">
                 <MapPin size={14} /> {event.location}
               </span>
             )}

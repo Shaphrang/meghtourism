@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useDynamicFilterOptions from "@/hooks/useDynamicFilterOptions";
 import useSingleFilterState from "@/hooks/useSingleFilterState";
 import {
@@ -32,25 +32,33 @@ interface Props {
   onFilterChange: (newFilter: { field: string; value: any } | null) => void;
 }
 
-export default function DynamicFilterComponent({ table, filtersConfig, onFilterChange }: Props) {
+export default function DynamicFilterComponent({
+  table,
+  filtersConfig,
+  onFilterChange,
+}: Props) {
   const options = useDynamicFilterOptions(table);
   const { filter, updateFilter, resetFilter } = useSingleFilterState();
 
-  const [activeFilterType, setActiveFilterType] = useState<FilterType | null>(null);
+  const [activeFilterType, setActiveFilterType] = useState<FilterType | null>(
+    null
+  );
 
-  const handleSelectValue = (field: string, value: any) => {
-    updateFilter(field, value);
-    onFilterChange({ field, value });
-    setActiveFilterType(null);
-  };
+  // --- DEBUGGING LOGS ---
+  useEffect(() => {
+    console.log("[FilterComponent] Loaded options:", options);
+  }, [options]);
 
-  const handleReset = () => {
-    resetFilter();
-    onFilterChange(null);
-    setActiveFilterType(null);
-  };
+  useEffect(() => {
+    console.log("[FilterComponent] Active filter type:", activeFilterType);
+  }, [activeFilterType]);
 
-    const priceRanges = [
+  useEffect(() => {
+    console.log("[FilterComponent] Current filter:", filter);
+  }, [filter]);
+
+  // Price and days ranges (as before)
+  const priceRanges = [
     { label: "Below ₹1,000", value: { lte: 1000 } },
     { label: "₹1,000 – ₹2,000", value: { gte: 1000, lte: 2000 } },
     { label: "₹2,000 – ₹4,000", value: { gte: 2000, lte: 4000 } },
@@ -85,18 +93,39 @@ export default function DynamicFilterComponent({ table, filtersConfig, onFilterC
     }
   };
 
+  
+
   const cfgField = (type: FilterType) => {
     const cfg = filtersConfig.find((f) => f.type === type);
     return cfg?.field || type;
   };
 
+  const handleSelectValue = (field: string, value: any) => {
+    console.log(`[FilterComponent] Selecting: field=${field}, value=`, value);
+    updateFilter(field, value);
+    onFilterChange({ field, value });
+    setActiveFilterType(null);
+  };
+
+  const handleReset = () => {
+    console.log("[FilterComponent] Resetting filters");
+    resetFilter();
+    onFilterChange(null);
+    setActiveFilterType(null);
+  };
+
+  // Log filter config on mount (optional)
+  useEffect(() => {
+    console.log("[FilterComponent] filtersConfig:", filtersConfig);
+  }, [filtersConfig]);
 
   return (
     <section className="bg-white shadow-md border-b px-4 py-4">
       <div className="flex flex-wrap justify-center gap-2">
-                {filtersConfig.map((cfg) => {
+        {filtersConfig.map((cfg) => {
           const isActive = filter?.field === (cfg.field || cfg.type);
-          const label = cfg.type.charAt(0).toUpperCase() + cfg.type.slice(1);
+          const label =
+            cfg.type.charAt(0).toUpperCase() + cfg.type.slice(1);
           const icon = {
             district: <Landmark size={18} />,
             location: <MapPin size={18} />,
@@ -106,14 +135,17 @@ export default function DynamicFilterComponent({ table, filtersConfig, onFilterC
             price: <IndianRupee size={18} />,
             days: <Calendar size={18} />,
           }[cfg.type];
-                    return (
+          return (
             <button
               key={cfg.type}
-              onClick={() =>
-                setActiveFilterType(activeFilterType === cfg.type ? null : cfg.type)
-              }
+              onClick={() => {
+                setActiveFilterType(activeFilterType === cfg.type ? null : cfg.type);
+                console.log("[FilterComponent] Clicked filter type:", cfg.type);
+              }}
               className={`flex flex-col items-center px-3 py-2 rounded-full ${
-                isActive ? "bg-blue-500 text-white" : "bg-blue-100 text-blue-800"
+                isActive
+                  ? "bg-blue-500 text-white"
+                  : "bg-blue-100 text-blue-800"
               } font-medium text-sm shadow transition`}
             >
               {icon}
@@ -132,7 +164,7 @@ export default function DynamicFilterComponent({ table, filtersConfig, onFilterC
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 mt-3">
-                {activeFilterType && getOptions(activeFilterType).length === 0 && (
+        {activeFilterType && getOptions(activeFilterType).length === 0 && (
           <span className="text-sm text-gray-500">No filters available</span>
         )}
 

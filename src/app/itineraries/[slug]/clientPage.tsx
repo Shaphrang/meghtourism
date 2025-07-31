@@ -70,7 +70,7 @@ export default function ClientPage() {
         {img && <meta name="twitter:image" content={img} />}
       </Head>
 
-      <main className="bg-gradient-to-b from-sky-50 to-white w-full min-h-screen text-gray-800 px-4 pb-10 overflow-x-hidden">
+      <main className="bg-gradient-to-b from-sky-50 to-white w-full min-h-screen text-charcoal px-4 pb-10 overflow-x-hidden">
       <div className="max-w-screen-md mx-auto">
 
         {/* Image Swiper */}
@@ -103,7 +103,7 @@ export default function ClientPage() {
             </h1>
             <AverageRating category="itinerary" itemId={itemSlug} />
           </div>
-          <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
+          <div className="flex flex-wrap gap-2 text-sm text-gcharcoal mb-2">
             {itinerary.days && (
               <span className="bg-sky-100 text-sky-700 px-3 py-1 rounded-full">
                 {itinerary.days} Days

@@ -55,7 +55,7 @@ export default function ClientPage() {
         {gallery[0] && <meta name="twitter:image" content={gallery[0]} />}
       </Head>
 
-      <main className="w-full min-h-screen bg-white text-gray-800 pb-10">
+      <main className="w-full min-h-screen bg-stoneGray text-charcoal pb-10">
         {gallery.length > 0 && (
           <Swiper spaceBetween={10} slidesPerView={1} className="w-screen h-64 md:h-96">
             {gallery.map((img, idx) => (
@@ -77,7 +77,7 @@ export default function ClientPage() {
           {tip.tags?.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {tip.tags.map((tag) => (
-                <span key={tag} className="px-3 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                <span key={tag} className="px-3 py-1 text-xs bg-cloudMist text-deepIndigo rounded-full">
                   {tag}
                 </span>
               ))}

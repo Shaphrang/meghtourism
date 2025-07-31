@@ -49,9 +49,9 @@ export default function EventsListingPage() {
   }, [events, loading, totalCount]);
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800">
-      <section className="bg-gradient-to-r from-blue-100 to-green-100 p-6 text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">What’s Happening in Meghalaya?</h1>
+    <main className="w-full min-h-screen bg-stoneGray text-charcoal">
+      <section className="bg-gradient-to-r from-cloudMist to-stoneGray p-6 text-center">
+        <h1 className="text-2xl sm:text-3xl font-bold text-deepIndigo">What’s Happening in Meghalaya?</h1>
       </section>
 
       {/* Filter Bar */}
@@ -78,9 +78,9 @@ export default function EventsListingPage() {
             <Link
               key={event.id}
               href={`/events/${event.slug ?? event.id}`}
-              className="bg-gray-50 rounded-xl shadow-sm overflow-hidden"
+              className="bg-cloudMist  rounded-xl shadow-sm overflow-hidden"
             >
-              <div className="h-40 relative bg-gray-100">
+              <div className="h-40 relative bg-cloudMist ">
                 {event.image && event.image.startsWith('https') ? (
                   <Image src={event.image} alt={event.name || "Event"} fill className="object-cover" />
                 ) : (
@@ -89,7 +89,7 @@ export default function EventsListingPage() {
               </div>
               <div className="p-4">
                 <h3 className="text-lg font-semibold truncate">{event.name}</h3>
-                <p className="text-sm text-gray-600 flex items-center gap-1">
+                <p className="text-sm text-charcoal flex items-center gap-1">
                   {event.date && <><Calendar size={14} /> {event.date}</>}
                   {event.time && <><Clock size={14} /> {event.time}</>}
                 </p>

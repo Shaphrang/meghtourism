@@ -54,7 +54,7 @@ export default function ItinerariesListingPage() {
   }, [items, loading, totalCount]);
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800 overflow-x-hidden">
+    <main className="w-full min-h-screen bg-stoneGray text-charcoal overflow-x-hidden">
       <section className="bg-gradient-to-r from-yellow-100 to-pink-100 p-6 text-center">
         <h1 className="text-2xl sm:text-3xl font-bold text-yellow-800">
           Ready-Made Meghalaya Travel Plans
@@ -87,9 +87,9 @@ export default function ItinerariesListingPage() {
             <Link
               key={trip.id}
               href={`/itineraries/${trip.slug ?? trip.id}`}
-              className="bg-gray-50 rounded-xl shadow-md overflow-hidden"
+              className="bg-cloudMist rounded-xl shadow-md overflow-hidden"
             >
-              <div className="relative w-full h-40 bg-gray-100">
+              <div className="relative w-full h-40 bg-cloudMist">
                 {trip.image && trip.image.startsWith("/") ? (
                   <Image
                     src={trip.image}
@@ -106,7 +106,7 @@ export default function ItinerariesListingPage() {
               <div className="p-4">
                 <h3 className="text-lg font-bold truncate">{trip.title}</h3>
                 {trip.description && (
-                  <p className="text-sm text-gray-700 mt-1 line-clamp-2">
+                  <p className="text-sm text-charcoal mt-1 line-clamp-2">
                     {trip.description}
                   </p>
                 )}

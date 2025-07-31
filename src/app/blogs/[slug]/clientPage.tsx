@@ -60,7 +60,7 @@ export default function ClientPage() {
         )}
       </Head>
 
-      <main className="bg-gradient-to-b from-stone-50 to-white w-full min-h-screen text-gray-800 overflow-x-hidden pb-10">
+      <main className="bg-gradient-to-b from-stone-50 to-white w-full min-h-screen text-charcoal overflow-x-hidden pb-10">
         {/* ✅ Full Width Image Swiper */}
         {gallery.length > 0 && (
           <Swiper
@@ -97,7 +97,7 @@ export default function ClientPage() {
               {blog.title}
             </h1>
             {blog.author && (
-              <p className="text-sm text-gray-600 mt-1">By {blog.author}</p>
+              <p className="text-sm text-charcoal mt-1">By {blog.author}</p>
             )}
             {blog.published_at && (
               <p className="text-xs text-gray-500 mt-1">

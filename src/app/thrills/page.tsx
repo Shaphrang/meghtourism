@@ -51,9 +51,9 @@ export default function ThrillsListingPage() {
   }, [thrills, loading, totalCount]);
 
   return (
-    <main className="w-full min-h-screen bg-white text-gray-800">
+    <main className="w-full min-h-screen bg-stoneGray text-charcoal">
       <section className="bg-gradient-to-r from-yellow-100 to-green-100 p-6 text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-green-800">Experience the Thrill of Meghalaya</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-deepIndigo">Experience the Thrill of Meghalaya</h1>
       </section>
 
       {/* Filter Bar */}
@@ -80,9 +80,9 @@ export default function ThrillsListingPage() {
             <Link
               key={thrill.id}
               href={`/thrills/${thrill.slug ?? thrill.id}`}
-              className="bg-gray-50 rounded-xl shadow-sm overflow-hidden"
+              className="bg-cloudMist rounded-xl shadow-sm overflow-hidden"
             >
-              <div className="h-40 relative bg-gray-100">
+              <div className="h-40 relative bg-cloudMist">
                 {thrill.image && thrill.image.startsWith('https') ? (
                   <Image src={thrill.image} alt={thrill.name || "Thrill"} fill className="object-cover" />
                 ) : (
@@ -92,17 +92,17 @@ export default function ThrillsListingPage() {
               <div className="p-4">
                 <h3 className="text-lg font-semibold">{thrill.name}</h3>
                 {thrill.location && (
-                  <p className="text-sm text-gray-600 flex items-center">
+                  <p className="text-sm text-charcoal flex items-center">
                     <MapPin size={14} className="mr-1" /> {thrill.location}
                   </p>
                 )}
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-charcoal">
                   {thrill.duration && <>🕒 {thrill.duration} </>}
-                  {thrill.priceperperson && <>💰 ₹{thrill.priceperperson.toLocaleString()}</>}
+                  {thrill.price && <>💰 ₹{thrill.price.toLocaleString()}</>}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {thrill.tags?.map((tag, idx) => (
-                    <span key={idx} className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">{tag}</span>
+                    <span key={idx} className="text-xs bg-green-100 text-deepIndigo px-2 py-1 rounded-full">{tag}</span>
                   ))}
                 </div>
               </div>

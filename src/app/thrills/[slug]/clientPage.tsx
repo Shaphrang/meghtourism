@@ -71,7 +71,7 @@ export default function ClientPage() {
         {img && <meta name="twitter:image" content={img} />}
       </Head>
 
-      <main className="bg-gradient-to-b from-yellow-50 to-white text-gray-800 w-full min-h-screen pb-10">
+      <main className="bg-gradient-to-b from-yellow-50 to-white text-charcoal w-full min-h-screen pb-10">
       {/* Full-width Swiper */}
 <div className="w-screen h-64 sm:h-80 md:h-96 relative -mx-[calc((100vw-100%)/2)]">
         <Swiper spaceBetween={10} slidesPerView={1} centeredSlides className="w-full h-full">
@@ -80,7 +80,7 @@ export default function ClientPage() {
               {img && img.startsWith("https") ? (
                 <Image src={img} alt={thrill.name || "Adventure"} fill className="object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-gray-100">
+                <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-cloudMist">
                   No image
                 </div>
               )}
@@ -101,7 +101,7 @@ export default function ClientPage() {
           </div>
 
           {/* Chips */}
-          <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
+          <div className="flex flex-wrap gap-2 text-sm text-charcoal mb-2">
             {thrill.location && (
               <span className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
                 <MapPin size={14} /> {thrill.location}
@@ -112,17 +112,17 @@ export default function ClientPage() {
                 <Clock size={14} /> {thrill.duration}
               </span>
             )}
-            {thrill.difficultylevel && (
+            {thrill.difficulty_level && (
               <span className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
-                <TrendingUp size={14} /> {thrill.difficultylevel}
+                <TrendingUp size={14} /> {thrill.difficulty_level}
               </span>
             )}
           </div>
 
           {/* Price - centered */}
-          {thrill.priceperperson && (
+          {thrill.price && (
             <p className="text-green-600 font-medium text-base mt-2">
-              ₹{thrill.priceperperson.toLocaleString()}/person
+              ₹{thrill.price.toLocaleString()}/person
             </p>
           )}
 
@@ -135,18 +135,18 @@ export default function ClientPage() {
         </section>
 
         {/* Highlights */}
-        {Array.isArray(thrill.highlights) && thrill.highlights.length > 0 && (
+        {Array.isArray(thrill.highlight) && thrill.highlight.length > 0 && (
           <section className="py-4">
             <h2 className="text-lg font-semibold mb-2">Highlights</h2>
             <ul className="list-disc list-inside text-sm text-gray-700">
-              {thrill.highlights.map((item, i) => (
+              {thrill.highlight.map((item, i) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>
           </section>
         )}
 
-        {/* Inclusions */}
+        {/* Inclusions 
         {Array.isArray(thrill.inclusions) && thrill.inclusions.length > 0 && (
           <section className="py-4">
             <h2 className="text-lg font-semibold mb-2">What's Included</h2>
@@ -158,7 +158,7 @@ export default function ClientPage() {
               ))}
             </div>
           </section>
-        )}
+        )}*/}
 
         {/* Description */}
         {thrill.description && (

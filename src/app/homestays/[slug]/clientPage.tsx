@@ -76,7 +76,7 @@ export default function ClientPage() {
         {img && <meta name="twitter:image" content={img} />}
       </Head>
 
-      <main className="bg-gradient-to-b from-indigo-50 to-white text-gray-800 w-full min-h-screen overflow-x-hidden pb-10">
+      <main className="bg-gradient-to-b from-indigo-50 to-white text-charcoal w-full min-h-screen overflow-x-hidden pb-10">
       {/* Full Width Image */}
       <div className="w-full">
         <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-64 sm:h-80 md:h-96">
@@ -101,9 +101,9 @@ export default function ClientPage() {
           <AverageRating category="homestay" itemId={itemSlug} />
         </div>
 
-        <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
+        <div className="flex flex-wrap gap-2 text-sm text-charcoal mb-2">
           {homestay.address && (
-            <span className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+            <span className="flex items-center gap-1 bg-cloudMist px-3 py-1 rounded-full">
               <MapPin size={14} /> {homestay.address}
             </span>
           )}
@@ -134,7 +134,7 @@ export default function ClientPage() {
           <section className="pt-6">
             <div className="bg-gray-50 p-4 rounded-xl shadow-sm">
               <h2 className="text-lg font-semibold">Room Info</h2>
-              <p className="text-sm text-gray-600">Occupancy: {homestay.occupancy}</p>
+              <p className="text-sm text-charcoal">Occupancy: {homestay.occupancy}</p>
               {homestay.pricepernight && (
                 <p className="text-green-600 font-medium mt-1">
                   ₹{homestay.pricepernight.toLocaleString()}/night

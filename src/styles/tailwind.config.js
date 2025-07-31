@@ -8,10 +8,26 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        sans: [
+          'Geist',
+          'Inter',
+          'Montserrat',
+          'Poppins',
+          'Arial',
+          'sans-serif',
+        ],
+      },
+      colors: {
+        meghGreen: '#166534',
+        warmAmber: '#FFC857',
+        cloudMist: '#E8F6EF',
+        tribalRed: '#C81D25',
+        deepIndigo: '#22223B',
+        charcoal: '#393E41',
+        stoneGray: '#F5F3F4',
       },
       screens: {
-        'xs': '360px',
+        xs: '360px',
       },
     },
   },
