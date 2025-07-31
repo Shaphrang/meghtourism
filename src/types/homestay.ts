@@ -100,8 +100,8 @@ export type Homestay = {
   business_type?: 'individual' | 'agency'; // Owner type
 
   // 📢 Ads & Marketing
-  adSlot?: import('../lib/adSlots').AdSlot; // Slot assignment
-  adActive?: boolean;                   // Is it a paid ad?
+  adslot?: import('../lib/adSlots').AdSlot; // Slot assignment
+  adactive?: boolean;                   // Is it a paid ad?
 
   // AI Functionality
   ai_score?: number;                    // 0–100 scoring relevance
