@@ -5,7 +5,8 @@ export default function ContactCTA() {
   const router = useRouter();
   const pathname = usePathname();
 
-  if (pathname === '/contact') return null;
+  // Hide on /contact and all /admin pages
+  if (pathname === '/contact' || pathname.startsWith('/admin')) return null;
 
   return (
     <div className="max-w-screen-md mx-auto px-4 mt-3">
