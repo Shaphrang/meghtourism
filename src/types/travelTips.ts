@@ -52,8 +52,8 @@ export interface TravelTip {
   sponsoredby?: string;
 
   // 📢 Ads & Promotion
-  adSlot?: import('../lib/adSlots').AdSlot;
-  adActive?: boolean;
+  adslot?: import('../lib/adSlots').AdSlot;
+  adactive?: boolean;
   isfeaturedforhome?: boolean;
 
   // AI Functionality

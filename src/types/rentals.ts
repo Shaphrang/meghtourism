@@ -74,8 +74,8 @@ export interface Rental {
   sponsoredby?: string;                  // Sponsor label if paid
 
   // 📢 Ads & Promotion
-  adSlot?: import('../lib/adSlots').AdSlot;
-  adActive?: boolean;
+  adslot?: import('../lib/adSlots').AdSlot;
+  adactive?: boolean;
   isfeaturedforhome?: boolean;
 
   // AI Functionality

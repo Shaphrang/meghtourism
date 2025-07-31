@@ -74,8 +74,8 @@ export interface Event {
   highlight?: boolean;            // For UI highlight/banner
 
   // 📢 Ads & Promotion
-  adSlot?: import('../lib/adSlots').AdSlot; // Ad slot if sponsored
-  adActive?: boolean;             // true if ad is active
+  adslot?: import('../lib/adSlots').AdSlot; // Ad slot if sponsored
+  adactive?: boolean;             // true if ad is active
 
   // AI Functionality
   ai_score?: number;                    // 0–100 scoring relevance

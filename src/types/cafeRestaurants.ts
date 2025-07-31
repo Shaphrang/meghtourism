@@ -74,8 +74,8 @@ export interface CafeAndRestaurant {
   sponsoredby?: string;
 
   // 📢 Ads & Promotions
-  adSlot?: import('../lib/adSlots').AdSlot;
-  adActive?: boolean;
+  adslot?: import('../lib/adSlots').AdSlot;
+  adactive?: boolean;
   isfeaturedforhome?: boolean;
 
   // AI Functionality

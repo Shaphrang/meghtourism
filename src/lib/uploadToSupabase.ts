@@ -1,16 +1,20 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import imageCompression from 'browser-image-compression';
+import { slugify } from '@/lib/utils';
+
 
 export async function uploadImageToSupabase({
   file,
   category,
   id,
   type, // 'main' | 'gallery'
+  name = '',
 }: {
   file: File;
   category: string;
   id: string;
   type: 'main' | 'gallery';
+  name?: string;
 }): Promise<string | null> {
   const supabase = createClientComponentClient();
 
@@ -24,12 +28,13 @@ export async function uploadImageToSupabase({
     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
 
     // Use correct filename with original extension
+    const safeName = name ? slugify(name) : id;
     const filename =
       type === 'main'
-        ? `main.${ext}`
-        : `gallery-${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
-
+        ? `main-${safeName}.${ext}`
+        : `gallery-${safeName}-${Date.now()}.${ext}`;
     const path = `${category}/${id}/${filename}`;
+
 
     const { error } = await supabase.storage
       .from('images')

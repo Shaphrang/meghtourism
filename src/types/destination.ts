@@ -77,8 +77,8 @@ export interface Destination {
   highlight?: boolean | null;           // Highlighted listing for styling/emphasis
 
   // 📢 Ads & Promotion
-  adSlot?: import('../lib/adSlots').AdSlot; // Linked ad campaign
-  adActive?: boolean;                   // true if paid ad active
+  adslot?: import('../lib/adSlots').AdSlot; // Linked ad campaign
+  adactive?: boolean;                   // true if paid ad active
 
   // AI Functionality
   ai_score?: number;                    // 0–100 scoring relevance
