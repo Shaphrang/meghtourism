@@ -11,7 +11,8 @@ import { deleteImageFromSupabase } from '@/lib/deleteImageFromSupabase';
 import { LOCATION_ZONES } from '@/lib/locationZones';
 import { AD_SLOTS } from '@/lib/adSlots';
 import { FIELD_OPTIONS } from '@/lib/fieldOption'; // Adjust path as needed
-
+import { DISTRICTS } from '@/lib/districts';
+import HorizontalCheckboxGroup from '@/components/common/horizontalCheckboxGroup';
 
 interface Props {
   initialData?: any;
@@ -21,17 +22,24 @@ interface Props {
 
 export default function DestinationFormModal({ initialData, onClose, onSave }: Props) {
   const isEditMode = !!initialData;
+  const [isUploading, setIsUploading] = useState(false);
 
-  // --- Initial State
+
+  // 3. Helper to auto-generate address
+  const autoAddress = (area: string, location: string, district: string) => {
+    return [area, location, district].filter(Boolean).join(', ');
+  };
+
+  // 1. Remove fields from default form
   const createDefaultForm = () => ({
     id: uuidv4(),
     name: '',
-    slug: '',
+    // slug: '', // removed
     description: '',
     location: '',
     area: '',
     district: '',
-    address: '',
+    address: '', // Will be auto-filled
     image: '',
     gallery: [],
     cover_image_alt: '',
@@ -44,10 +52,6 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
     entryfee: {},
     openinghours: {},
     howtoreach: '',
-    nearbyattractions: [],
-    traveltimes: {},
-    latitude: '',
-    longitude: '',
     tags: [],
     theme: [],
     visitseason: [],
@@ -55,12 +59,9 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
     isnaturalspot: false,
     ishistorical: false,
     requirespermit: false,
-    rating: '',
     averagecostestimate: {},
-    tips: [],
-    warnings: [],
-    distancefromshillong: '',
-    distancefromguwahati: '',
+    distancefromshillong: '', // will validate as integer
+    distancefromguwahati: '', // will validate as integer
     view_count: '',
     click_count: '',
     meta_title: '',
@@ -80,15 +81,32 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
     created_at: new Date().toISOString(),
   });
 
+  // Init state
   const [form, setForm] = useState(() => ({ ...createDefaultForm(), ...initialData }));
   useEffect(() => {
-  setForm(() => ({ ...createDefaultForm(), ...initialData }));
-}, [initialData]);
+    console.log('Initial gallery data:', initialData?.gallery);
+    setForm(() => ({ ...createDefaultForm(), ...initialData }));
+  }, [initialData]);
 
+  // Watch area/location/district to auto-update address
+  useEffect(() => {
+    setForm((prev: any) => ({
+      ...prev,
+      address: autoAddress(prev.area, prev.location, prev.district),
+    }));
+  }, [form.area, form.location, form.district]);
 
   // --- Handlers
   const handleChange = (key: string, value: any) => {
-    setForm((prev: any) => ({ ...prev, [key]: value }));
+    // 4. Only allow integers for distances
+    if (key === 'distancefromshillong' || key === 'distancefromguwahati') {
+      // Allow blank or integer
+      if (value === '' || /^[0-9]+$/.test(value)) {
+        setForm((prev: any) => ({ ...prev, [key]: value }));
+      }
+    } else {
+      setForm((prev: any) => ({ ...prev, [key]: value }));
+    }
   };
   const handleNestedChange = (objKey: string, field: string, value: any) => {
     setForm((prev: any) => ({
@@ -97,15 +115,15 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
     }));
   };
 
-  // --- Uniform, explicit snake_case payload
+  // --- Uniform, explicit snake_case payload (removed all removed fields)
   const buildPayload = () => ({
     id: form.id,
     name: form.name,
-    slug: form.slug,
     description: form.description,
     location: form.location,
     area: form.area,
     district: form.district,
+    category: form.category,
     address: form.address,
     image: form.image,
     gallery: form.gallery,
@@ -119,23 +137,18 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
     entryfee: form.entryfee,
     openinghours: form.openinghours,
     howtoreach: form.howtoreach,
-    nearbyattractions: form.nearbyattractions,
-    traveltimes: form.traveltimes,
-    latitude: form.latitude,
-    longitude: form.longitude,
     tags: form.tags,
     theme: form.theme,
+    suitablefor: form.suitablefor,
+    warnings: form.warnings,
     visitseason: form.visitseason,
     isoffbeat: form.isoffbeat,
     isnaturalspot: form.isnaturalspot,
     ishistorical: form.ishistorical,
     requirespermit: form.requirespermit,
-    rating: form.rating,
     averagecostestimate: form.averagecostestimate,
-    tips: form.tips,
-    warnings: form.warnings,
-    distancefromshillong: form.distancefromshillong,
-    distancefromguwahati: form.distancefromguwahati,
+    distancefromshillong: form.distancefromshillong ? parseInt(form.distancefromshillong) : null,
+    distancefromguwahati: form.distancefromguwahati ? parseInt(form.distancefromguwahati) : null,
     view_count: form.view_count,
     click_count: form.click_count,
     meta_title: form.meta_title,
@@ -155,33 +168,39 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
     created_at: form.created_at || new Date().toISOString(),
   });
 
-  // --- Save handler
-  const handleSubmit = async () => {
-    try {
-      const slug = await generateSlug(supabase, form.name, form.slug);
-      const payload = { ...buildPayload(), slug, cover_image_alt: form.cover_image_alt || form.name };
+const handleSubmit = async () => {
+  try {
+    const payload = {
+      ...buildPayload(),
+      cover_image_alt: form.cover_image_alt || form.name,
+    };
 
-      const { error } = isEditMode
-        ? await supabase.from('destinations').update(payload).eq('id', form.id)
-        : await supabase.from('destinations').insert([payload]);
-      if (error) throw error;
-      toast.success(`Destination ${isEditMode ? 'updated' : 'created'} successfully`);
-      onSave();
-      onClose();
-    } catch (err: any) {
-      toast.error(err.message || 'Error saving data');
-    }
-  };
+    // Add this:
+    console.log('Saving payload.gallery:', payload.gallery);
+
+    const { error } = isEditMode
+      ? await supabase.from('destinations').update(payload).eq('id', form.id)
+      : await supabase.from('destinations').insert([payload]);
+    if (error) throw error;
+    toast.success(`Destination ${isEditMode ? 'updated' : 'created'} successfully`);
+    onSave();
+    onClose();
+  } catch (err: any) {
+    toast.error(err.message || 'Error saving data');
+  }
+};
+
 
   // --- UI render helpers
-  const renderInput = (label: string, key: string, type = 'text') => (
+  const renderInput = (label: string, key: string, type = 'text', readOnly = false) => (
     <div className="mb-3">
       <label className="block font-medium text-sm mb-1">{label}</label>
       <input
         type={type}
         value={form[key] || ''}
+        readOnly={readOnly}
         onChange={(e) => handleChange(key, type === 'number' ? Number(e.target.value) : e.target.value)}
-        className="w-full border px-3 py-2 rounded"
+        className={`w-full border px-3 py-2 rounded ${readOnly ? 'bg-gray-100 text-gray-500' : ''}`}
       />
     </div>
   );
@@ -306,24 +325,22 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
               <Disclosure.Panel>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderInput('Name', 'name')}
-                  {renderInput('Slug', 'slug')}
+                  {/* Slug REMOVED */}
                   {renderSelect('Location Zone', 'location', LOCATION_ZONES)}
                   {renderInput('Area/Locality', 'area')}
-                  {renderInput('District', 'district')}
-                  {renderInput('Address', 'address')}
-                  {renderInput('Latitude', 'latitude')}
-                  {renderInput('Longitude', 'longitude')}
-                  {renderInput('Map Link', 'maplink')}
-                  {renderInput('Distance from Shillong (km)', 'distancefromshillong')}
-                  {renderInput('Distance from Guwahati (km)', 'distancefromguwahati')}
-                  {renderInput('Best Time to Visit', 'besttimetovisit')}
-                  {renderInput('Duration to Spend', 'durationtospend')}
-                  {renderInput('Meta Title', 'meta_title')}
-                  {renderInput('Sponsored By', 'sponsoredby')}
-                  {renderInput('Popularity Index', 'popularityindex', 'number')}
+                  {/* 2. District select from districts list */}
+                  {renderSelect('District', 'district', DISTRICTS)}
+                  {renderSelect('Category', 'category', [...FIELD_OPTIONS.destinations.category])}
+
+                  {/* 3. Address readonly */}
+                  {/*{renderInput('Address (autofilled)', 'address', 'text', true)}*/}
+                  {/* 4. Distance fields integer-only */}
+                  {renderInput('Distance from Shillong (minutes)', 'distancefromshillong', 'text')}
+                  {renderInput('Distance from Guwahati (minutes)', 'distancefromguwahati', 'text')}
                 </div>
                 {renderTextArea('Description', 'description', 4)}
                 {renderTextArea('How to Reach', 'howtoreach', 2)}
+                {renderSelect('Visibility Status', 'visibilitystatus', ['visible', 'hidden', 'draft'])}
               </Disclosure.Panel>
             </div>
           )}
@@ -338,22 +355,60 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
             </Disclosure.Button>
             <Disclosure.Panel>
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {renderMultiSelect('Tags', 'tags', [...FIELD_OPTIONS.destinations.tags])}
-                  {renderMultiSelect('Theme', 'theme', [...FIELD_OPTIONS.destinations.themes])}
-                  {renderMultiSelect('Visit Season', 'visitseason', [...FIELD_OPTIONS.destinations.visitseason])}
-
-                  {renderArray('Highlights', 'highlights')}
-                  {renderArray('Things To Do', 'thingstodo')}
-                  {renderArray('Nearby Attractions', 'nearbyattractions')}
-                  {renderArray('Tips', 'tips')}
-                  {renderArray('Warnings', 'warnings')}
+                <div className="flex flex-col gap-1">
+                  <HorizontalCheckboxGroup
+                    label="Tags:"
+                    value={form.tags || []}
+                    options={[...FIELD_OPTIONS.destinations.tags]}
+                    onChange={(selected) => handleChange('tags', selected)}
+                  />
+                    <HorizontalCheckboxGroup
+                    label="Themes:"
+                    value={form.themes || []}
+                    options={[...FIELD_OPTIONS.destinations.themes]}
+                    onChange={(selected) => handleChange('themes', selected)}
+                  />
+                    <HorizontalCheckboxGroup
+                    label="Visit Season:"
+                    value={form.visitseason || []}
+                    options={[...FIELD_OPTIONS.destinations.visitseason]}
+                    onChange={(selected) => handleChange('visitseason', selected)}
+                  />
+                    <HorizontalCheckboxGroup
+                    label="Highlights:"
+                    value={form.highlights || []}
+                    options={[...FIELD_OPTIONS.destinations.highlights]}
+                    onChange={(selected) => handleChange('highlights', selected)}
+                  />
+                    <HorizontalCheckboxGroup
+                    label="Best Time To Visit:"
+                    value={form.besttimetovisit || []}
+                    options={[...FIELD_OPTIONS.destinations.besttimetovisit]}
+                    onChange={(selected) => handleChange('besttimetovisit', selected)}
+                  /><HorizontalCheckboxGroup
+                    label="Things To Do:"
+                    value={form.thingstodo || []}
+                    options={[...FIELD_OPTIONS.destinations.thingstodo]}
+                    onChange={(selected) => handleChange('thingstodo', selected)}
+                  />
+                    <HorizontalCheckboxGroup
+                    label="Suitable For:"
+                    value={form.suitablefor || []}
+                    options={[...FIELD_OPTIONS.destinations.suitablefor]}
+                    onChange={(selected) => handleChange('suitablefor', selected)}
+                  />
+                    <HorizontalCheckboxGroup
+                    label="Warnings:"
+                    value={form.warnings || []}
+                    options={[...FIELD_OPTIONS.destinations.warnings]}
+                    onChange={(selected) => handleChange('warnings', selected)}
+                  />
+                  {renderInput('Duration to Spend', 'durationtospend')}
                   {renderInput('Special Notice', 'specialnotice')}
                   {renderCheckbox('Is Offbeat', 'isoffbeat')}
                   {renderCheckbox('Is Natural Spot', 'isnaturalspot')}
                   {renderCheckbox('Is Historical', 'ishistorical')}
                   {renderCheckbox('Requires Permit', 'requirespermit')}
-                  {renderInput('Rating', 'rating', 'number')}
                 </div>
               </div>
             </Disclosure.Panel>
@@ -406,7 +461,11 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
                     multiple
                     onChange={async (e) => {
                       const files = Array.from(e.target.files || []);
+                      if (!files.length) return;
+
+                      setIsUploading(true);
                       const uploaded: string[] = [];
+
                       for (const file of files) {
                         const url = await uploadImageToSupabase({
                           file,
@@ -416,18 +475,27 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
                         });
                         if (url) uploaded.push(url);
                       }
+
                       if (uploaded.length) {
                         toast.success('Gallery images uploaded');
-                        handleChange('gallery', [...(form.gallery || []), ...uploaded]);
+                        setForm((prev: any) => ({
+                          ...prev,
+                          gallery: [...(prev.gallery || []), ...uploaded],
+                        }));
                       } else {
                         toast.error('Gallery upload failed');
                       }
+                      setIsUploading(false);
                     }}
                     className="border px-3 py-2 w-full"
                   />
+
+
                   <div className="grid grid-cols-3 gap-2 mt-2">
                     {(form.gallery || []).map((url: string, i: number) => {
+                      console.log('form.gallery1:', form.gallery);
                       const storagePath = url.split('/storage/v1/object/public/')[1];
+                                                                    console.log('form.gallery2:', form.gallery);
                       return (
                         <div key={i} className="relative group">
                           <img src={url} className="h-24 object-cover rounded w-full" alt={`Gallery ${i}`} />
@@ -468,7 +536,6 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
                   {renderJSON('Entry Fee', 'entryfee')}
                   {renderJSON('Opening Hours', 'openinghours')}
                   {renderJSON('Average Cost Estimate', 'averagecostestimate')}
-                  {renderJSON('Travel Times', 'traveltimes')}
                 </div>
               </Disclosure.Panel>
             </div>
@@ -486,13 +553,29 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderSelect('Ad Slot', 'adslot', [...AD_SLOTS])}
                   {renderCheckbox('Ad Active', 'adactive')}
+                </div>
+              </Disclosure.Panel>
+            </div>
+          )}
+        </Disclosure>
+
+        {/* SEO & Visibility */}
+        <Disclosure>
+          {({ open }) => (
+            <div>
+              <Disclosure.Button className="w-full text-left font-semibold text-lg mt-4 mb-2">
+                <span className={open ? '' : 'opacity-70'}>🚀 SEO & Visibility</span>
+              </Disclosure.Button>
+              <Disclosure.Panel>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderInput('View Count', 'view_count', 'number')}
                   {renderInput('Click Count', 'click_count', 'number')}
-                  {renderSelect('Visibility Status', 'visibilitystatus', ['visible', 'hidden', 'draft'])}
                   {renderCheckbox('Highlight (Home)', 'highlight')}
                 </div>
                 {renderInput('Meta Title', 'meta_title')}
                 {renderTextArea('Meta Description', 'meta_description')}
+                {renderInput('Popularity Index', 'popularityindex', 'number')}
+                {renderInput('Sponsored By', 'sponsoredby')}
               </Disclosure.Panel>
             </div>
           )}
@@ -559,10 +642,21 @@ export default function DestinationFormModal({ initialData, onClose, onSave }: P
         </Disclosure>
 
         <div className="mt-6 flex justify-end gap-2">
-          <button onClick={onClose} className="bg-gray-200 px-4 py-2 rounded">Cancel</button>
-          <button onClick={handleSubmit} className="bg-emerald-600 text-white px-4 py-2 rounded">
+          <button onClick={onClose} className="bg-gray-200 px-4 py-2 rounded" disabled={isUploading}>
+            Cancel
+          </button>
+
+          <button
+            onClick={handleSubmit}
+            className="bg-emerald-600 text-white px-4 py-2 rounded disabled:opacity-60"
+            disabled={isUploading}
+          >
             {isEditMode ? 'Update' : 'Create'}
           </button>
+          {isUploading && (
+            <div className="text-xs text-amber-500 mt-2">Uploading images, please wait...</div>
+          )}
+
         </div>
       </div>
     </Dialog>

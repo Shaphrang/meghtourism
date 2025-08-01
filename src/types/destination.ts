@@ -24,6 +24,10 @@ export interface Destination {
   durationtospend: string | null;       // e.g., "1–2 hours"
   specialnotice?: string | null;        // e.g., "Closed during monsoon" or "Permit required"
 
+  category?: string;             // Single category, e.g., "Waterfall"
+  suitablefor?: string[];        // e.g., ["Families", "Backpackers"]
+  warnings?: string[];           // e.g., ["Slippery During Monsoon", "Permit Required"]
+
   // 💰 Entry Fee
   entryfee: {
     type?: string;                      // e.g., "Paid" or "Free"

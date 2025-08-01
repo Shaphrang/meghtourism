@@ -9,6 +9,9 @@ import { Destination } from "@/types/destination";
 import CarouselBanner from "@/components/common/carouselBanner";
 import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
 import FeaturedBannerAds from "@/components/ads/featuredBannerAds";
+import { FIELD_OPTIONS } from "@/lib/fieldOption";
+import HorizontalSection from "@/components/ads/destinationSectionsUnique";
+
 
 export default function DestinationsListingPage() {
   const [page, setPage] = useState(1);
@@ -53,99 +56,98 @@ export default function DestinationsListingPage() {
   return (
     <main className="w-full min-h-screen bg-stoneGray text-charcoal overflow-x-hidden">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-cloudMist to-stoneGray p-6 text-center">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-deepIndigo">
-          Explore Meghalaya's Destinations
-        </h1>
-        <p className="text-sm text-charcoal mt-1">
-          Discover beautiful places, hidden gems, and local favorites
-        </p>
+      <section className="relative bg-teal-900 pb-2 pt-2 px-4 text-white">
+        <div className="max-w-2xl mx-auto text-center">
+          <h1 className="text-xl md:text-5xl font-bold mb-4">
+            Discover Amazing Tourist Destinations
+          </h1>
+          <DynamicFilterComponent
+            table="destinations"
+            filtersConfig={[
+              { type: "location" },
+              { type: "district" },
+            ]}
+            onFilterChange={(newFilter) => {
+              setFilter(newFilter);
+              setPage(1);
+            }}
+          />
+        </div>
       </section>
-
-
-      {/* Filter Component */}
-      <DynamicFilterComponent
-        table="destinations"
-        filtersConfig={[
-          { type: "location" },
-          { type: "district" },
-          { type: "tags" },
-        ]}
-        onFilterChange={(newFilter) => {
-          setFilter(newFilter);
-          setPage(1);
-        }}
-      />
-        
+      <div className="px-4 pt-4">
+        <div className="flex flex-nowrap gap-2 overflow-x-auto no-scrollbar pb-2">
+          {FIELD_OPTIONS.destinations.category.map((cat, i) => (
+            <span
+              key={i}
+              className="flex items-center px-3 py-1 bg-gray-100 text-xs rounded-full shadow whitespace-nowrap border border-teal-700"
+              style={{ minHeight: 32 }}
+            >
+              {cat}
+            </span>
+          ))}
+        </div>
+      </div> 
       {/* Featured Ads */}
       <section className="p-4">
-        <h2 className="text-lg font-semibold mb-2">Featured Destinations</h2>
+        <h2 className="text-sm font-semibold">⭐️ Featured Destinations</h2>
         <FeaturedBannerAds category="destinations"/>
+      </section>
+      <section className="p-4">
+        <HorizontalSection type="top10" />
+        <HorizontalSection type="trending" />
+        <HorizontalSection type="hiddenGems" />
+        <HorizontalSection type="bucketList" />
+        <HorizontalSection type="recommended" />
       </section>
 
       {/* All Destinations */}
       <section className="p-4">
-        <h2 className="text-lg font-semibold mb-2">All Destinations</h2>
+        <h2 className="text-sm font-semibold mb-2">🌍 All Destinations</h2>
         <div className="grid grid-cols-2 gap-3">
-  {items.map((dest, index) => (
-    <Fragment key={dest.id}>
-      {/* ⭐ Use new destination card format */}
-      <Link
-        href={`/destinations/${dest.slug ?? dest.id}`}
-        className="relative rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] block h-[160px]"
-      >
-        <div className="relative w-full h-full">
-          {dest.image ? (
-            <>
-              <Image
-                src={dest.image}
-                alt={dest.name ?? "Destination image"}
-                fill
-                sizes="(min-width: 640px) 180px, 100vw"
-                className="object-cover transition-transform duration-300"
-              />
-              <div className="absolute bottom-0 w-full px-2 py-2 bg-gradient-to-t from-black/100 via-black/70 to-transparent text-white">
-                <h3 className="text-sm font-semibold truncate">{dest.name}</h3>
-                {dest.location && (
-                  <p className="text-xs text-gray-300 truncate flex items-center gap-1 mt-0.5">
-                    <MapPin className="w-3 h-3" />
-                    {dest.location}
-                  </p>
-                )}
-                {/*{dest.rating && (
-                  <div className="flex items-center text-xs mt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-3 h-3 ${
-                          i < Math.round(dest.rating) ? 'text-yellow-400' : 'text-gray-400'
-                        }`}
-                        fill={i < Math.round(dest.rating) ? 'currentColor' : 'none'}
+          {items.map((dest, index) => (
+            <Fragment key={dest.id}>
+              {/* ⭐ Use new destination card format */}
+              <Link
+                href={`/destinations/${dest.slug ?? dest.id}`}
+                className="relative rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] block h-[160px]"
+              >
+                <div className="relative w-full h-full">
+                  {dest.image ? (
+                    <>
+                      <Image
+                        src={dest.image}
+                        alt={dest.name ?? "Destination image"}
+                        fill
+                        sizes="(min-width: 640px) 180px, 100vw"
+                        className="object-cover transition-transform duration-300"
                       />
-                    ))}
-                    <span className="ml-1">{dest.rating.toFixed(1)}</span>
-                  </div>
-                )}*/}
-              </div>
-            </>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-cloudMist text-xs text-gray-400">
-              No image
-            </div>
-          )}
-        </div>
-      </Link>
+                      <div className="absolute bottom-0 w-full px-2 py-2 bg-gradient-to-t from-black/100 via-black/70 to-transparent text-white">
+                        <h3 className="text-sm font-semibold truncate">{dest.name}</h3>
+                        {dest.location && (
+                          <p className="text-xs text-gray-300 truncate flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3" />
+                            {dest.location}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-cloudMist text-xs text-gray-400">
+                      No image
+                    </div>
+                  )}
+                </div>
+              </Link>
 
-      {/* 👇 Carousel insertion every 8 items */}
-      {(index + 1) % 8 === 0 && (
-        <div key={`ad-${index}`} className="col-span-2">
-          <CarouselBanner id="homestays" />
+              {/* 👇 Carousel insertion every 8 items */}
+              {(index + 1) % 8 === 0 && (
+                <div key={`ad-${index}`} className="col-span-2">
+                  <CarouselBanner id="homestays" />
+                </div>
+              )}
+            </Fragment>
+          ))}
         </div>
-      )}
-    </Fragment>
-  ))}
-</div>
-
 
         <div ref={observerRef} className="text-center mt-4">
           {loading && <p className="text-sm text-gray-500">Loading...</p>}

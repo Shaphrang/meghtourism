@@ -120,7 +120,7 @@ export default function DynamicFilterComponent({
   }, [filtersConfig]);
 
   return (
-    <section className="bg-white shadow-md border-b px-4 py-4">
+    <section>
       <div className="flex flex-wrap justify-center gap-2">
         {filtersConfig.map((cfg) => {
           const isActive = filter?.field === (cfg.field || cfg.type);
