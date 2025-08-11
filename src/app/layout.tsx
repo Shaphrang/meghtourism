@@ -55,14 +55,14 @@ export default function RootLayout({
           `}
         </Script>
         {/* ✅ Global Header */}
-        <Header />
-        <main className="min-h-screen pt-[var(--header-height)] pb-[var(--footer-height)]">
+        {/*<Header />*/}
+        <main className="min-h-screen pb-[var(--footer-height)]">
           {children}
           <ContactCTA />
         </main>
 
-        <FooterNav />
-        {/* Sticky contact CTA */}
+        
+        {/* <FooterNav /> Sticky contact CTA */}
 
         <Toaster />
       </body>

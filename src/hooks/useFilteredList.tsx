@@ -88,3 +88,7 @@ export default function useFilteredList<T>(table: string, opts: Options = {}) {
 
   return { data, totalCount, loading, error }
 }
+
+
+
+
