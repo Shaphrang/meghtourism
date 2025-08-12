@@ -10,11 +10,8 @@ export const revalidate = 900; // ISR: 15 min
 const TABLE = "destinations";
 const PAGE_SIZE = 20;
 
-type SearchParams = {
-  location?: string;
-  district?: string;
-  page?: string;
-};
+// Note: new Next.js expects searchParams to be awaited
+type SearchParamsObj = { [key: string]: string | string[] | undefined };
 
 function mapRow(r: any): DestinationCard {
   return {
@@ -37,16 +34,26 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export default async function Page({ searchParams }: { searchParams: SearchParams }) {
+// Helper to normalize string | string[] | undefined -> string
+const pick = (v: unknown): string =>
+  Array.isArray(v) ? String(v[0] ?? "") : typeof v === "string" ? v : "";
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParamsObj>; // 👈 make it a Promise
+}) {
+  const sp = await searchParams; // 👈 await it once
+
+  const location = pick(sp?.location).trim();
+  const district = pick(sp?.district).trim();
+  const page = Math.max(1, parseInt(pick(sp?.page) || "1", 10));
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { auth: { persistSession: false } }
   );
-
-  const location = (searchParams.location ?? "").trim();
-  const district = (searchParams.district ?? "").trim();
-  const page = Math.max(1, parseInt(searchParams.page || "1", 10));
 
   // Build base filter (only one filter active at a time)
   const filter = (q: any) => {
@@ -63,7 +70,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
   const locations = Array.from(new Set((locRes.data || []).map((r: any) => r.location).filter(Boolean))) as string[];
   const districts = Array.from(new Set((distRes.data || []).map((r: any) => r.district).filter(Boolean))) as string[];
 
-  // Sponsored ads (fallback to any featured/adactive)
+  // Sponsored ads
   const adsQuery = filter(
     supabase
       .from(TABLE)
@@ -75,7 +82,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
   const { data: adsRows } = await adsQuery;
   const sponsored = (adsRows || []).map(mapRow);
 
-  // Build a pool to randomly carve the 5 rails (avoid duplicates)
+  // Pool for rails
   const poolQuery = filter(
     supabase
       .from(TABLE)
@@ -123,20 +130,8 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
     filters: { locations, districts },
     selected: { location: location || "", district: district || "" },
     sponsored,
-    rails: {
-      mustSee,
-      nowTrending,
-      secretGems,
-      bucketList,
-      handpicked,
-    },
-    all: {
-      items: allDestinations,
-      total,
-      page,
-      totalPages,
-      pageSize: PAGE_SIZE,
-    },
+    rails: { mustSee, nowTrending, secretGems, bucketList, handpicked },
+    all: { items: allDestinations, total, page, totalPages, pageSize: PAGE_SIZE },
   };
 
   return <DestinationsClient {...props} />;

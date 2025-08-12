@@ -1,5 +1,4 @@
 "use client";
-import AverageRating from "./averageRating";
 import ReviewForm from "./reviewForm";
 import ReviewList from "./reviewList";
 
