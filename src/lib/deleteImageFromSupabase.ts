@@ -1,3 +1,5 @@
+//src\lib\deleteImageFromSupabase.ts
+
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export async function deleteImageFromSupabase(path: string): Promise<boolean> {

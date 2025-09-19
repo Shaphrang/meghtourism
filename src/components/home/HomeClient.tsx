@@ -136,7 +136,7 @@ function DestinationCard({ item }: { item: DestinationCard }) {
 function HomestayCard({ item }: { item: HomestayCard }) {
   return (
     <Link href={`/homestays/${item.slug}`} className="rounded-2xl overflow-hidden bg-white shadow border border-gray-100 block">
-      <div className="relative h-36">
+      <div className="relative h-25">
         <Image src={item.image || "/placeholder.jpg"} alt={item.name} fill className="object-cover" sizes="(max-width: 768px) 90vw, 600px" />
         {item.best && (
           <div className="absolute left-2 top-2 text-[11px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full flex items-center gap-1"><Crown size={12}/> Best</div>

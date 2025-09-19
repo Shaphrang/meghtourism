@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  MapPin, Megaphone, SlidersHorizontal, ChevronRight, Mountain,
+  MapPin, HomeIcon,Megaphone, User,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -357,8 +357,8 @@ async function loadMore() {
         <Rail title="Handpicked For You" items={rails.handpicked} render={(item) => <DestinationHomeRailCard item={item} />} />
 
         {/* All Destinations — good-looking vertical single cards */}
-        <section className="px-3 mt-6 max-w-2xl mx-auto">
-        <div className="text-sm font-semibold text-gray-800 mb-2">All Destinations</div>
+        <section className="px-3 mt-6 max-w-2xl mx-auto mb-4">
+        <div className="text-sm font-semibold text-gray-800">All Destinations</div>
 
         {allItems.length === 0 ? (
             <div className="text-center py-16 text-gray-500">No destinations found.</div>
@@ -372,7 +372,7 @@ async function loadMore() {
 
         {/* View More */}
         {hasMore && (
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4 pb-4">
             <button
                 onClick={loadMore}
                 className="px-4 py-2 rounded-full text-sm bg-emerald-600 text-white hover:bg-emerald-700 shadow"
@@ -386,7 +386,14 @@ async function loadMore() {
             .rail-scroll { -ms-overflow-style: none; scrollbar-width: none; }
             .rail-scroll::-webkit-scrollbar { display: none; }
             `}</style>
-        <div className="h-24" />
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur border-t z-40">
+          <div className="px-6 py-2 grid grid-cols-4 text-xs">
+            <Link href="/" className="flex flex-col items-center text-emerald-700"><HomeIcon size={20}/>Home</Link>
+            <Link href="/destinations" className="flex flex-col items-center text-gray-600"><Megaphone size={20}/>Scenaries</Link>
+            <Link href="/events" className="flex flex-col items-center text-gray-600"><User size={20}/>Events</Link>
+            <Link href="/itineraries" className="flex flex-col items-center text-gray-600"><User size={20}/>Itineraries</Link>
+          </div>
+        </nav>
       </div>
     </div>
   );

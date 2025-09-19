@@ -1,7 +1,19 @@
-// Use this in src/lib/supabaseClient.ts
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+"use client";
 
-//const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-//const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+// import type { Database } from "@/lib/types"; // optional
 
-export const supabase = createClientComponentClient();
+/**
+ * A single shared client instance for Client Components.
+ * Works with existing imports: { supabase } and { supabaseBrowser }.
+ */
+export const supabase = createClientComponentClient/*<Database>*/();
+export const supabaseBrowser = supabase;
+
+/**
+ * If you prefer a fresh client per call (rarely needed), use this.
+ * Example: const sb = getSupabaseBrowser();
+ */
+export function getSupabaseBrowser() {
+  return createClientComponentClient/*<Database>*/();
+}

@@ -1,3 +1,5 @@
+//src\lib\uploadToSupabase.ts
+
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import imageCompression from 'browser-image-compression';
 import { slugify } from '@/lib/utils';

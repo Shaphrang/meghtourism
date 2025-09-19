@@ -4,12 +4,13 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Head from "next/head";
-import { MapPin, Calendar, Ticket, Tag, Star, Info } from "lucide-react";
+import { MapPin, Calendar, Ticket, Tag, Star, Info, HomeIcon,Megaphone,User } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 
 import HorizontalSection from "@/components/common/horizonatlSection";
 import ReviewSection from "@/components/reviews/reviewSection";
 import DestinationDetailSEO from "@/components/seo/DestinationDetailSEO";
+import Link from "next/link";
 
 type FAQ = { question: string; answer: string };
 
@@ -48,6 +49,21 @@ type RelatedItem = {
   location?: string | null;
   district?: string | null;
 };
+
+function Header() {
+  return (
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b">
+      <div className="px-3 py-2 flex items-center gap-2">
+        <div className="w-9 h-9 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold">M</div>
+        <div className="flex-1">
+          <div className="text-[11px] text-gray-500">Meghtourism</div>
+          <div className="text-sm font-semibold">Explore Best Destinations</div>
+        </div>
+        <Link href="/" className="text-xs text-emerald-700">Home</Link>
+      </div>
+    </header>
+  );
+}
 
 export default function ClientPage({
   initial,
@@ -178,6 +194,7 @@ export default function ClientPage({
 
       {/* ===== Layout (unchanged visuals) ===== */}
       <main className="bg-white min-h-screen text-gray-900 pb-2">
+        <Header />
         {/* 1) Hero */}
         <div className="px-4 pt-4">
           <div className="relative w-full h-52 sm:h-72 rounded-2xl overflow-hidden shadow">
@@ -414,6 +431,15 @@ export default function ClientPage({
           <HorizontalSection title="🛵 Get a Rental"      type="rentals"     items={related.rentals} />
           <ReviewSection category="destination" itemId={destination.slug} />
         </section>
+
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur border-t z-40">
+          <div className="px-6 py-2 grid grid-cols-4 text-xs">
+            <Link href="/" className="flex flex-col items-center text-emerald-700"><HomeIcon size={20}/>Home</Link>
+            <Link href="/destinations" className="flex flex-col items-center text-gray-600"><Megaphone size={20}/>Scenaries</Link>
+            <Link href="/events" className="flex flex-col items-center text-gray-600"><User size={20}/>Events</Link>
+            <Link href="/itineraries" className="flex flex-col items-center text-gray-600"><User size={20}/>Itineraries</Link>
+          </div>
+        </nav>
 
         {/* 9) Lightbox */}
         {lightboxIndex !== null && (
