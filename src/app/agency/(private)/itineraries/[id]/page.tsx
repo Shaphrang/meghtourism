@@ -1,58 +1,44 @@
 //src\app\agency\(private)\itineraries\[id]\page.tsx
-
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import AgencyImageUploader from "@/components/agencyImageUploader"; // path to your uploaded file
+import CoverImageSection from "./CoverImageSection";
 
 export const dynamic = "force-dynamic";
 
 export default async function EditItinerary({ params }: { params: { id: string } }) {
   const supabase = createServerComponentClient({ cookies });
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) redirect("/agency/login");
 
   const { data: agency } = await supabase
-    .from("tourism_agencies").select("id,name").eq("owner_user_id", user.id).single();
+    .from("tourism_agencies")
+    .select("id,name")
+    .eq("owner_user_id", user.id)
+    .single();
 
-  const { data: itin } = await supabase
+  const { data: itinerary } = await supabase
     .from("itineraries")
-    .select("id,title,cover_image_path")
+    .select("id,title,image")
     .eq("id", params.id)
     .single();
 
-  if (!agency || !itin) return <main className="p-6">Not found.</main>;
-
-  const publicUrl = (path?: string | null) =>
-    path ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${encodeURI(path)}` : null;
+  if (!agency || !itinerary) {
+    return <main className="p-6">Not found.</main>;
+  }
 
   return (
     <main className="p-6 space-y-4">
-      <h1 className="text-xl font-bold">Edit: {itin.title}</h1>
-
-      <section className="space-y-2">
-        <div className="text-sm font-medium">Cover image</div>
-        <AgencyImageUploader
-          agencyId={agency.id}
-          category="itineraries"
-          rowId={itin.id}
-          type="main"
-          name={itin.title}
-          onUploaded={async (_url, path) => {
-            // store storage PATH on the row (recommended)
-            "use server";
-            // ← NOTE: If you prefer, handle update via a client form:
-            // const supabase = createClientComponentClient(); supabase.from("itineraries").update({ cover_image_path: path }).eq("id", itin.id)
-          }}
-        />
-        {itin.cover_image_path && (
-          <img
-            className="rounded-xl border max-w-md"
-            src={publicUrl(itin.cover_image_path) ?? ""}
-            alt="Cover"
-          />
-        )}
-      </section>
+      <h1 className="text-xl font-bold">Edit: {itinerary.title ?? "Itinerary"}</h1>
+      <CoverImageSection
+        agencyId={agency.id}
+        itineraryId={itinerary.id}
+        title={itinerary.title ?? "Itinerary"}
+        coverImagePath={itinerary.image ?? null}
+      />
     </main>
   );
 }

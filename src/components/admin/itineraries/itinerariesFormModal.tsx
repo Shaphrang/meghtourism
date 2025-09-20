@@ -1,3 +1,4 @@
+// src/app/admin/_components/ItineraryFormModal.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,6 +11,7 @@ import { uploadImageToSupabase } from '@/lib/uploadToSupabase';
 import { deleteImageFromSupabase } from '@/lib/deleteImageFromSupabase';
 import { AD_SLOTS } from '@/lib/adSlots';
 import { FIELD_OPTIONS } from '@/lib/fieldOption';
+import { ItineraryZ } from '@/lib/schemas/itinerary';
 
 interface Props {
   initialData?: any;
@@ -17,8 +19,25 @@ interface Props {
   onSave: () => void;
 }
 
+/* helpers */
+const toArray = (v: any): string[] =>
+  Array.isArray(v) ? v.filter(Boolean)
+  : typeof v === 'string' ? v.split(',').map(s => s.trim()).filter(Boolean)
+  : [];
+
+function publicImageUrl(path?: string | null) {
+  if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path;
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  return `${base}/storage/v1/object/public/images/${encodeURI(path)}`;
+}
+
+/* DayPlanner */
+type DayPlan = { day: number; places: string[] };
+
 export default function ItineraryFormModal({ initialData, onClose, onSave }: Props) {
   const isEditMode = !!initialData;
+
   const createDefaultForm = () => ({
     id: uuidv4(),
     title: '',
@@ -27,32 +46,33 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
     days: 1,
     starting_point: '',
     ending_point: '',
-    regions_covered: [],
-    idealfor: [],
-    theme: [],
+    regions_covered: [] as string[],
+    idealfor: [] as string[],
+    theme: [] as string[],
     season: '',
-    visitseason: [],
-    tags: [],
-    estimated_cost: {},
-    travel_mode: [],
-    highlights: [],
-    places_per_day: [],
+    visit_season: [] as string[],       // ✅ snake_case everywhere
+    tags: [] as string[],
+    estimated_cost: {} as Record<string, any>,
+    travel_mode: [] as string[],
+    highlights: [] as string[],
+    places_per_day: [] as DayPlan[],
     maplink: '',
     image: '',
-    gallery: [],
+    gallery: [] as string[],
     cover_image_alt: '',
-    media: [],
-    tips: [],
-    warnings: [],
+    media: [] as string[],
+    tips: [] as string[],
+    warnings: [] as string[],
     contact: '',
     email: '',
     website: '',
-    socialmedia: { facebook: '', instagram: '', youtube: '' },
+    socialmedia: { facebook: '', instagram: '', youtube: '' } as {
+      facebook?: string; instagram?: string; youtube?: string;
+    },
     customizable: false,
     author: '',
     ratings: 0,
-    reviews: [],
-    viewcount: 0,
+    reviews: [] as string[],
     view_count: 0,
     click_count: 0,
     bookings_count: 0,
@@ -60,18 +80,19 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
     meta_title: '',
     meta_description: '',
     popularityindex: 0,
-    visibilitystatus: 'visible',
+    visibilitystatus: 'visible' as 'visible' | 'hidden' | 'draft',
     highlight: false,
     sponsoredby: '',
-    adslot: 'none',
+    adslot: 'none' as typeof AD_SLOTS[number],
     adactive: false,
     isfeaturedforhome: false,
     ai_score: 0,
-    search_keywords: [],
+    search_keywords: [] as string[],
     searchboost: 0,
     summary: '',
     include_in_ai_search: true,
-    faq_answers: [],
+    faq_answers: [] as {question: string; answer: string;}[],
+    approval_status: 'pending' as 'pending' | 'approved' | 'rejected',
     created_at: new Date().toISOString(),
   });
 
@@ -85,6 +106,10 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
             instagram: data.socialmedia?.instagram ?? '',
             youtube: data.socialmedia?.youtube ?? '',
           },
+          places_per_day: Array.isArray(data.places_per_day) ? data.places_per_day : [],
+          approval_status: data.approval_status ?? 'pending',
+          // accept either visit_season or legacy visitseason
+          visit_season: toArray(data.visit_season ?? data.visitseason),
         }
       : createDefaultForm();
 
@@ -104,7 +129,7 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
       socialmedia: { ...(prev.socialmedia ?? {}), [platform]: value },
     }));
 
-  // --------- INPUT RENDERERS ---------
+  /* inputs */
   const Input = (label: string, key: string, type: 'text' | 'number' | 'email' = 'text') => (
     <div>
       <label className="text-sm font-medium">{label}</label>
@@ -210,44 +235,157 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
     </div>
   );
 
-  // ----------- SAVE HANDLER -------------
-  const save = async () => {
-    setLoading(true);
-    try {
-      const slug = await generateSlug(supabase, form.title, form.slug);
-      const payload = { ...form, slug };
-      if (isEditMode) {
-        const { error } = await supabase.from('itineraries').update(payload).eq('id', form.id);
-        if (error) throw error;
-        toast.success('Itinerary updated');
-      } else {
-        const { error } = await supabase.from('itineraries').insert([payload]);
-        if (error) throw error;
-        toast.success('Itinerary created');
-      }
-      onSave();
-      onClose();
-    } catch (err: any) {
-      toast.error(err.message || 'Error saving data');
-    } finally {
-      setLoading(false);
-    }
-  };
+  /* save (Zod validated) */
+// ----------- SAVE HANDLER (with deep logging) -------------
+const save = async () => {
+  setLoading(true);
+  try {
+    const slug = await generateSlug(supabase, form.title, form.slug);
 
-  // ----------- IMAGE & GALLERY -----------
+    // Normalize arrays & JSON ahead of validation
+    const candidate = {
+      ...form,
+      slug,
+      regions_covered: toArray(form.regions_covered),
+      idealfor: toArray(form.idealfor),
+      theme: toArray(form.theme),
+      visit_season: toArray((form as any).visit_season ?? (form as any).visitseason),
+      tags: toArray(form.tags),
+      travel_mode: toArray(form.travel_mode),
+      highlights: toArray(form.highlights),
+      places_per_day: Array.isArray(form.places_per_day) ? form.places_per_day : [],
+      gallery: toArray(form.gallery),
+      tips: toArray(form.tips),
+      warnings: toArray(form.warnings),
+      reviews: toArray(form.reviews),
+      media: toArray(form.media),
+      search_keywords: toArray(form.search_keywords),
+      // Clean empty strings that go into numeric/date columns:
+      ai_score: form.ai_score === '' ? null : form.ai_score,
+      searchboost: form.searchboost === '' ? null : form.searchboost,
+      ratings: form.ratings === '' ? null : form.ratings,
+      popularityindex: form.popularityindex === '' ? null : form.popularityindex,
+      lastbookedat: form.lastbookedat === '' ? null : form.lastbookedat,
+      // Enums/safe values:
+      approval_status: (form.approval_status ?? 'pending') as 'pending' | 'approved' | 'rejected',
+      visibilitystatus: (form.visibilitystatus ?? 'visible') as 'visible' | 'hidden' | 'draft',
+      adslot: (form.adslot ?? 'none') as any,
+      // Social media structure guard
+      socialmedia: {
+        facebook: form.socialmedia?.facebook ?? '',
+        instagram: form.socialmedia?.instagram ?? '',
+        youtube: form.socialmedia?.youtube ?? '',
+      },
+      // Image normalization: keep whatever you store (URL or path), but never empty string
+      image: form.image ? String(form.image) : null,
+    };
+
+    // If you changed DB column to jsonb (not jsonb[]), make sure it’s a JSON array
+    if (
+      candidate.places_per_day != null &&
+      !Array.isArray(candidate.places_per_day)
+    ) {
+      console.warn('[save] places_per_day was not array; coercing to []');
+      (candidate as any).places_per_day = [];
+    }
+
+    // Optional: enforce adslot allowed set (matches your DB check constraint)
+    const allowedAdslots = new Set(['none', 'homepage', 'featured', 'nearby']);
+    if (candidate.adslot && !allowedAdslots.has(candidate.adslot)) {
+      console.warn('[save] adslot not allowed by DB check; forcing "none"', candidate.adslot);
+      (candidate as any).adslot = 'none';
+    }
+
+    // Zod-validate (adjust import/schema if needed)
+    // If you're not using Zod here, you can comment these two lines out.
+    // const payload = ItineraryZ.parse(candidate);
+    const payload = candidate;
+
+    // Helpful console dump before sending to DB
+    console.group('[Admin Itinerary] Submitting payload');
+    console.log('mode:', isEditMode ? 'edit' : 'create');
+    console.log('payload:', payload);
+    console.groupEnd();
+
+    let resp;
+    if (isEditMode) {
+      // return=representation gives us the row back (and better PostgREST messages)
+      resp = await supabase
+        .from('itineraries')
+        .update(payload)
+        .eq('id', form.id)
+        .select('id, slug, approval_status, adslot, visit_season, places_per_day');
+    } else {
+      resp = await supabase
+        .from('itineraries')
+        .insert([payload])
+        .select('id, slug, approval_status, adslot, visit_season, places_per_day');
+    }
+
+    const { data, error } = resp;
+
+    if (error) {
+      // Log everything Supabase exposes
+      console.group('[Admin Itinerary] Supabase error');
+      console.error('code:', (error as any).code);
+      console.error('message:', error.message);
+      console.error('details:', (error as any).details);
+      console.error('hint:', (error as any).hint);
+      console.groupEnd();
+
+      // Surface DB code toasts
+      // Common codes:
+      // 22P02 = invalid_text_representation (type cast)
+      // 23505 = unique_violation (slug)
+      // 23514 = check_violation (adslot check, etc.)
+      toast.error(
+        `Save failed: ${(error as any).code || ''} ${error.message}`
+      );
+      setLoading(false);
+      return;
+    }
+
+    console.group('[Admin Itinerary] Supabase OK');
+    console.log('returned data:', data);
+    console.groupEnd();
+
+    toast.success(isEditMode ? 'Itinerary updated' : 'Itinerary created');
+    onSave();
+    onClose();
+  } catch (err: any) {
+    console.group('[Admin Itinerary] Exception');
+    console.error(err);
+    console.groupEnd();
+    if (err?.issues?.length) {
+      toast.error(err.issues[0]?.message || 'Validation failed');
+    } else {
+      toast.error(err?.message || 'Error saving data');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  /* images */
   const upImage = async (file: File, place: 'main' | 'gallery') => {
     const url = await uploadImageToSupabase({ file, category: 'itineraries', id: form.id, type: place });
     if (!url) return toast.error('Upload failed');
     place === 'main' ? set('image', url) : set('gallery', [...(form.gallery ?? []), url]);
   };
   const delImage = async (url: string, idx?: number) => {
-    const ok = await deleteImageFromSupabase(url.split('/storage/v1/object/public/')[1]);
+    const ok = await deleteImageFromSupabase(url);
     if (!ok) return toast.error('Delete failed');
     if (idx == null) set('image', '');
       else set('gallery', (form.gallery ?? []).filter((_: string, i: number) => i !== idx));
   };
 
-  // ----------- UI -------------
+  /* UI */
+  const visitSeasonOptions =
+    FIELD_OPTIONS?.itineraries?.visit_season ??
+    FIELD_OPTIONS?.itineraries?.visit_season ??
+    [];
+
   return (
     <Dialog open onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/40" />
@@ -271,7 +409,7 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
                   {Multi('Ideal For', 'idealfor', [...FIELD_OPTIONS.itineraries.idealfor])}
                   {Multi('Theme', 'theme', [...FIELD_OPTIONS.itineraries.theme])}
                   {Input('Season', 'season')}
-                  {Multi('Visit Season', 'visitseason', [...FIELD_OPTIONS.itineraries.visitseason])}
+                  {Multi('Visit Season', 'visit_season', [...visitSeasonOptions])}
                   {Multi('Tags', 'tags', [...FIELD_OPTIONS.itineraries.tags])}
                   {Multi('Travel Mode', 'travel_mode', [...FIELD_OPTIONS.itineraries.travel_mode])}
                   {Input('Author', 'author')}
@@ -294,7 +432,10 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
               <Disclosure.Panel>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderArray('Highlights', 'highlights')}
-                  {renderJSON('Places Per Day', 'places_per_day')}
+                  <DayPlanner
+                    value={Array.isArray(form.places_per_day) ? form.places_per_day : []}
+                    onChange={(v) => set('places_per_day', v)}
+                  />
                 </div>
               </Disclosure.Panel>
             </div>
@@ -433,7 +574,34 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
           )}
         </Disclosure>
 
-        {/* AI ADVANCED */}
+        {/* ✅ APPROVAL */}
+        <Disclosure>
+          {({ open }) => (
+            <div>
+              <Disclosure.Button className="w-full text-left font-semibold text-lg mt-4 mb-2">
+                <span className={open ? '' : 'opacity-70'}>✅ Approval</span>
+              </Disclosure.Button>
+              <Disclosure.Panel>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Approval Status</label>
+                    <select
+                      value={form.approval_status ?? 'pending'}
+                      onChange={(e) => set('approval_status', e.target.value)}
+                      className="w-full border px-3 py-2 rounded mt-1"
+                    >
+                      <option value="pending">pending</option>
+                      <option value="approved">approved</option>
+                      <option value="rejected">rejected</option>
+                    </select>
+                  </div>
+                </div>
+              </Disclosure.Panel>
+            </div>
+          )}
+        </Disclosure>
+
+        {/* 🤖 AI & Advanced */}
         <Disclosure>
           {({ open }) => (
             <div>
@@ -448,8 +616,6 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
                   {TextArea('AI Summary', 'summary')}
                   {Check('Include in AI Search', 'include_in_ai_search')}
                 </div>
-
-                {/* FAQ Answers - Dynamic add/edit/remove */}
                 <div className="mb-4 mt-4">
                   <label className="block font-medium text-sm mb-1">FAQ Answers</label>
                   {(form.faq_answers || []).map((item: any, idx: number) => (
@@ -502,7 +668,6 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
                     Add FAQ
                   </button>
                 </div>
-                {/* Created At Timestamp */}
                 <div className="text-xs text-gray-400 mt-2">
                   <span>
                     Created At:{' '}
@@ -516,7 +681,7 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
           )}
         </Disclosure>
 
-        {/* FINAL ACTION BUTTONS */}
+        {/* FOOTER */}
         <div className="flex justify-end gap-3 pt-6">
           <button
             onClick={onClose}
@@ -534,7 +699,137 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
             {loading ? 'Saving…' : isEditMode ? 'Update' : 'Create'}
           </button>
         </div>
-      </div> {/* closes the main inner modal div */}
+      </div>
     </Dialog>
+  );
+}
+
+/* DayPlanner */
+function DayPlanner({
+  value,
+  onChange,
+}: {
+  value: DayPlan[];
+  onChange: (v: DayPlan[]) => void;
+}) {
+  const [items, setItems] = useState<DayPlan[]>(Array.isArray(value) ? value : []);
+
+  // Sync down when the prop changes (but avoid churn by comparing JSON)
+  useEffect(() => {
+    const a = JSON.stringify(items);
+    const b = JSON.stringify(value || []);
+    if (a !== b) setItems(Array.isArray(value) ? value : []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(value)]);
+
+  // Notify parent when local items change
+  useEffect(() => {
+    onChange(items);
+    // intentionally omit onChange (parent may pass a new function every render)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
+
+  const addDay = () => {
+    const day = (items.at(-1)?.day ?? 0) + 1;
+    setItems([...items, { day, places: [] }]);
+  };
+
+  const removeDay = (idx: number) => {
+    const next = [...items];
+    next.splice(idx, 1);
+    setItems(next);
+  };
+
+  const setPlaces = (idx: number, nextPlaces: string[]) => {
+    const next = [...items];
+    next[idx] = { ...next[idx], places: nextPlaces };
+    setItems(next);
+  };
+
+  return (
+    <div className="col-span-1 md:col-span-2">
+      <div className="text-sm font-medium">Day planner (places per day)</div>
+      <div className="mt-2 space-y-3">
+        {items.map((it, idx) => (
+          <div key={idx} className="rounded-xl border p-3">
+            <div className="flex items-center justify-between">
+              <div className="font-medium text-sm">Day {it.day}</div>
+              <button
+                type="button"
+                className="text-xs rounded border px-2 py-1"
+                onClick={() => removeDay(idx)}
+              >
+                Remove
+              </button>
+            </div>
+            <Chips
+              label="Places (chips)"
+              value={it.places}
+              onChange={(v) => setPlaces(idx, v)}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="mt-2">
+        <button
+          type="button"
+          className="rounded-xl border px-3 py-2 text-sm"
+          onClick={addDay}
+        >
+          Add day
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* Chips */
+function Chips({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string[] | string | null | undefined;
+  onChange: (v: string[]) => void;
+}) {
+  const arr = Array.isArray(value)
+    ? value
+    : (typeof value === 'string' ? value.split(',').map(s => s.trim()).filter(Boolean) : []);
+  const [txt, setTxt] = useState('');
+  return (
+    <div>
+      <div className="text-sm font-medium">{label}</div>
+      <div className="mt-1 flex flex-wrap gap-2">
+        {arr.map((v, i) => (
+          <span key={i} className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
+            {v}
+            <button type="button" className="ml-1 text-gray-500" onClick={() => { const next = [...arr]; next.splice(i, 1); onChange(next); }}>
+              ✕
+            </button>
+          </span>
+        ))}
+      </div>
+      <div className="mt-2 flex gap-2">
+        <input
+          className="flex-1 rounded-xl border p-2 text-sm"
+          placeholder="Type and press Add"
+          value={txt}
+          onChange={(e) => setTxt(e.target.value)}
+        />
+        <button
+          type="button"
+          className="rounded-xl border px-3 py-2 text-sm"
+          onClick={() => {
+            const v = txt.trim();
+            if (!v) return;
+            onChange([...arr, v]);
+            setTxt('');
+          }}
+        >
+          Add
+        </button>
+      </div>
+    </div>
   );
 }

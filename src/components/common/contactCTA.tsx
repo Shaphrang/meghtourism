@@ -6,7 +6,7 @@ export default function ContactCTA() {
   const pathname = usePathname();
 
   // Hide on /contact and all /admin pages
-  if (pathname === '/contact' || pathname.startsWith('/admin')) return null;
+  if (pathname === '/contact' || pathname.startsWith('/admin') || pathname.startsWith('/agency')) return null;
 
   return (
     <div className="max-w-screen-md mx-auto px-4 mt-3">

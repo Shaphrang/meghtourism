@@ -62,7 +62,7 @@ export const FIELD_OPTIONS = {
   itineraries: {
     idealfor: ['Backpackers','Families','Couples','Solo Travelers','Adventure Seekers','Photographers','Nature Lovers','Cultural Explorers','Honeymooners','Roadtrippers'],
     theme: ['Nature','Adventure','Culture','Pilgrimage','Eco-tourism','Leisure','History','Festival','Offbeat','Romantic'],
-    visitseason: ['Winter','Summer','Monsoon','Spring','Autumn','Post-Monsoon','Year-round'],
+    visit_season: ['Winter','Summer','Monsoon','Spring','Autumn','Post-Monsoon','Year-round'],
     tags: ['3-day','5-day','7-day','weekend','budget','luxury','roadtrip','customizable','guided','offbeat'],
     travel_mode: ['Self-drive','Taxi','Bike Rental','Shared Cab','Bus','Tour Package','Private Vehicle','Hired Guide'],
     regions_covered: ['East Khasi Hills','West Khasi Hills','Ri Bhoi','West Jaintia Hills','East Jaintia Hills','South West Khasi Hills','North Garo Hills','East Garo Hills','West Garo Hills','South West Garo Hills','South Garo Hills']

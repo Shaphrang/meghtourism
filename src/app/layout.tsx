@@ -56,7 +56,7 @@ export default function RootLayout({
         </Script>
         {/* ✅ Global Header */}
         {/*<Header />*/}
-        <main className="min-h-screen pb-[var(--footer-height)]">
+        <main className="min-h-screen app-main">
           {children}
           <ContactCTA />
         </main>

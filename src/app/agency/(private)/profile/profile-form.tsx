@@ -1,5 +1,3 @@
-//src\app\agency\(private)\profile\profile-form.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -24,27 +22,24 @@ export default function ProfileForm({ agency }: { agency: any }) {
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  // Keep form in sync if server sends a fresher row (nav replacements etc.)
+  // Keep form in sync if server sends a fresher row
   useEffect(() => setForm(agency ?? {}), [agency]);
 
   const showToast = (msg: string, then?: () => void) => {
     setToast(msg);
-    // Keep toast visible briefly, then optionally run "then" (redirect)
     setTimeout(() => {
       setToast(null);
       if (then) then();
-    }, 900);
+    }, 1100);
   };
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
 
-    // Only the allowed/known columns for tourism_agencies
     const payload = {
       short_description: form.short_description ?? null,
       about: form.about ?? null,
-      // logo_url and cover_image_url are set via uploaders below
       logo_url: form.logo_url ?? null,
       cover_image_url: form.cover_image_url ?? null,
       email: form.email ?? null,
@@ -61,7 +56,6 @@ export default function ProfileForm({ agency }: { agency: any }) {
       show_public_profile: !!form.show_public_profile,
     };
 
-    console.debug("[Profile] updating agency", agency.id, payload);
     const { error } = await supabase
       .from("tourism_agencies")
       .update(payload)
@@ -75,7 +69,6 @@ export default function ProfileForm({ agency }: { agency: any }) {
       return;
     }
 
-    // Optional refetch for immediate local state reflect (not strictly needed since we redirect)
     const { data: reloaded } = await supabase
       .from("tourism_agencies")
       .select("*")
@@ -83,166 +76,223 @@ export default function ProfileForm({ agency }: { agency: any }) {
       .single();
     if (reloaded) setForm(reloaded);
 
-    // ✅ Show toast, then redirect to /agency (dashboard)
     showToast("Profile updated", () => router.replace("/agency"));
   };
 
   const logoUrl = publicImageUrl(form.logo_url);
   const coverUrl = publicImageUrl(form.cover_image_url);
+  const locationText = [form.city, form.district].filter(Boolean).join(", ");
 
   return (
-    <main className="mx-auto w-full max-w-3xl p-4 sm:p-6">
-      <h1 className="text-xl font-bold">Agency profile</h1>
-
-      <form onSubmit={save} className="mt-4 space-y-4">
-        {/* Read-only name from registration */}
-        <Read label="Name" value={agency?.name} />
-
-        {/* Contact / basics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Field label="Email">
-            <input
-              className="w-full rounded-xl border p-2"
-              value={form.email || ""}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-          </Field>
-          <Field label="Phone">
-            <input
-              className="w-full rounded-xl border p-2"
-              value={form.phone || ""}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            />
-          </Field>
-          <Field label="Website">
-            <input
-              className="w-full rounded-xl border p-2"
-              value={form.website || ""}
-              onChange={(e) => setForm({ ...form, website: e.target.value })}
-            />
-          </Field>
-          <Field label="GSTIN">
-            <input
-              className="w-full rounded-xl border p-2"
-              value={form.gstin || ""}
-              onChange={(e) => setForm({ ...form, gstin: e.target.value })}
-            />
-          </Field>
+    <main className="min-h-[100svh] bg-gray-50">
+      {/* Minimal, professional gradient app bar */}
+      <header className="sticky top-0 z-40 text-white bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-900">
+        <div className="px-4 py-3 flex items-center justify-between">
+          <div className="min-w-0">
+            <div className="text-[11px] uppercase tracking-wide/loose opacity-80">Agency</div>
+            <div className="text-lg font-semibold truncate">{agency?.name || "Agency Profile"}</div>
+          </div>
+          <button
+            onClick={() => router.replace("/agency")}
+            className="rounded-xl bg-white/90 text-slate-900 hover:bg-white px-3 py-1.5 text-sm font-medium transition"
+          >
+            Dashboard
+          </button>
         </div>
+      </header>
+
+      {/* Content */}
+      <form onSubmit={save} className="mx-auto w-full max-w-3xl px-4 py-4">
+        {/* Compact identity card */}
+        <section className="rounded-2xl border bg-white shadow-sm p-4">
+          <div className="flex items-start gap-4">
+            <div className="w-16 h-16 rounded-xl overflow-hidden border bg-gray-100 shrink-0 ring-1 ring-black/5">
+              {logoUrl ? (
+                <img src={logoUrl} className="w-full h-full object-cover" alt="Logo" />
+              ) : (
+                <div className="w-full h-full grid place-items-center text-[11px] text-gray-500">Logo</div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-base font-semibold truncate">{agency?.name || "—"}</div>
+              <div className="text-[12px] text-gray-500 truncate">{locationText || "Location not set"}</div>
+              <div className="mt-2 flex items-center gap-2">
+                {form.email ? <Badge>{form.email}</Badge> : <Badge muted>Email not set</Badge>}
+                {form.phone ? <Badge>{form.phone}</Badge> : <Badge muted>Phone not set</Badge>}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Brand Images */}
+        <section className="rounded-2xl border bg-white shadow-sm p-4 mt-4">
+          <SectionTitle title="Brand Images" />
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Cover */}
+            <div>
+              <div className="text-sm font-medium">Cover image</div>
+              <div className="mt-2 flex items-center gap-3">
+                <div className="w-40 h-28 rounded-2xl border overflow-hidden bg-gray-50 ring-1 ring-black/5">
+                  {coverUrl ? (
+                    <img src={coverUrl} className="w-full h-full object-cover" alt="Cover" />
+                  ) : (
+                    <div className="w-full h-full grid place-items-center text-xs text-gray-500">No image</div>
+                  )}
+                </div>
+                <AgencyImageUploader
+                  agencyId={agency.id}
+                  category="agency"
+                  rowId={agency.id}
+                  type="main"
+                  name={(agency.name || "agency") + "-cover"}
+                  onUploaded={(_url, path) => {
+                    setForm((f: any) => ({ ...f, cover_image_url: path }));
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Logo */}
+            <div>
+              <div className="text-sm font-medium">Logo</div>
+              <div className="mt-2 flex items-center gap-3">
+                <div className="w-28 h-28 rounded-2xl border overflow-hidden bg-gray-50 ring-1 ring-black/5">
+                  {logoUrl ? (
+                    <img src={logoUrl} className="w-full h-full object-cover" alt="Logo" />
+                  ) : (
+                    <div className="w-full h-full grid place-items-center text-xs text-gray-500">No logo</div>
+                  )}
+                </div>
+                <AgencyImageUploader
+                  agencyId={agency.id}
+                  category="agency"
+                  rowId={agency.id}
+                  type="main"
+                  name={(agency.name || "agency") + "-logo"}
+                  onUploaded={(_url, path) => {
+                    setForm((f: any) => ({ ...f, logo_url: path }));
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact & business */}
+        <Card title="Contact & Business">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Field label="Email">
+              <Input
+                value={form.email || ""}
+                onChange={(v) => setForm({ ...form, email: v })}
+                placeholder="contact@agency.com"
+              />
+            </Field>
+            <Field label="Phone">
+              <Input
+                value={form.phone || ""}
+                onChange={(v) => setForm({ ...form, phone: v })}
+                placeholder="+91 98xxxxxxx"
+              />
+            </Field>
+            <Field label="Website">
+              <Input
+                value={form.website || ""}
+                onChange={(v) => setForm({ ...form, website: v })}
+                placeholder="https://example.com"
+              />
+            </Field>
+            <Field label="GSTIN">
+              <Input
+                value={form.gstin || ""}
+                onChange={(v) => setForm({ ...form, gstin: v })}
+                placeholder="GSTIN"
+              />
+            </Field>
+          </div>
+        </Card>
 
         {/* Location */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Field label="City">
-            <input
-              className="w-full rounded-xl border p-2"
-              value={form.city || ""}
-              onChange={(e) => setForm({ ...form, city: e.target.value })}
-            />
-          </Field>
-          <Field label="District">
-            <input
-              className="w-full rounded-xl border p-2"
-              value={form.district || ""}
-              onChange={(e) => setForm({ ...form, district: e.target.value })}
-            />
-          </Field>
-          <Field label="Pincode">
-            <input
-              className="w-full rounded-xl border p-2"
-              value={form.pincode || ""}
-              onChange={(e) => setForm({ ...form, pincode: e.target.value })}
-            />
-          </Field>
-        </div>
-
-        {/* Description */}
-        <Field label="Short description">
-          <textarea
-            rows={3}
-            className="w-full rounded-xl border p-2"
-            value={form.short_description || ""}
-            onChange={(e) => setForm({ ...form, short_description: e.target.value })}
-          />
-        </Field>
-
-        <Field label="About">
-          <textarea
-            rows={6}
-            className="w-full rounded-xl border p-2"
-            value={form.about || ""}
-            onChange={(e) => setForm({ ...form, about: e.target.value })}
-          />
-        </Field>
-
-        {/* IMAGES — Replace text fields with uploaders */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Logo */}
-          <div>
-            <div className="text-sm font-medium">Logo</div>
-            <div className="mt-2 flex items-center gap-3">
-              <div className="w-28 h-28 rounded-xl border overflow-hidden bg-gray-50">
-                {logoUrl ? (
-                  <img src={logoUrl} className="w-full h-full object-cover" alt="Logo" />
-                ) : (
-                  <div className="w-full h-full grid place-items-center text-xs text-gray-500">
-                    No logo
-                  </div>
-                )}
-              </div>
-              <AgencyImageUploader
-                agencyId={agency.id}
-                category="agency"
-                rowId={agency.id}
-                type="main"
-                name={(agency.name || "agency") + "-logo"}
-                onUploaded={(_url, path) => {
-                  setForm((f: any) => ({ ...f, logo_url: path }));
-                }}
+        <Card title="Location">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Field label="City">
+              <Input
+                value={form.city || ""}
+                onChange={(v) => setForm({ ...form, city: v })}
+                placeholder="City"
               />
-            </div>
-          </div>
-
-          {/* Cover image */}
-          <div>
-            <div className="text-sm font-medium">Cover image</div>
-            <div className="mt-2 flex items-center gap-3">
-              <div className="w-40 h-28 rounded-xl border overflow-hidden bg-gray-50">
-                {coverUrl ? (
-                  <img src={coverUrl} className="w-full h-full object-cover" alt="Cover" />
-                ) : (
-                  <div className="w-full h-full grid place-items-center text-xs text-gray-500">
-                    No image
-                  </div>
-                )}
-              </div>
-              <AgencyImageUploader
-                agencyId={agency.id}
-                category="agency"
-                rowId={agency.id}
-                type="main"
-                name={(agency.name || "agency") + "-cover"}
-                onUploaded={(_url, path) => {
-                  setForm((f: any) => ({ ...f, cover_image_url: path }));
-                }}
+            </Field>
+            <Field label="District">
+              <Input
+                value={form.district || ""}
+                onChange={(v) => setForm({ ...form, district: v })}
+                placeholder="District"
               />
-            </div>
+            </Field>
+            <Field label="Pincode">
+              <Input
+                value={form.pincode || ""}
+                onChange={(v) => setForm({ ...form, pincode: v })}
+                placeholder="PIN"
+              />
+            </Field>
           </div>
-        </div>
+          <div className="mt-3">
+            <Field label="Address">
+              <Textarea
+                rows={3}
+                value={form.address || ""}
+                onChange={(v) => setForm({ ...form, address: v })}
+                placeholder="Street address"
+              />
+            </Field>
+          </div>
+        </Card>
 
-        {/* Save */}
-        <div className="flex items-center gap-2">
-          <button disabled={busy} className="rounded-xl bg-gray-900 text-white px-4 py-2">
-            {busy ? "Saving..." : "Save"}
+        {/* About */}
+        <Card title="About">
+          <Field label="Short description">
+            <Textarea
+              rows={3}
+              value={form.short_description || ""}
+              onChange={(v) => setForm({ ...form, short_description: v })}
+              placeholder="A quick one-liner about your agency"
+            />
+          </Field>
+          <div className="mt-3">
+            <Field label="About">
+              <Textarea
+                rows={6}
+                value={form.about || ""}
+                onChange={(v) => setForm({ ...form, about: v })}
+                placeholder="Tell more about your services, experience, and team…"
+              />
+            </Field>
+          </div>
+        </Card>
+
+        {/* Normal action row at end */}
+        <div className="mt-6 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="h-11 rounded-xl px-5 text-sm font-medium border bg-white hover:bg-gray-50"
+          >
+            Cancel
           </button>
-          <span className="text-xs text-gray-500">
-            Changes will reflect on your public profile later.
-          </span>
+          <button
+            type="submit"
+            disabled={busy}
+            className="h-11 rounded-xl px-5 text-sm font-medium text-white bg-gradient-to-br from-indigo-600 to-slate-900 shadow hover:opacity-95 disabled:opacity-60"
+          >
+            {busy ? "Saving…" : "Save changes"}
+          </button>
         </div>
       </form>
 
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70]">
           <div className="rounded-full bg-gray-900 text-white px-4 py-2 text-sm shadow-lg">
             {toast}
           </div>
@@ -252,19 +302,77 @@ export default function ProfileForm({ agency }: { agency: any }) {
   );
 }
 
+/* ---------- UI atoms ---------- */
+
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-2xl border bg-white shadow-sm p-4 mt-4">
+      <SectionTitle title={title} />
+      <div className="mt-3">{children}</div>
+    </section>
+  );
+}
+function SectionTitle({ title }: { title: string }) {
+  return <h2 className="text-sm font-semibold text-gray-800">{title}</h2>;
+}
 function Field({ label, children }: any) {
   return (
     <div>
-      <div className="text-sm font-medium">{label}</div>
+      <div className="text-sm font-medium text-gray-800">{label}</div>
       <div className="mt-1">{children}</div>
     </div>
   );
 }
-function Read({ label, value }: any) {
+function Input({
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+}) {
   return (
-    <div>
-      <div className="text-sm font-medium">{label}</div>
-      <div className="mt-1 rounded-xl border bg-gray-50 p-2 text-sm">{value}</div>
-    </div>
+    <input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      type={type}
+      className="w-full h-11 rounded-xl border px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200"
+    />
+  );
+}
+function Textarea({
+  value,
+  onChange,
+  placeholder,
+  rows = 3,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  rows?: number;
+}) {
+  return (
+    <textarea
+      rows={rows}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full rounded-xl border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200"
+    />
+  );
+}
+function Badge({ children, muted = false }: { children: React.ReactNode; muted?: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-1 text-[11px] ${
+        muted ? "bg-gray-50 text-gray-500 border-gray-200" : "bg-indigo-50 text-indigo-700 border-indigo-200"
+      }`}
+    >
+      {children}
+    </span>
   );
 }

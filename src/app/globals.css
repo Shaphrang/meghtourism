@@ -170,3 +170,41 @@ section {
   --header-height: 3rem;
   --footer-height: 4rem;
 }
+
+/* --- Footer-aware main padding ------------------------------------------- */
+
+/* Default height you want to reserve for the footer when present */
+:root {
+  --footer-height: 64px; /* tweak as needed */
+}
+
+/* Base: no extra bottom padding */
+.app-main {
+  padding-bottom: 0;
+}
+
+/* Modern browsers: add padding only when a footer nav follows <main> */
+@supports (selector(main:has(+ nav[data-footer]))) {
+  .app-main:has(+ nav[data-footer]) {
+    padding-bottom: var(--footer-height, 64px);
+  }
+}
+
+/* Optional iOS safe-area variant (uncomment if you want it)
+@supports (selector(main:has(+ nav[data-footer]))) {
+  .app-main:has(+ nav[data-footer]) {
+    padding-bottom: max(env(safe-area-inset-bottom), var(--footer-height, 64px));
+  }
+}
+*/
+
+/* Fallback for older browsers without :has()
+   If you need to support them, give FooterNav a class like `.footer-nav-is-present`
+   on a parent wrapper (or on <html>) and scope padding that way.
+   Otherwise, you can ignore this block.
+*/
+/*
+html.footer-nav-is-present .app-main {
+  padding-bottom: var(--footer-height, 64px);
+}
+*/
