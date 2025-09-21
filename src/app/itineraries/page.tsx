@@ -1,126 +1,109 @@
-"use client";
+// src/app/itineraries/page.tsx
+import ItinerariesClient from "@/components/itineraries/ItinerariesClient";
+import { createClient } from "@supabase/supabase-js";
+import ItinerariesSEO from "@/app/components/seo/ItinerariesSEO";
 
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import useSupabaseList from "@/hooks/useSupabaseList";
-import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
-import { Itinerary } from "@/types/itineraries";
-import { MapPin } from "lucide-react";
-import FeaturedBannerAds from "@/components/ads/featuredBannerAds";
+export const revalidate = 900; // ISR like Homestays
 
-export default function ItinerariesListingPage() {
-  const [page, setPage] = useState(1);
-  const [items, setItems] = useState<Itinerary[]>([]);
-  const [filter, setFilter] = useState<{ field: string; value: any } | null>(null);
-  const { data, totalCount, loading } = useSupabaseList<Itinerary>(
-    "itineraries",
-    {
-      sortBy: "created_at",
-      ascending: false,
-      filter,
-      page,
-      pageSize: 6,
-    }
+// --- Minimal row types (adjust to your schema as needed)
+type ItineraryRow = {
+  id: string;
+  slug?: string;
+  title?: string;
+  image?: string;
+  gallery?: string[] | null;
+  days?: number | null;
+  starting_point?: string | null;
+  audience?: string | null;
+  sponsored?: boolean | null;
+  discountPct?: number | null;
+  featured?: boolean | null;
+  pricefrom?: number | null;
+  description?: string | null;
+  created_at?: string;
+};
+
+type ReviewAggRow = {
+  item_id: string;
+  count: number;
+  avg_rating: number | string | null;
+};
+
+export default async function Page() {
+  // 1) Create Supabase client (inline). Ensure env vars exist.
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
-  const { data: top } = useSupabaseList<Itinerary>("itineraries", {
-    sortBy: "ratings",
-    ascending: false,
-    pageSize: 10,
+
+  // 2) Fetch a pooled set of itineraries
+  const { data: dataRows, error: rowsError } = await supabase
+    .from("itineraries")
+    .select(
+      "id, slug, title, image, gallery, days, starting_point, audience, sponsored, discountPct, featured, pricefrom, description, created_at"
+    )
+    .order("created_at", { ascending: false })
+    .limit(60);
+
+  // Safe fallback to array
+  const rows: ItineraryRow[] = dataRows ?? [];
+
+  // 3) Join rating aggregate (optional)
+  const ids = rows.map((r) => r.slug || r.id).filter(Boolean) as string[];
+  let ratingMap: Record<string, { count: number; avg: number }> = {};
+
+  if (ids.length > 0) {
+    const { data: dataAgg } = await supabase
+      .from("review_aggregate")
+      .select("item_id, count, avg_rating")
+      .eq("category", "itinerary")
+      .in("item_id", ids);
+
+    const agg: ReviewAggRow[] = dataAgg ?? [];
+    ratingMap = Object.fromEntries(
+      agg.map((a) => [
+        a.item_id,
+        {
+          count: a.count ?? 0,
+          avg: a.avg_rating == null ? 0 : Number(a.avg_rating),
+        },
+      ])
+    );
+  }
+
+  // 4) Normalize rows -> list for UI
+  const list = rows.map((r) => {
+    const key = (r.slug || r.id) as string;
+    const rating = ratingMap[key];
+    return {
+      id: r.id,
+      slug: r.slug || r.id,
+      title: r.title || "Untitled",
+      image: r.image || (r.gallery?.[0] ?? ""),
+      days: r.days ?? 0,
+      start: r.starting_point ?? "Shillong",
+      audience: r.audience ?? "",
+      sponsored: Boolean(r.sponsored),
+      discountPct: r.discountPct ?? 0,
+      featured: Boolean(r.featured),
+      priceFrom: r.pricefrom ?? 0,
+      ratingAvg: rating?.avg ?? null,
+      ratingCount: rating?.count ?? 0,
+      description: r.description ?? "",
+    };
   });
 
-  const observerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (page === 1) setItems(data);
-    else setItems((prev) => [...prev, ...data]);
-  }, [data]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (
-          entries[0].isIntersecting &&
-          !loading &&
-          items.length < (totalCount ?? 0)
-        ) {
-          setPage((prev) => prev + 1);
-        }
-      },
-      { threshold: 1 }
-    );
-    if (observerRef.current) observer.observe(observerRef.current);
-    return () => observer.disconnect();
-  }, [items, loading, totalCount]);
+  // 5) Precompute rails
+  const topPicks = list.filter((i) => i.featured);
+  const sponsored = list.filter((i) => i.sponsored);
+  const deals = list
+    .filter((i) => (i.discountPct || 0) > 0)
+    .sort((a, b) => (b.discountPct || 0) - (a.discountPct || 0));
 
   return (
-    <main className="w-full min-h-screen bg-stoneGray text-charcoal overflow-x-hidden">
-      <section className="bg-gradient-to-r from-yellow-100 to-pink-100 p-6 text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-yellow-800">
-          Ready-Made Meghalaya Travel Plans
-        </h1>
-      </section>
-      
-      <DynamicFilterComponent
-        table="itineraries"
-        filtersConfig={[
-          { type: "location", field: "starting_point" },
-          { type: "days", field: "days" },
-        ]}
-        onFilterChange={(newFilter) => {
-          setFilter(newFilter);
-          setPage(1);
-        }}
-      />
-
-      {/* Featured Ads */}
-      <section className="p-4">
-        <h2 className="text-lg font-semibold mb-2">Top Adventures</h2>
-        <FeaturedBannerAds category="itineraries"/>
-      </section>
-
-      {/* All Itineraries */}
-      <section className="p-4">
-        <h2 className="text-lg font-semibold mb-2">All Activities</h2>
-        <div className="flex flex-col gap-4">
-          {items.map((trip) => (
-            <Link
-              key={trip.id}
-              href={`/itineraries/${trip.slug ?? trip.id}`}
-              className="bg-cloudMist rounded-xl shadow-md overflow-hidden"
-            >
-              <div className="relative w-full h-40 bg-cloudMist">
-                {trip.image && trip.image.startsWith("/") ? (
-                  <Image
-                    src={trip.image}
-                    alt={trip.title || "Itinerary"}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400 text-xs">
-                    No image
-                  </div>
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-bold truncate">{trip.title}</h3>
-                {trip.description && (
-                  <p className="text-sm text-charcoal mt-1 line-clamp-2">
-                    {trip.description}
-                  </p>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
-        <div ref={observerRef} className="text-center mt-4">
-          {loading && <p className="text-sm text-gray-500">Loading...</p>}
-          {items.length >= (totalCount ?? 0) && !loading && (
-            <p className="text-sm text-gray-400">No more itineraries.</p>
-          )}
-        </div>
-      </section>
-    </main>
+    <>
+      <ItinerariesSEO total={list.length} />
+      <ItinerariesClient all={list} topPicks={topPicks} sponsored={sponsored} deals={deals} />
+    </>
   );
 }

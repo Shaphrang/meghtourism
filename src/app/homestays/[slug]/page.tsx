@@ -1,3 +1,4 @@
+//src\app\homestays\[slug]\page.tsx
 import { createClient } from "@supabase/supabase-js";
 import ClientPage from "./clientPage";
 import { notFound } from "next/navigation";

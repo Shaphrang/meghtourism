@@ -1,4 +1,4 @@
-// src/app/homestays/page.tsx
+//src\app\homestays\page.tsx
 import { createClient } from "@supabase/supabase-js";
 import HomestaysClient, { HomestayCard } from "@/components/homestays/HomestaysClient";
 
