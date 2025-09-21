@@ -1,4 +1,4 @@
-// src/app/admin/_components/ItineraryFormModal.tsx
+//src\components\admin\itineraries\itinerariesFormModal.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -25,15 +25,182 @@ const toArray = (v: any): string[] =>
   : typeof v === 'string' ? v.split(',').map(s => s.trim()).filter(Boolean)
   : [];
 
-function publicImageUrl(path?: string | null) {
-  if (!path) return null;
-  if (/^https?:\/\//i.test(path)) return path;
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  return `${base}/storage/v1/object/public/images/${encodeURI(path)}`;
-}
+// NEW: coerce any value (object/string/number) to a label string
+const toLabel = (v: any): string => {
+  if (typeof v === 'string') return v.trim();
+  if (v && typeof v === 'object') {
+    if (typeof (v as any).name === 'string') return (v as any).name.trim();
+    if (typeof (v as any).title === 'string') return (v as any).title.trim();
+  }
+  return String(v ?? '').trim();
+};
+
 
 /* DayPlanner */
 type DayPlan = { day: number; places: string[] };
+
+/* ---------- Chip Picker (select from options + add custom) ---------- */
+
+function ChipPicker({
+  label, value, options, onChange, placeholder
+}: {
+  label: string;
+  value: string[] | undefined;
+  options: readonly string[];       // ✅ accepts readonly and mutable
+  onChange: (next: string[]) => void;
+  placeholder?: string;
+}) {
+  const selected = Array.isArray(value) ? value : [];
+  const toggle = (v: string) => {
+    const exist = selected.includes(v);
+    onChange(exist ? selected.filter(x => x !== v) : [...selected, v]);
+  };
+  const [txt, setTxt] = useState("");
+
+  const addCustom = () => {
+    const v = txt.trim();
+    if (!v) return;
+    if (!selected.includes(v)) onChange([...selected, v]);
+    setTxt("");
+  };
+
+  return (
+    <div>
+      <label className="text-sm font-medium">{label}</label>
+
+      {/* options from catalog */}
+      <div className="mt-1 flex flex-wrap gap-2">
+        {options.map(opt => {
+          const active = selected.includes(opt);
+          return (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => toggle(opt)}
+              className={
+                "px-3 py-1 rounded-full text-xs border " +
+                (active
+                  ? "bg-emerald-600 text-white border-emerald-600"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")
+              }
+              title={opt}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* selected list (reorder/remove quickly) */}
+      {selected.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {selected.map((v, i) => (
+            <span
+              key={`${v}-${i}`}
+              className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full"
+            >
+              {v}
+              <button
+                type="button"
+                className="ml-1 text-gray-500"
+                onClick={() => onChange(selected.filter(x => x !== v))}
+                aria-label={`Remove ${v}`}
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* add custom */}
+      <div className="mt-2 flex gap-2">
+        <input
+          value={txt}
+          onChange={(e) => setTxt(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCustom())}
+          placeholder={placeholder}
+          className="flex-1 rounded-xl border p-2 text-sm"
+        />
+        <button
+          type="button"
+          onClick={addCustom}
+          className="rounded-xl border px-3 py-2 text-sm"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Estimated Cost editor (friendly fields) ---------- */
+
+type Cost = { min?: number | null; max?: number | null; currency?: string | null; notes?: string | null };
+
+function EstimatedCostEditor({
+  value,
+  onChange,
+}: {
+  value: Cost | undefined;
+  onChange: (c: Cost) => void;
+}) {
+  const v: Cost = value || {};
+  const set = (patch: Partial<Cost>) => onChange({ ...v, ...patch });
+
+  return (
+    <div className="rounded-xl border p-3">
+      <label className="text-sm font-medium">Estimated Cost</label>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
+        <div>
+          <div className="text-xs text-gray-500 mb-1">Min</div>
+          <input
+            type="number"
+            min={0}
+            value={v.min ?? ""}
+            onChange={(e) => set({ min: e.target.value === "" ? null : Number(e.target.value) })}
+            className="w-full border px-3 py-2 rounded"
+            placeholder="e.g., 5000"
+          />
+        </div>
+        <div>
+          <div className="text-xs text-gray-500 mb-1">Max</div>
+          <input
+            type="number"
+            min={0}
+            value={v.max ?? ""}
+            onChange={(e) => set({ max: e.target.value === "" ? null : Number(e.target.value) })}
+            className="w-full border px-3 py-2 rounded"
+            placeholder="e.g., 15000"
+          />
+        </div>
+        <div>
+          <div className="text-xs text-gray-500 mb-1">Currency</div>
+          <select
+            value={v.currency ?? "INR"}
+            onChange={(e) => set({ currency: e.target.value })}
+            className="w-full border px-3 py-2 rounded"
+          >
+            <option value="INR">INR (₹)</option>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+          </select>
+        </div>
+      </div>
+      <div className="mt-2">
+        <div className="text-xs text-gray-500 mb-1">Notes (supports “10% off” etc.)</div>
+        <textarea
+          rows={2}
+          value={v.notes ?? ""}
+          onChange={(e) => set({ notes: e.target.value })}
+          className="w-full border px-3 py-2 rounded"
+          placeholder="e.g., Early-bird 10% off till 30th Sept"
+        />
+      </div>
+    </div>
+  );
+}
+
 
 export default function ItineraryFormModal({ initialData, onClose, onSave }: Props) {
   const isEditMode = !!initialData;
@@ -52,7 +219,9 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
     season: '',
     visit_season: [] as string[],       // ✅ snake_case everywhere
     tags: [] as string[],
-    estimated_cost: {} as Record<string, any>,
+    estimated_cost: { min: null, max: null, currency: "INR", notes: "" } as {
+      min: number | null; max: number | null; currency: string | null; notes: string | null;
+    },
     travel_mode: [] as string[],
     highlights: [] as string[],
     places_per_day: [] as DayPlan[],
@@ -96,22 +265,30 @@ export default function ItineraryFormModal({ initialData, onClose, onSave }: Pro
     created_at: new Date().toISOString(),
   });
 
-  const mapInitialData = (data: any) =>
-    data
-      ? {
-          ...createDefaultForm(),
-          ...data,
-          socialmedia: {
-            facebook: data.socialmedia?.facebook ?? '',
-            instagram: data.socialmedia?.instagram ?? '',
-            youtube: data.socialmedia?.youtube ?? '',
-          },
-          places_per_day: Array.isArray(data.places_per_day) ? data.places_per_day : [],
-          approval_status: data.approval_status ?? 'pending',
-          // accept either visit_season or legacy visitseason
-          visit_season: toArray(data.visit_season ?? data.visitseason),
-        }
-      : createDefaultForm();
+    const mapInitialData = (data: any) =>
+      data
+        ? {
+            ...createDefaultForm(),
+            ...data,
+            socialmedia: {
+              facebook: data.socialmedia?.facebook ?? '',
+              instagram: data.socialmedia?.instagram ?? '',
+              youtube: data.socialmedia?.youtube ?? '',
+            },
+            places_per_day: Array.isArray(data.places_per_day)
+              ? data.places_per_day.map((d: any, i: number) => ({
+                  day: Number(d?.day) || i + 1,
+                  places: Array.isArray(d?.places)
+                    ? d.places.map(toLabel).filter(Boolean)
+                    : [],
+                }))
+              : [],
+            approval_status: data.approval_status ?? 'pending',
+            // accept either visit_season or legacy visitseason
+            visit_season: toArray(data.visit_season ?? data.visitseason),
+          }
+        : createDefaultForm();
+
 
   const [form, setForm] = useState(() => mapInitialData(initialData));
   const [loading, setLoading] = useState(false);
@@ -245,49 +422,68 @@ const save = async () => {
     // Normalize arrays & JSON ahead of validation
     const candidate = {
       ...form,
+      // slug you computed above
       slug,
+
+      // chip/multi-selects → string[]
       regions_covered: toArray(form.regions_covered),
-      idealfor: toArray(form.idealfor),
-      theme: toArray(form.theme),
-      visit_season: toArray((form as any).visit_season ?? (form as any).visitseason),
-      tags: toArray(form.tags),
-      travel_mode: toArray(form.travel_mode),
-      highlights: toArray(form.highlights),
-      places_per_day: Array.isArray(form.places_per_day) ? form.places_per_day : [],
-      gallery: toArray(form.gallery),
-      tips: toArray(form.tips),
-      warnings: toArray(form.warnings),
-      reviews: toArray(form.reviews),
-      media: toArray(form.media),
-      search_keywords: toArray(form.search_keywords),
-      // Clean empty strings that go into numeric/date columns:
-      ai_score: form.ai_score === '' ? null : form.ai_score,
-      searchboost: form.searchboost === '' ? null : form.searchboost,
-      ratings: form.ratings === '' ? null : form.ratings,
+      idealfor:       toArray(form.idealfor),
+      theme:          toArray(form.theme),
+      visit_season:   toArray((form as any).visit_season ?? (form as any).visitseason),
+      tags:           toArray(form.tags),
+      travel_mode:    toArray(form.travel_mode),
+
+      // free lists
+      highlights:     toArray(form.highlights),
+      gallery:        toArray(form.gallery),
+      tips:           toArray(form.tips),
+      warnings:       toArray(form.warnings),
+      reviews:        toArray(form.reviews),
+      media:          toArray(form.media),
+      search_keywords:toArray(form.search_keywords),
+
+      // daily plan → normalized array of objects
+      places_per_day: Array.isArray(form.places_per_day)
+        ? form.places_per_day.map((d: any, i: number) => ({
+            day: Number(d?.day) || i + 1,
+            // convert objects like {name:"..."} or {title:"..."} to strings
+            places: Array.isArray(d?.places) ? d.places.map(toLabel).filter(Boolean) : [],
+          }))
+        : [],
+
+      // numbers/dates → null if empty string
+      ai_score:        form.ai_score        === '' ? null : form.ai_score,
+      searchboost:     form.searchboost     === '' ? null : form.searchboost,
+      ratings:         form.ratings         === '' ? null : form.ratings,
       popularityindex: form.popularityindex === '' ? null : form.popularityindex,
-      lastbookedat: form.lastbookedat === '' ? null : form.lastbookedat,
-      // Enums/safe values:
-      approval_status: (form.approval_status ?? 'pending') as 'pending' | 'approved' | 'rejected',
-      visibilitystatus: (form.visibilitystatus ?? 'visible') as 'visible' | 'hidden' | 'draft',
-      adslot: (form.adslot ?? 'none') as any,
-      // Social media structure guard
+      lastbookedat:    form.lastbookedat    === '' ? null : form.lastbookedat,
+
+      // enums/safe values
+      approval_status:  (form.approval_status  ?? 'pending') as 'pending'|'approved'|'rejected',
+      visibilitystatus: (form.visibilitystatus ?? 'visible') as 'visible'|'hidden'|'draft',
+
+      // adslot guard (matches your DB check)
+      adslot: (['none','homepage','featured','nearby'] as const).includes(form.adslot)
+        ? form.adslot
+        : 'none',
+
+      // social structure (avoid undefined)
       socialmedia: {
-        facebook: form.socialmedia?.facebook ?? '',
+        facebook:  form.socialmedia?.facebook  ?? '',
         instagram: form.socialmedia?.instagram ?? '',
-        youtube: form.socialmedia?.youtube ?? '',
+        youtube:   form.socialmedia?.youtube   ?? '',
       },
-      // Image normalization: keep whatever you store (URL or path), but never empty string
+
+      // image normalization – store null instead of empty string
       image: form.image ? String(form.image) : null,
     };
 
-    // If you changed DB column to jsonb (not jsonb[]), make sure it’s a JSON array
-    if (
-      candidate.places_per_day != null &&
-      !Array.isArray(candidate.places_per_day)
-    ) {
+    // If you changed the DB column to jsonb (object), ensure it's truly an array:
+    if (candidate.places_per_day != null && !Array.isArray(candidate.places_per_day)) {
       console.warn('[save] places_per_day was not array; coercing to []');
       (candidate as any).places_per_day = [];
     }
+
 
     // Optional: enforce adslot allowed set (matches your DB check constraint)
     const allowedAdslots = new Set(['none', 'homepage', 'featured', 'nearby']);
@@ -296,16 +492,16 @@ const save = async () => {
       (candidate as any).adslot = 'none';
     }
 
-    // Zod-validate (adjust import/schema if needed)
-    // If you're not using Zod here, you can comment these two lines out.
     // const payload = ItineraryZ.parse(candidate);
     const payload = candidate;
 
-    // Helpful console dump before sending to DB
     console.group('[Admin Itinerary] Submitting payload');
     console.log('mode:', isEditMode ? 'edit' : 'create');
     console.log('payload:', payload);
     console.groupEnd();
+
+    // ... supabase insert/update with .select(...)
+
 
     let resp;
     if (isEditMode) {
@@ -405,13 +601,50 @@ const save = async () => {
                   {Input('Days', 'days', 'number')}
                   {Input('Starting Point', 'starting_point')}
                   {Input('Ending Point', 'ending_point')}
-                  {Multi('Regions Covered', 'regions_covered', [...FIELD_OPTIONS.itineraries.regions_covered])}
-                  {Multi('Ideal For', 'idealfor', [...FIELD_OPTIONS.itineraries.idealfor])}
-                  {Multi('Theme', 'theme', [...FIELD_OPTIONS.itineraries.theme])}
-                  {Input('Season', 'season')}
-                  {Multi('Visit Season', 'visit_season', [...visitSeasonOptions])}
-                  {Multi('Tags', 'tags', [...FIELD_OPTIONS.itineraries.tags])}
-                  {Multi('Travel Mode', 'travel_mode', [...FIELD_OPTIONS.itineraries.travel_mode])}
+                  <ChipPicker
+                    label="Regions Covered"
+                    value={form.regions_covered}
+                    options={FIELD_OPTIONS.itineraries.regions_covered || []}
+                    onChange={(next) => set('regions_covered', next)}
+                  />
+
+                  <ChipPicker
+                    label="Ideal For"
+                    value={form.idealfor}
+                    options={FIELD_OPTIONS.itineraries.idealfor || []}
+                    onChange={(next) => set('idealfor', next)}
+                  />
+
+                  <ChipPicker
+                    label="Theme"
+                    value={form.theme}
+                    options={FIELD_OPTIONS.itineraries.theme || []}
+                    onChange={(next) => set('theme', next)}
+                  />
+
+                  {Input('Season (single value)', 'season')}
+
+                  <ChipPicker
+                    label="Visit Season"
+                    value={form.visit_season}
+                    options={visitSeasonOptions || []}
+                    onChange={(next) => set('visit_season', next)}
+                  />
+
+                  <ChipPicker
+                    label="Tags"
+                    value={form.tags}
+                    options={FIELD_OPTIONS.itineraries.tags || []}
+                    onChange={(next) => set('tags', next)}
+                  />
+
+                  <ChipPicker
+                    label="Travel Mode"
+                    value={form.travel_mode}
+                    options={FIELD_OPTIONS.itineraries.travel_mode || []}
+                    onChange={(next) => set('travel_mode', next)}
+                  />
+
                   {Input('Author', 'author')}
                   {Input('Ratings', 'ratings', 'number')}
                   {Input('Region', 'region')}
@@ -558,7 +791,10 @@ const save = async () => {
               </Disclosure.Button>
               <Disclosure.Panel>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {renderJSON('Estimated Cost', 'estimated_cost')}
+                  <EstimatedCostEditor
+                    value={form.estimated_cost}
+                    onChange={(c) => set('estimated_cost', c)}
+                  />
                   {Input('Meta Title', 'meta_title')}
                   {TextArea('Meta Description', 'meta_description')}
                   {Input('Popularity Index', 'popularityindex', 'number')}
@@ -763,7 +999,7 @@ function DayPlanner({
               </button>
             </div>
             <Chips
-              label="Places (chips)"
+              label="Plans"
               value={it.places}
               onChange={(v) => setPlaces(idx, v)}
             />
@@ -784,18 +1020,17 @@ function DayPlanner({
 }
 
 /* Chips */
-function Chips({
-  label,
-  value,
-  onChange,
-}: {
+function Chips({ label, value, onChange }: {
   label: string;
   value: string[] | string | null | undefined;
   onChange: (v: string[]) => void;
 }) {
-  const arr = Array.isArray(value)
-    ? value
-    : (typeof value === 'string' ? value.split(',').map(s => s.trim()).filter(Boolean) : []);
+  const arr: string[] = Array.isArray(value)
+    ? value.map(toLabel).filter(Boolean)
+    : (typeof value === 'string'
+        ? value.split(',').map(toLabel).filter(Boolean)
+        : []);
+
   const [txt, setTxt] = useState('');
   return (
     <div>

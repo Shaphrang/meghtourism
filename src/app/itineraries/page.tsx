@@ -1,109 +1,128 @@
 // src/app/itineraries/page.tsx
 import ItinerariesClient from "@/components/itineraries/ItinerariesClient";
+import ItinerariesSEO from "@/components/seo/ItinerariesSEO";
 import { createClient } from "@supabase/supabase-js";
-import ItinerariesSEO from "@/app/components/seo/ItinerariesSEO";
 
-export const revalidate = 900; // ISR like Homestays
+export const revalidate = 900; // 15m ISR
 
-// --- Minimal row types (adjust to your schema as needed)
+type Cost = { min?: number; max?: number; currency?: string; notes?: string } | null;
+
 type ItineraryRow = {
   id: string;
-  slug?: string;
-  title?: string;
-  image?: string;
-  gallery?: string[] | null;
-  days?: number | null;
-  starting_point?: string | null;
-  audience?: string | null;
-  sponsored?: boolean | null;
-  discountPct?: number | null;
-  featured?: boolean | null;
-  pricefrom?: number | null;
-  description?: string | null;
-  created_at?: string;
+  slug: string | null;
+  title: string | null;
+  image: string | null;
+  gallery: string[] | null;
+  days: number | null;
+  starting_point: string | null;
+  idealfor: string[] | null;
+  estimated_cost: Cost;
+  description: string | null;
+  created_at: string | null;
+  popularityindex: number | null;
+  // (we intentionally ignore promo flags for now)
 };
 
-type ReviewAggRow = {
-  item_id: string;
-  count: number;
-  avg_rating: number | string | null;
+type Card = {
+  id: string;
+  slug: string;
+  title: string;
+  image?: string;
+  days: number;
+  start: string;
+  audience?: string;
+  sponsored?: boolean;   // not used, but kept for client type
+  discountPct?: number;  // not used, but kept for client type
+  featured?: boolean;    // not used, but kept for client type
+  priceFrom?: number;
+  ratingAvg: number | null;
+  ratingCount: number;
+  description: string;
+  popularity: number;
 };
+
+const envSafe = () =>
+  Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 export default async function Page() {
-  // 1) Create Supabase client (inline). Ensure env vars exist.
+  if (!envSafe()) {
+    console.error("[itineraries/page] Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    return (
+      <>
+        <ItinerariesSEO total={0} />
+        <ItinerariesClient all={[]} topPicks={[]} sponsored={[]} deals={[]} />
+      </>
+    );
+  }
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  // 2) Fetch a pooled set of itineraries
-  const { data: dataRows, error: rowsError } = await supabase
+  // Pull a decently large pool to randomize from
+  const { data: dataRows, error } = await supabase
     .from("itineraries")
     .select(
-      "id, slug, title, image, gallery, days, starting_point, audience, sponsored, discountPct, featured, pricefrom, description, created_at"
+      [
+        "id",
+        "slug",
+        "title",
+        "image",
+        "gallery",
+        "days",
+        "starting_point",
+        "idealfor",
+        "estimated_cost",
+        "description",
+        "created_at",
+        "popularityindex",
+      ].join(", ")
     )
+    .eq("approval_status", "approved")
+    .eq("is_active", true)
     .order("created_at", { ascending: false })
-    .limit(60);
+    .limit(200)
+    .returns<ItineraryRow[]>();
 
-  // Safe fallback to array
+  if (error) console.error("[itineraries/page] Supabase error:", error.message);
+
   const rows: ItineraryRow[] = dataRows ?? [];
 
-  // 3) Join rating aggregate (optional)
-  const ids = rows.map((r) => r.slug || r.id).filter(Boolean) as string[];
-  let ratingMap: Record<string, { count: number; avg: number }> = {};
+  const list: Card[] = rows.map((r) => ({
+    id: r.id,
+    slug: r.slug || r.id,
+    title: r.title || "Untitled",
+    image: r.image || r.gallery?.[0] || undefined,
+    days: Math.max(0, Number(r.days ?? 0)),
+    start: r.starting_point || "Meghalaya",
+    audience: (r.idealfor?.[0] ?? "").toString().trim() || undefined,
+    priceFrom: typeof r.estimated_cost?.min === "number" ? r.estimated_cost!.min : undefined,
+    ratingAvg: null,
+    ratingCount: 0,
+    description: r.description ?? "",
+    popularity: Number.isFinite(Number(r.popularityindex)) ? Number(r.popularityindex) : 0,
+  }));
 
-  if (ids.length > 0) {
-    const { data: dataAgg } = await supabase
-      .from("review_aggregate")
-      .select("item_id, count, avg_rating")
-      .eq("category", "itinerary")
-      .in("item_id", ids);
+  // --- Randomize & split (no overlap) ---
+  const take = Math.min(30, list.length); // up to 30 items total for rails
+  const shuffled = [...list].sort(() => Math.random() - 0.5).slice(0, take);
 
-    const agg: ReviewAggRow[] = dataAgg ?? [];
-    ratingMap = Object.fromEntries(
-      agg.map((a) => [
-        a.item_id,
-        {
-          count: a.count ?? 0,
-          avg: a.avg_rating == null ? 0 : Number(a.avg_rating),
-        },
-      ])
-    );
-  }
-
-  // 4) Normalize rows -> list for UI
-  const list = rows.map((r) => {
-    const key = (r.slug || r.id) as string;
-    const rating = ratingMap[key];
-    return {
-      id: r.id,
-      slug: r.slug || r.id,
-      title: r.title || "Untitled",
-      image: r.image || (r.gallery?.[0] ?? ""),
-      days: r.days ?? 0,
-      start: r.starting_point ?? "Shillong",
-      audience: r.audience ?? "",
-      sponsored: Boolean(r.sponsored),
-      discountPct: r.discountPct ?? 0,
-      featured: Boolean(r.featured),
-      priceFrom: r.pricefrom ?? 0,
-      ratingAvg: rating?.avg ?? null,
-      ratingCount: rating?.count ?? 0,
-      description: r.description ?? "",
-    };
-  });
-
-  // 5) Precompute rails
-  const topPicks = list.filter((i) => i.featured);
-  const sponsored = list.filter((i) => i.sponsored);
-  const deals = list
-    .filter((i) => (i.discountPct || 0) > 0)
-    .sort((a, b) => (b.discountPct || 0) - (a.discountPct || 0));
+  // If fewer than 30, split evenly and keep order
+  const third = Math.ceil(shuffled.length / 3);
+  const topPicks = shuffled.slice(0, Math.min(10, third));
+  const sponsored = shuffled.slice(Math.min(10, third), Math.min(20, 2 * third));
+  const deals = shuffled.slice(Math.min(20, 2 * third), Math.min(30, 3 * third));
 
   return (
     <>
       <ItinerariesSEO total={list.length} />
-      <ItinerariesClient all={list} topPicks={topPicks} sponsored={sponsored} deals={deals} />
+      <ItinerariesClient
+        all={list}
+        topPicks={topPicks}
+        sponsored={sponsored}
+        deals={deals}
+      />
     </>
   );
 }
