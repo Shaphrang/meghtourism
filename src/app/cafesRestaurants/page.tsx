@@ -1,169 +1,126 @@
-"use client";
+// Server/ISR page — fetch ALL rows, split into 3 equal buckets (max 10 each)
 
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { MapPin } from "lucide-react";
-import useSupabaseList from "@/hooks/useSupabaseList";
-import DynamicFilterComponent from "@/components/filters/DynamicFilterComponent";
-import { CafeAndRestaurant } from "@/types/cafeRestaurants";
-import FeaturedBannerAds from "@/components/ads/featuredBannerAds";
+import { createClient } from "@supabase/supabase-js";
+import CafesRestaurantsClient from "@/components/cafesRestaurants/cafesRestaurantsClient";
+import CafesRestaurantsSEO from "@/components/seo/cafesRestaurantsSeo";
+import type { CafeAndRestaurant } from "@/types/cafeRestaurants";
 
-export default function RestaurantsListingPage() {
-  const [page, setPage] = useState(1);
-  const [restaurants, setRestaurants] = useState<CafeAndRestaurant[]>([]);
-  const [filter, setFilter] = useState<{ field: string; value: any } | null>(null);
+export const revalidate = 900; // 15m
 
-  const { data, totalCount, loading } = useSupabaseList<CafeAndRestaurant>(
-    "cafes_and_restaurants",
-    {
-      sortBy: "created_at",
-      ascending: false,
-      filter,
-      page,
-      pageSize: 6,
-    }
+type Row = {
+  id: string;
+  slug: string | null;
+  name: string | null;
+  image: string | null;
+  gallery: string[] | null;
+  type: string | null;
+  area: string | null;
+  location: string | null;
+  cuisine: string[] | null;
+  tags: string[] | null;
+  averagecost: number | null;
+  description: string | null;
+  adactive: boolean | null;
+  sponsoredby: string | null;
+  isfeaturedforhome: boolean | null;
+  highlight: boolean | null;
+  visibilitystatus: "visible" | "hidden" | "draft" | null;
+  created_at: string | null;
+};
+
+export default async function Page() {
+  const hasEnv = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
 
-  const { data: popular } = useSupabaseList<CafeAndRestaurant>(
-    "cafes_and_restaurants",
-    {
-      sortBy: "ratings",
-      ascending: false,
-      pageSize: 10,
-    }
-  );
-
-  const observerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (page === 1) setRestaurants(data);
-    else setRestaurants((prev) => [...prev, ...data]);
-  }, [data]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (
-          entries[0].isIntersecting &&
-          !loading &&
-          restaurants.length < (totalCount ?? 0)
-        ) {
-          setPage((p) => p + 1);
-        }
-      },
-      { threshold: 1 }
-    );
-    if (observerRef.current) observer.observe(observerRef.current);
-    return () => observer.disconnect();
-  }, [restaurants, loading, totalCount]);
-
-  // Inline Card Component
-  function Card({ item }: { item: CafeAndRestaurant }) {
-    const [expanded, setExpanded] = useState(false);
+  if (!hasEnv) {
+    console.error("[cafesRestaurants/page] Missing NEXT_PUBLIC_SUPABASE_* env");
     return (
-      <div className="flex gap-3 bg-white rounded-xl shadow-md overflow-hidden p-2 flex-shrink-0">
-        <div className="relative w-[100px] h-[100px] flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-          {item.image ? (
-            <Image
-              src={item.image}
-              alt={item.name || "Cafe"}
-              fill
-              sizes="100px"
-              className="object-cover"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-sm text-charcoal/50">
-              No Image
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col justify-between py-1 pr-1">
-          <div>
-            <h3 className="text-sm font-semibold text-deepIndigo truncate">
-              {item.name || "Untitled"}
-            </h3>
-            <p className="text-xs text-charcoal mt-0.5">
-              {expanded
-                ? item.description
-                : `${item.description?.slice(0, 100)}${
-                    item.description && item.description.length > 100 ? "..." : ""
-                  }`}
-              {item.description && item.description.length > 100 && (
-                <button
-                  onClick={() => setExpanded(!expanded)}
-                  className="ml-1 text-meghGreen text-[11px] font-medium hover:underline"
-                >
-                  {expanded ? "Show less" : "Show more"}
-                </button>
-              )}
-            </p>
-            <p className="text-xs text-meghGreen mt-1 flex items-center">
-              <MapPin size={12} className="mr-1" />
-              {item.location}
-            </p>
-          </div>
-          <div className="text-xs text-gray-500 mt-1">
-            {(item.cuisine?.length ? item.cuisine.join(", ") : "No cuisine")}
-            {" • "}
-            <span className="text-deepIndigo">{item.type}</span>
-            {" • "}
-            <span className="text-warmAmber font-bold">
-              ⭐ {item.ratings ?? "N/A"}
-            </span>
-          </div>
-        </div>
-      </div>
+      <>
+        <CafesRestaurantsSEO total={0} />
+        <CafesRestaurantsClient all={[]} topPicks={[]} sponsored={[]} deals={[]} />
+      </>
     );
   }
 
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  const { data, error } = await supabase
+    .from("cafes_and_restaurants")
+    .select(
+      [
+        "id","slug","name","image","gallery","type","area","location",
+        "cuisine","tags","averagecost","description",
+        "adactive","sponsoredby","isfeaturedforhome","highlight",
+        "visibilitystatus","created_at",
+      ].join(", ")
+    )
+    // IMPORTANT: no filter — get ALL
+    .order("created_at", { ascending: false })
+    .limit(200)
+    .returns<Row[]>();
+
+  if (error) {
+    console.error("[cafesRestaurants/page] Supabase error:", error.message);
+  }
+
+  const rows: Row[] = data ?? [];
+
+  const toCard = (r: Row): Partial<CafeAndRestaurant> => ({
+    id: r.id,
+    slug: r.slug ?? r.id,
+    name: r.name ?? "Untitled",
+    image: r.image ?? r.gallery?.[0] ?? "",
+    type: r.type ?? "Cafe",
+    area: r.area ?? undefined,
+    location: r.location ?? undefined,
+    cuisine: r.cuisine ?? undefined,
+    features: r.tags ?? undefined,
+    averagecost: typeof r.averagecost === "number" ? r.averagecost : undefined,
+    description: r.description ?? "",
+    // kept for future use (UI doesn’t rely on them right now)
+    adactive: !!r.adactive,
+    sponsoredby: r.sponsoredby ?? undefined,
+    isfeaturedforhome: !!r.isfeaturedforhome,
+    highlight: !!r.highlight,
+    created_at: r.created_at ?? new Date().toISOString(),
+  });
+
+  const list = rows.map(toCard);
+
+  // ------- Split ALL into 3 buckets (no criteria), disjoint, each ≤ 10 -------
+  const total = list.length;
+  const third = Math.ceil(total / 3);
+  const cap = Math.min(10, Math.max(1, Math.floor(total / 3) || 10));
+
+  const first = list.slice(0, third);
+  const second = list.slice(third, third * 2);
+  const thirdArr = list.slice(third * 2);
+
+  const topPicks   = first.slice(0, cap);
+  const sponsored  = second.slice(0, cap);
+  const deals      = thirdArr.slice(0, cap);
+
+  console.log("[cafesRestaurants/page] split", {
+    total, cap,
+    topPicks: topPicks.length,
+    sponsored: sponsored.length,
+    deals: deals.length,
+    sample: list[0],
+  });
+
   return (
-    <main className="w-full min-h-screen bg-stoneGray text-charcoal">
-      <section className="bg-gradient-to-r from-pink-100 to-yellow-100 p-6 text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-pink-800">Dine in Meghalaya</h1>
-      </section>
-
-      {/* Filter Bar */}
-      <DynamicFilterComponent
-        table="cafes_and_restaurants"
-        filtersConfig={[{ type: "location" }, { type: "cuisine" }]}
-        onFilterChange={(newFilter) => {
-          setFilter(newFilter);
-          setPage(1);
-        }}
+    <>
+      <CafesRestaurantsSEO total={list.length} />
+      <CafesRestaurantsClient
+        all={list}
+        topPicks={topPicks}
+        sponsored={sponsored}
+        deals={deals}
       />
-
-      {/* Featured Ads */}
-      <section className="p-4">
-        <h2 className="text-lg font-semibold mb-2 text-meghGreen font-geist font-sans">
-          Popular Restaurants
-        </h2>
-        <FeaturedBannerAds category="cafesRestaurants" />
-      </section>
-
-      {/* All Restaurants (Vertical Cards) */}
-      <section className="p-4">
-        <h2 className="text-lg font-semibold mb-2 text-meghGreen font-geist font-sans">
-          All Restaurants
-        </h2>
-        <div className="flex flex-col gap-3">
-          {restaurants.map((rest) => (
-            <Link
-              key={rest.id}
-              href={`/cafesRestaurants/${rest.slug ?? rest.id}`}
-              className="block hover:scale-[1.01] transition-transform duration-200"
-            >
-              <Card item={rest} />
-            </Link>
-          ))}
-        </div>
-        <div ref={observerRef} className="text-center mt-4">
-          {loading && <p className="text-sm text-meghGreen font-geist font-sans">Loading...</p>}
-          {restaurants.length >= (totalCount ?? 0) && !loading && (
-            <p className="text-sm text-charcoal/40 font-geist font-sans">No more restaurants.</p>
-          )}
-        </div>
-      </section>
-    </main>
+    </>
   );
 }

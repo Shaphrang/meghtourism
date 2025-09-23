@@ -1,3 +1,4 @@
+//src\types\cafeRestaurants.ts
 export interface CafeAndRestaurant {
   // 🔑 Core Identity
   id: string;
