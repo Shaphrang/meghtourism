@@ -14,6 +14,8 @@ import {
   Compass,
 } from "lucide-react";
 import type { CafeAndRestaurant } from "@/types/cafeRestaurants";
+import Footer from "@/components/common/footer";
+import FooterSpace from "../common/FooterSpace";
 
 function cx(...c: (string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
@@ -53,26 +55,14 @@ function logDivider() {
 
 function Header() {
   return (
-    <header className="bg-white/95 backdrop-blur border-b w-full">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b">
       <div className="px-3 py-2 flex items-center gap-2">
-        <div
-          className="w-9 h-9 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold"
-          aria-label="Meghtourism"
-        >
-          M
-        </div>
+        <div className="w-9 h-9 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold">M</div>
         <div className="flex-1">
           <div className="text-[11px] text-gray-500">Meghtourism</div>
-          <div className="text-sm font-semibold">Cafes & Restaurants</div>
+          <div className="text-sm font-semibold">Cafes and Restaurants</div>
         </div>
-        <button
-          onClick={() => alert("PWA: Add to Home Screen")}
-          className="px-3 py-1.5 rounded-xl bg-gray-900 text-white text-xs"
-          aria-label="Install app"
-          type="button"
-        >
-          Install
-        </button>
+        <Link href="/" className="text-xs text-emerald-700">Home</Link>
       </div>
     </header>
   );
@@ -480,6 +470,8 @@ export default function CafesRestaurantsClient({
             </div>
           )}
         </main>
+        <FooterSpace/>
+        <Footer />
 
         {/* Hide scrollbars for rails */}
         <style jsx global>{`

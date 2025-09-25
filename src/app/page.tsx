@@ -1,4 +1,4 @@
-// src/app/page.tsx
+//src\app\page.tsx
 import { createClient } from "@supabase/supabase-js";
 import HomeClient from "@/components/home/HomeClient";
 import type {
@@ -181,14 +181,21 @@ if (thr?.error) console.error("THRILLS ERROR", thr.error);
     rating: r.ratings ?? undefined, // alias for any older UI pieces
   }));
 
-  const itineraries: ItineraryCard[] = rows<any>(iti).map((r) => ({
-    id: r.id,
-    slug: r.slug ?? String(r.id),
-    title: r.title,
-    image: r.image,
-    days: r.days ?? undefined,
-    audience: Array.isArray(r.idealfor) ? r.idealfor[0] : r.idealfor ?? undefined,
-  }));
+// in page.tsx, where you map itineraries -> ItineraryCard[]
+const itineraries: ItineraryCard[] = rows<any>(iti).map((r) => ({
+  id: r.id,
+  slug: r.slug ?? String(r.id),
+  title: r.title,
+  image: r.image,
+  days: r.days ?? undefined,
+  audience: Array.isArray(r.idealfor) ? r.idealfor[0] : r.idealfor ?? undefined,
+  start: r.start ?? r.startlocation ?? r.location ?? undefined,       // NEW
+  priceFrom: r.pricefrom ?? r.price_from ?? r.startingprice ?? undefined, // NEW
+  sponsored: !!(r.sponsored ?? r.is_sponsored),                       // NEW
+  discountPct: r.discountpct ?? r.discount_pct ?? undefined,          // NEW
+  ratingAvg: r.rating ?? r.ratings ?? r.rating_avg ?? undefined,      // NEW
+}));
+
 
   const rentals: RentalCard[] = rows<any>(ren).map((r) => ({
     id: r.id,

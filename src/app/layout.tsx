@@ -5,7 +5,6 @@ import { Toaster } from "react-hot-toast";
 import Script from "next/script";
 import Header from "@/components/common/header";
 import FooterNav from "@/components/common/footer";
-import ContactCTA from "@/components/common/contactCTA";
 
 
 const geistSans = Geist({
@@ -58,7 +57,6 @@ export default function RootLayout({
         {/*<Header />*/}
         <main className="min-h-screen app-main">
           {children}
-          <ContactCTA />
         </main>
 
         

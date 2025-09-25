@@ -13,6 +13,8 @@ import {
   BadgePercent, HomeIcon, User
 } from "lucide-react";
 import HomestaysSEO from "@/components/seo/HomestaysSeo";
+import Footer from "@/components/common/footer";
+import FooterSpace from "@/components/common/FooterSpace";
 
 /* ---------------- Types ---------------- */
 
@@ -595,7 +597,7 @@ export default function HomestaysClient(props: {
         )}
 
         {/* All Homestays — ALWAYS visible below */}
-        <section className="px-3 mt-6 max-w-2xl mx-auto pb-4">
+        <section className="px-3 mt-6 max-w-2xl mx-auto">
           <div className="text-sm font-semibold text-gray-800 mb-2">All Homestays</div>
 
           {shownAll.length === 0 ? (
@@ -619,14 +621,8 @@ export default function HomestaysClient(props: {
             </div>
           )}
         </section>
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur border-t z-40">
-          <div className="px-6 py-2 grid grid-cols-4 text-xs">
-            <Link href="/" className="flex flex-col items-center text-emerald-700"><HomeIcon size={20}/>Home</Link>
-            <Link href="/destinations" className="flex flex-col items-center text-gray-600"><Megaphone size={20}/>Scenaries</Link>
-            <Link href="/events" className="flex flex-col items-center text-gray-600"><User size={20}/>Events</Link>
-            <Link href="/itineraries" className="flex flex-col items-center text-gray-600"><User size={20}/>Itineraries</Link>
-          </div>
-        </nav>
+        <FooterSpace/>
+        <Footer />
 
         {/* Hide scrollbars for rails */}
         <style jsx global>{`

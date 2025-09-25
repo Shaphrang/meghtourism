@@ -8,6 +8,8 @@ import {
   CalendarDays, MapPin, Star, Megaphone, Percent, Users,
   Heart, BadgeDollarSign, Home, User, Compass
 } from "lucide-react";
+import Footer from "@/components/common/footer";
+import FooterSpace from "../common/FooterSpace";
 
 export type Itin = {
   id: string;
@@ -36,23 +38,14 @@ function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b">
       <div className="px-3 py-2 flex items-center gap-2">
-        <div
-          className="w-9 h-9 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold"
-          aria-label="Meghtourism"
-        >
+        <div className="w-9 h-9 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold">
           M
         </div>
         <div className="flex-1">
           <div className="text-[11px] text-gray-500">Meghtourism</div>
-          <div className="text-sm font-semibold">Explore Meghalaya</div>
+          <div className="text-sm font-semibold">Best Itineraries in Meghalaya</div>
         </div>
-        <button
-          onClick={() => alert("PWA: Add to Home Screen")}
-          className="px-3 py-1.5 rounded-xl bg-gray-900 text-white text-xs"
-          aria-label="Install app"
-        >
-          Install
-        </button>
+        <Link href="/" className="text-xs text-emerald-700">Home</Link>
       </div>
     </header>
   );
@@ -62,20 +55,15 @@ function Header() {
 function TrendingZones() {
   const zones = ["Shillong", "Sohra", "Mawlynnong"];
   return (
-    <section className="mt-3">
-      <div className="rounded-3xl overflow-hidden bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 p-4 text-white shadow-sm">
-        <h2 className="text-lg font-bold">Discover Meghalaya, your way</h2>
-        <p className="text-white/90 text-xs mt-1">Trending zones</p>
-        <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
-          {zones.map((z) => (
-            <span
-              key={z}
-              className="px-3 py-1.5 rounded-full bg-white/90 text-gray-900 text-sm shadow-sm"
-            >
-              #{z}
-            </span>
-          ))}
-        </div>
+    <section className="rounded-3xl overflow-hidden bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 p-4 text-white px-3 pt-5 pb-5 mt-3">
+      <h2 className="text-lg font-bold">Discover Meghalaya, your way</h2>
+      <p className="text-white/90 text-xs mt-1">Trending zones</p>
+      <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
+        {zones.map((z) => (
+          <span key={z} className="px-3 py-1.5 rounded-full bg-white/90 text-gray-900 text-sm shadow-sm">
+            #{z}
+          </span>
+        ))}
       </div>
     </section>
   );
@@ -233,13 +221,13 @@ export default function ItinerariesClient({
 
   return (
     <div className="min-h-screen text-gray-900 bg-gradient-to-b from-emerald-50/40 via-white to-sky-50/40">
+      <Header />
       {/* Center column + gutters (same baseline) */}
       <div className="mx-auto w-full max-w-md px-3">
-        <Header />
         <TrendingZones />
 
         {/* Rails zone in a subtle card shell for separation */}
-        <div className="mt-3 rounded-3xl border bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/80 shadow-sm p-3">
+        <div className="mt-3 mb-3 rounded-3xl border bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/80 shadow-sm p-3">
           <SectionHeader title="Top picks" icon={<Compass size={16}/>} accent="bg-sky-400" />
           <Rail items={topPicks} variant="twoHalf" />
 
@@ -254,7 +242,7 @@ export default function ItinerariesClient({
         <SegmentedTabs value={tab} onChange={(k) => { setTab(k); setVisible(PAGE); }} />
 
         {/* Main list with clearer sectioning */}
-        <main className="mt-2 pb-28">
+        <main className="mt-2">
           {!list.length ? (
             <div className="text-center text-sm text-gray-600 py-12">No itineraries match this filter.</div>
           ) : (
@@ -319,14 +307,8 @@ export default function ItinerariesClient({
         </main>
 
         {/* Bottom nav (unchanged) */}
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur border-t z-40">
-          <div className="px-6 py-2 grid grid-cols-4 text-xs">
-            <Link href="/" className="flex flex-col items-center text-sky-700"><Home size={20}/>Home</Link>
-            <Link href="/ads" className="flex flex-col items-center text-gray-600"><Megaphone size={20}/>Ads</Link>
-            <Link href="/saved" className="flex flex-col items-center text-gray-600"><Heart size={20}/>Saved</Link>
-            <Link href="/profile" className="flex flex-col items-center text-gray-600"><User size={20}/>Profile</Link>
-          </div>
-        </nav>
+        <FooterSpace/>
+        <Footer />
 
         {/* Hide scrollbars for rails */}
         <style jsx global>{`
